@@ -1,0 +1,31 @@
+orchestration: swarm
+secrets:
+  - name: s3-secret-key
+    namespace: openfaas-fn
+  - name: s3-access-key
+    namespace:  openfaas-fn
+
+# features:
+#   - name: sealed_secrets
+#     enabled: true
+#   - name: minio
+#     enabled: true
+
+# domain:
+#   pretty: true
+
+# source_control:
+#   name: github
+
+# orchestrator:
+#   name: kubernetes
+
+# helm:
+#   charts:
+#     - name: minio
+#       command: 
+
+# oauth:
+#   client_secret: 
+#   client_id: 
+#   redirect_domain:
