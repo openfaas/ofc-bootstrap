@@ -79,14 +79,22 @@ func process(plan types.Plan) error {
 	if plan.Orchestration == OrchestrationK8s {
 		fmt.Println("Building Ingress")
 
+		nsErr := createNamespaces()
+		if nsErr != nil {
+			log.Println(nsErr)
+		}
+
 		tillerErr := installTiller()
 		if tillerErr != nil {
 			log.Println(tillerErr)
 		}
 
-		nsErr := createNamespaces()
-		if nsErr != nil {
-			log.Println(nsErr)
+		for i := 0; i < 60; i++ {
+			ready := tillerReady()
+			if ready {
+				break
+			}
+			time.Sleep(time.Second * 1)
 		}
 
 		cmErr := installCertmanager()
@@ -279,4 +287,15 @@ func createK8sSecret(kvn types.KeyValueNamespaceTuple) string {
 	}
 
 	return fmt.Sprintf("kubectl create secret generic -n %s %s --from-literal s3-access-key=\"%s\"", kvn.Namespace, kvn.Name, val)
+}
+
+func tillerReady() bool {
+
+	task := execute.ExecTask{
+		Command: `kubectl get deploy/tiller-deploy -n kube-system --output="jsonpath={.status.availableReplicas}"`,
+		Shell:   false,
+	}
+	res, _ := task.Execute()
+
+	return res.Stdout == "1"
 }
