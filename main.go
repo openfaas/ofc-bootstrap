@@ -292,10 +292,11 @@ func createK8sSecret(kvn types.KeyValueNamespaceTuple) string {
 func tillerReady() bool {
 
 	task := execute.ExecTask{
-		Command: `kubectl get deploy/tiller-deploy -n kube-system --output="jsonpath={.status.availableReplicas}"`,
-		Shell:   false,
+		Command: "./scripts/get-tiller.sh",
+		Shell:   true,
 	}
-	res, _ := task.Execute()
 
+	res, err := task.Execute()
+	fmt.Println("tiller", res.ExitCode, res.Stdout, res.Stderr, err)
 	return res.Stdout == "1"
 }
