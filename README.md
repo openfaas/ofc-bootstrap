@@ -4,28 +4,32 @@ ofc-bootstrap
 
 ## Goals
 
-* Get OpenFaaS and OpenFaaS Cloud installed with a single command
+* Install OpenFaaS and Install OpenFaaS Cloud with a single command
 * Mirror OpenFaaS Cloud Community Cluster features/coverage
-* Build an environment for Kubernetes
-* Support GitHub
+* Use Kubernetes as the underlying provider/platform
+* Use GitHub as the SCM (the source for git)
+* Offer a flag for sourcing configuration from a YAML file
+* Offer a dry-run flag or configuration in the YAML file
+* Build a config file for the current OpenFaaS Cloud Community Cluster
 
 ## Stretch goals
 
-* Library for re-use in official CLI or other dedicated CLI i.e. `faas-cli system install openfaas-cloud`
-* Command for installing a base-OpenFaaS system `faas-cli system install --kubernetes/--swarm` 
-* Build a suitable dev environment for local work
+* Publish a static binary
+* Use GitLab for as SCM (the source for git)
 * Build environment out for a Swarm cluster
-* Support for GitLab configuration
+* Add version to YAML file to enable versioning/migration of configs
+* Create a Go library for re-use in official CLI or other dedicated CLI i.e. `faas-cli system install openfaas-cloud`
+* Build a suitable dev environment for local work
+* Add command for installing a base-OpenFaaS system `faas-cli system install --kubernetes/--swarm` 
 
 ## Non-goals
 
-* Running in a Docker image
+* Create a Docker image / run in Docker
 * Installing, configuring or provisioning Kubernetes clusters or nodes
 * Running on a system without bash
 * Terraform/Ansible/Puppet style of experience
-* Re-run without clean-up
-* Updates to config after initial deployment
-* To use go modules
+* Re-run without clean-up (i.e. no updates to config)
+* go modules (`dep` is fine, let's add features instead)
 
 ## Pre-reqs
 
