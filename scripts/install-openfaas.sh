@@ -2,8 +2,7 @@
 
 helm repo add openfaas https://openfaas.github.io/faas-netes
 
-helm repo update
-
+helm repo update && \
 helm upgrade openfaas --install openfaas/openfaas \
     --namespace openfaas  \
     --set basic_auth=true \
