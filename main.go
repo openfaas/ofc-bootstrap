@@ -131,6 +131,7 @@ func installTiller() error {
 	}
 
 	log.Println(res1.Stdout)
+	log.Println(res1.Stderr)
 
 	task2 := execute.ExecTask{
 		Command: "scripts/create-tiller.sh",
@@ -144,6 +145,7 @@ func installTiller() error {
 	}
 
 	log.Println(res2.Stdout)
+	log.Println(res2.Stderr)
 
 	return nil
 }
@@ -162,6 +164,7 @@ func installIngressController() error {
 	}
 
 	log.Println(res.Stdout)
+	log.Println(res.Stderr)
 
 	return nil
 }
@@ -181,6 +184,7 @@ func installOpenfaas() error {
 	}
 
 	log.Println(res.Stdout)
+	log.Println(res.Stderr)
 
 	return nil
 }
@@ -200,6 +204,7 @@ func installCertmanager() error {
 	}
 
 	log.Println(res.Stdout)
+	log.Println(res.Stderr)
 
 	return nil
 }
@@ -219,6 +224,7 @@ func createNamespaces() error {
 	}
 
 	log.Println(res.Stdout)
+	log.Println(res.Stderr)
 
 	return nil
 }
