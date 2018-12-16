@@ -193,7 +193,7 @@ func installCertmanager() error {
 	log.Println("Creating Cert-Manager")
 
 	task := execute.ExecTask{
-		Command: "scripts/install-certmanager.sh",
+		Command: "scripts/install-cert-manager.sh",
 		Shell:   true,
 	}
 
