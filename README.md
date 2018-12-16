@@ -93,7 +93,9 @@ Status:
 * [ ] Create basic-auth secrets for the functions in `openfaas-fn`
 * [ ] Step: Install Minio and generate keys
 * [ ] init.yml - define GitHub App and OAuth App and load via struct
-
+* [ ] Step: deploy OpenFaaS Cloud primary functions
+* [ ] Step: deploy OpenFaaS Cloud dashboard
+* [ ] Step: deploy container builder (buildkit)
 
 Add all remaining steps from [installation guide](https://github.com/openfaas/openfaas-cloud/tree/master/docs).
 
