@@ -89,7 +89,8 @@ func process(plan types.Plan) error {
 			log.Println(tillerErr)
 		}
 
-		for i := 0; i < 60; i++ {
+		for i := 0; i < 260; i++ {
+			log.Printf("Is tiller ready? %d\n", i)
 			ready := tillerReady()
 			if ready {
 				break
