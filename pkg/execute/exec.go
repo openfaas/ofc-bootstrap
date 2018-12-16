@@ -25,13 +25,10 @@ func (et ExecTask) Execute() (ExecResult, error) {
 
 	if et.Shell {
 		startArgs := strings.Split(et.Command, " ")
-		args := []string{"-c", "\""}
+		args := []string{"-c"}
 		for _, part := range startArgs {
 			args = append(args, part)
 		}
-		args = append(args, "\"")
-
-		fmt.Println(args)
 
 		cmd = exec.Command("/bin/bash", args...)
 	} else {
@@ -43,7 +40,13 @@ func (et ExecTask) Execute() (ExecResult, error) {
 		return ExecResult{}, stdoutPipeErr
 	}
 
+	stderrPipe, stderrPipeErr := cmd.StderrPipe()
+	if stderrPipeErr != nil {
+		return ExecResult{}, stderrPipeErr
+	}
+
 	startErr := cmd.Start()
+
 	if startErr != nil {
 		return ExecResult{}, startErr
 	}
@@ -52,9 +55,17 @@ func (et ExecTask) Execute() (ExecResult, error) {
 	if err != nil {
 		return ExecResult{}, err
 	}
+
+	stderrBytes, err := ioutil.ReadAll(stderrPipe)
+
+	if err != nil {
+		return ExecResult{}, err
+	}
+
 	fmt.Println("res: " + string(stdoutBytes))
 
 	return ExecResult{
 		Stdout: string(stdoutBytes),
+		Stderr: string(stderrBytes),
 	}, nil
 }
