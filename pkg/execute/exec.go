@@ -25,10 +25,11 @@ func (et ExecTask) Execute() (ExecResult, error) {
 
 	if et.Shell {
 		startArgs := strings.Split(et.Command, " ")
-		args := []string{"-c"}
+		args := []string{"-c", `'`}
 		for _, part := range startArgs {
 			args = append(args, part)
 		}
+		args = append(args, `'`)
 
 		cmd = exec.Command("/bin/bash", args...)
 	} else {
