@@ -61,7 +61,7 @@ func apply(source string, name string, ingress IngressTemplate) error {
 
 	execTask := execute.ExecTask{
 		Command: "kubectl apply -f " + tempFilePath,
-		Shell:   true,
+		Shell:   false,
 	}
 
 	execRes, execErr := execTask.Execute()
