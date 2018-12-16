@@ -6,7 +6,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: alexellis2@gmail.com
+    email: your-email@gmail.com
     privateKeySecretRef:
       name: letsencrypt-prod
     dns01:
@@ -16,5 +16,5 @@ spec:
           serviceAccountSecretRef:
             name: clouddns-service-account
             key: service-account.json 
-          project: dispatch-193801
+          project: proj-name
 

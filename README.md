@@ -17,6 +17,7 @@ ofc-bootstrap
 * Publish a static binary
 * Use GitLab for as SCM (the source for git)
 * Build environment out for a Swarm cluster
+* Allow namespaces to be overriden from `openfaas`/`openfaas-fn` to something else
 * Add version to YAML file to enable versioning/migration of configs
 * Create a Go library for re-use in official CLI or other dedicated CLI i.e. `faas-cli system install openfaas-cloud`
 * Build a suitable dev environment for local work
@@ -70,6 +71,11 @@ go run main.go -yaml init.yaml
 Help is wanted - the code is in a private repo for OpenFaaS maintainers to contribute to. Sign-off/DCO is required and standard OpenFaaS contributing procedures apply.
 
 Status:
+* [ ] Library: Generate passwords via Golang code or library
+* [ ] Step: Add Ingress controller
+* [ ] Step: Install OpenFaaS via helm
+* [ ] Step: Install tiller sa
+* [ ] Step: Install OpenFaaS namespaces
 * [ ] Flag: Add dry-run
 * [ ] Exec commands need to be actioned, but are just printed
 * [ ] Secret generation isn't working, but should be moved to Golang code - perhaps using a popular Go library?
@@ -90,6 +96,4 @@ Status:
 
 
 Add all remaining steps from [installation guide](https://github.com/openfaas/openfaas-cloud/tree/master/docs).
-
-
 
