@@ -149,6 +149,7 @@ func installTiller() error {
 
 	return nil
 }
+
 func installIngressController() error {
 	log.Println("Creating Ingress Controller")
 
