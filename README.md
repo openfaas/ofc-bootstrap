@@ -2,7 +2,7 @@ ofc-bootstrap
 
 "one-click" CLI to install OpenFaaS Cloud on Kubernetes
 
-## Goals
+## Goals for initial release
 
 * Install OpenFaaS and Install OpenFaaS Cloud with a single command
 * Mirror OpenFaaS Cloud Community Cluster features/coverage
@@ -13,12 +13,15 @@ ofc-bootstrap
 * Offer a dry-run flag or configuration in the YAML file
 * Build a config file for the current OpenFaaS Cloud Community Cluster
 
-## Stretch goals
+## Goals for 1.0
 
 * Publish a static binary on GitHub Releases for `ofc-bootstrap` tool
 * Use GitLab for as SCM (the source for git)
 * Implement a back-end for Swarm in addition to the Kubernetes support.
 * Allow namespaces to be overriden from `openfaas`/`openfaas-fn` to something else
+
+## Goals for 2.0
+
 * Build a suitable dev environment for local work (without Ingress, TLS)
 * Add version number to YAML file i.e `1.0` to enable versioning/migration of configs
 * Move code into official CLI via `faas-cli system install openfaas-cloud`
