@@ -19,7 +19,7 @@ type ExecResult struct {
 }
 
 func (et ExecTask) Execute() (ExecResult, error) {
-	fmt.Println(et.Command)
+	fmt.Println("exec ", et.Command)
 
 	var cmd *exec.Cmd
 
