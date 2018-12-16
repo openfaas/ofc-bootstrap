@@ -79,6 +79,11 @@ func process(plan types.Plan) error {
 	if plan.Orchestration == OrchestrationK8s {
 		fmt.Println("Building Ingress")
 
+		tillerErr := installTiller()
+		if tillerErr != nil {
+			log.Println(tillerErr)
+		}
+
 		nsErr := createNamespaces()
 		if nsErr != nil {
 			log.Println(nsErr)
@@ -111,6 +116,37 @@ func process(plan types.Plan) error {
 	return nil
 }
 
+func installTiller() error {
+	log.Println("Creating Tiller")
+
+	task1 := execute.ExecTask{
+		Command: "scripts/create-tiller-sa.sh",
+		Shell:   true,
+	}
+
+	res1, err1 := task1.Execute()
+
+	if err1 != nil {
+		return err1
+	}
+
+	log.Println(res1.Stdout)
+
+	task2 := execute.ExecTask{
+		Command: "scripts/create-tiller.sh",
+		Shell:   true,
+	}
+
+	res2, err2 := task2.Execute()
+
+	if err2 != nil {
+		return err2
+	}
+
+	log.Println(res2.Stdout)
+
+	return nil
+}
 func installIngressController() error {
 	log.Println("Creating Ingress Controller")
 
