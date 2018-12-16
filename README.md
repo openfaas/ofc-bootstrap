@@ -7,6 +7,7 @@ ofc-bootstrap
 * Get OpenFaaS and OpenFaaS Cloud installed with a single command
 * Mirror OpenFaaS Cloud Community Cluster features/coverage
 * Build an environment for Kubernetes
+* Support GitHub
 
 ## Stretch goals
 
@@ -14,6 +15,7 @@ ofc-bootstrap
 * Command for installing a base-OpenFaaS system `faas-cli system install --kubernetes/--swarm` 
 * Build a suitable dev environment for local work
 * Build environment out for a Swarm cluster
+* Support for GitLab configuration
 
 ## Non-goals
 
@@ -63,7 +65,27 @@ go run main.go -yaml init.yaml
 
 Help is wanted - the code is in a private repo for OpenFaaS maintainers to contribute to. Sign-off/DCO is required and standard OpenFaaS contributing procedures apply.
 
-[ ] Dry-run flag needed
-[ ] Exec commands need to be actioned, but are just printed
-[ ] Secret generation isn't working, but should be moved to Golang code - perhaps using a popular Go library?
+Status:
+* [ ] Flag: Add dry-run
+* [ ] Exec commands need to be actioned, but are just printed
+* [ ] Secret generation isn't working, but should be moved to Golang code - perhaps using a popular Go library?
+* [x] Wildcard ingress
+* [x] Auth ingress
+* [ ] Template: auth service YAML
+* [ ] Template: dashboard stack.yml
+* [x] Template: `gateway_config.yml`
+* [ ] Step: install SealedSecrets
+* [ ] Step: export SealedSecrets pub-cert
+* [ ] Step: export all passwords required for user such as GW via `kubectl`
+* [ ] Step: setup issuer and certificate entries for cert-manager
+* [ ] Step: generate `payload_secret` for trust
+* [ ] init.yml - add `github_app_id` and `WEBHOOK_SECRET`
+* [ ] Create basic-auth secrets for the functions in `openfaas-fn`
+* [ ] Step: Install Minio and generate keys
+* [ ] init.yml - define GitHub App and OAuth App and load via struct
+
+
+Add all remaining steps from [installation guide](https://github.com/openfaas/openfaas-cloud/tree/master/docs).
+
+
 
