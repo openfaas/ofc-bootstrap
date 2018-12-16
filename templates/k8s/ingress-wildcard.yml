@@ -1,0 +1,34 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: openfaas-ingress
+  namespace: openfaas
+  annotations:
+    certmanager.k8s.io/acme-challenge-type: dns01
+    certmanager.k8s.io/acme-dns01-provider: clouddns
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: "nginx"
+    certmanager.k8s.io/cluster-issuer: "letsencrypt-prod"
+  labels:
+    app: faas-netesd
+spec:
+  tls:
+  - hosts:
+    - '*.{{.RootDomain}}'
+    secretName: o6s-com-tls
+  rules:
+  - host: '*.{{.RootDomain}}'
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: of-router
+          servicePort: 8080
+  - host: 'gateway.{{.RootDomain}}'
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: gateway
+          servicePort: 8080
