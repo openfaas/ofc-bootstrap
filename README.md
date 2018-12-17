@@ -12,6 +12,7 @@ ofc-bootstrap
 * Offer a flag for sourcing configuration from a YAML file
 * Offer a dry-run flag or configuration in the YAML file
 * Build a config file for the current OpenFaaS Cloud Community Cluster
+* Light-weight unit-testing
 
 ## Goals for 1.0
 
@@ -29,6 +30,7 @@ ofc-bootstrap
 
 ## Non-goals
 
+* Deep / extensive / complicated unit-tests
 * Create a Docker image / run in Docker
 * Installing, configuring or provisioning Kubernetes clusters or nodes
 * Running on a system without bash
