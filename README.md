@@ -62,6 +62,7 @@ mv ofc-bootstrap $GOPATH/src/github.com/alexellis/
 ```bash
 go get sigs.k8s.io/kind
 kind create cluster --name 1
+
 export KUBECONFIG=$(kind get kubeconfig-path --name 1)
 ```
 
@@ -69,7 +70,9 @@ export KUBECONFIG=$(kind get kubeconfig-path --name 1)
 
 ```bash
 cd $GOPATH/src/github.com/alexellis/
+
 mkdir -p tmp
+
 go run main.go -yaml init.yaml
 ```
 
