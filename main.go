@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/alexellis/ofc-bootstrap/pkg/of-stack"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,7 +13,7 @@ import (
 	"github.com/alexellis/ofc-bootstrap/pkg/ingress"
 	"github.com/alexellis/ofc-bootstrap/pkg/stack"
 	"github.com/alexellis/ofc-bootstrap/pkg/types"
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 )
 
 type Vars struct {
@@ -120,6 +121,15 @@ func process(plan types.Plan) error {
 			return planErr
 		}
 
+		if plan.FunctionStack != "" {
+			fmt.Println("Deploying ", plan.FunctionStack)
+
+			ofStackErr := of_stack.Deploy(plan.FunctionStack)
+
+			if ofStackErr != nil {
+				return ofStackErr
+			}
+		}
 	}
 
 	return nil

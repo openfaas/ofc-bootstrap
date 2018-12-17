@@ -6,6 +6,7 @@ type Plan struct {
 	RootDomain    string                   `yaml:"root_domain"`
 	Registry      string                   `yaml:"registry"`
 	CustomersURL  string                   `yaml:"customers_url"`
+	FunctionStack string                   `yaml:"function_stack"`
 }
 
 type KeyValueNamespaceTuple struct {

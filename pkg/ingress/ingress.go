@@ -65,7 +65,7 @@ func apply(source string, name string, ingress IngressTemplate) error {
 	}
 
 	execRes, execErr := execTask.Execute()
-	if err != nil {
+	if execErr != nil {
 		return execErr
 	}
 
