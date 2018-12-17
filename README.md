@@ -59,8 +59,8 @@ mv ofc-bootstrap $GOPATH/src/github.com/alexellis/
 
 ```bash
 go get sigs.k8s.io/kind
-kind create cluster
-export KUBECONFIG=$(kind get kubeconfig-path)
+kind create cluster --name 1
+export KUBECONFIG=$(kind get kubeconfig-path --name 1)
 ```
 
 * Run the code
@@ -88,6 +88,7 @@ JetStack's cert-manager is currently pinned to an earlier version due to issues 
 Help is wanted - the code is in a private repo for OpenFaaS maintainers to contribute to. Sign-off/DCO is required and standard OpenFaaS contributing procedures apply.
 
 Status:
+* [ ] Step: Clone OpenFaaS Cloud repo https://github.com/openfaas/openfaas-cloud
 * [ ] Library: Generate passwords via Golang code or library
 * [ ] Step: Add Ingress controller
 * [ ] Step: Install OpenFaaS via helm
