@@ -52,6 +52,8 @@ func main() {
 
 	fmt.Fprintf(os.Stdout, "Plan loaded from: %s\n", vars.YamlFile)
 
+	os.Mkdir("tmp", 0700)
+
 	start := time.Now()
 	err := process(plan)
 	done := time.Since(start)
