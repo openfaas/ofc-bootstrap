@@ -95,13 +95,11 @@ Help is wanted - the code is in a private repo for OpenFaaS maintainers to contr
 Status:
 * [ ] Step: Clone OpenFaaS Cloud repo https://github.com/openfaas/openfaas-cloud
 * [ ] Library: Generate passwords via Golang code or library
-* [ ] Step: Add Ingress controller
-* [ ] Step: Install OpenFaaS via helm
-* [ ] Step: Install tiller sa
-* [ ] Step: Install OpenFaaS namespaces
+* [x] Step: Add Ingress controller
+* [x] Step: Install OpenFaaS via helm
+* [x] Step: Install tiller sa
+* [x] Step: Install OpenFaaS namespaces
 * [ ] Flag: Add dry-run
-* [ ] Exec commands need to be actioned, but are just printed
-* [ ] Secret generation isn't working, but should be moved to Golang code - perhaps using a popular Go library?
 * [x] Wildcard ingress
 * [x] Auth ingress
 * [ ] Template: auth service YAML
