@@ -12,7 +12,8 @@ import (
 	"github.com/alexellis/ofc-bootstrap/pkg/ingress"
 	"github.com/alexellis/ofc-bootstrap/pkg/stack"
 	"github.com/alexellis/ofc-bootstrap/pkg/types"
-	yaml "gopkg.in/yaml.v2"
+	"github.com/alexellis/ofc-bootstrap/pkg/utils"
+	"gopkg.in/yaml.v2"
 )
 
 type Vars struct {
@@ -245,9 +246,9 @@ func createSecrets(plan types.Plan) error {
 
 	var command execute.ExecTask
 	if plan.Orchestration == OrchestrationK8s {
-		command = execute.ExecTask{Command: createK8sSecret(plan.Secrets[0])}
+		command = execute.ExecTask{Command: utils.CreateK8sSecret(plan.Secrets[0], nil)}
 	} else if plan.Orchestration == OrchestrationSwarm {
-		command = execute.ExecTask{Command: createDockerSecret(plan.Secrets[0])}
+		command = execute.ExecTask{Command: utils.CreateDockerSecret(plan.Secrets[0], nil)}
 	}
 
 	res, err := command.Execute()
@@ -256,39 +257,6 @@ func createSecrets(plan types.Plan) error {
 	return err
 }
 
-func generateSecret() (string, error) {
-	task := execute.ExecTask{
-		Command: "head -c 16 /dev/urandom | shasum",
-		Shell:   true,
-	}
-
-	res, err := task.Execute()
-	if res.ExitCode != 0 && err != nil {
-		err = fmt.Errorf("non-zero exit code")
-	}
-
-	return res.Stdout, err
-}
-
-func createDockerSecret(kvn types.KeyValueNamespaceTuple) string {
-	val, err := generateSecret()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	return fmt.Sprintf("echo %s | docker secret create %s", val, kvn.Name)
-}
-
-func createK8sSecret(kvn types.KeyValueNamespaceTuple) string {
-	val, err := generateSecret()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	return fmt.Sprintf("kubectl create secret generic -n %s %s --from-literal s3-access-key=\"%s\"", kvn.Namespace, kvn.Name, val)
-}
 
 func tillerReady() bool {
 
