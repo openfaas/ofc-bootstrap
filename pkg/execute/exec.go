@@ -33,7 +33,17 @@ func (et ExecTask) Execute() (ExecResult, error) {
 
 		cmd = exec.Command("/bin/bash", args...)
 	} else {
-		cmd = exec.Command(et.Command)
+		if strings.Index(et.Command, " ") > 0 {
+			parts := strings.Split(et.Command, " ")
+			command := parts[0]
+			args := parts[1:]
+			fmt.Println("c", command)
+			fmt.Println("a", args)
+			cmd = exec.Command(command, args...)
+
+		} else {
+			cmd = exec.Command(et.Command)
+		}
 	}
 
 	stdoutPipe, stdoutPipeErr := cmd.StdoutPipe()

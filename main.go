@@ -286,51 +286,28 @@ func createSecrets(plan types.Plan) error {
 
 	fmt.Println(plan.Secrets)
 
-	var command execute.ExecTask
-	if plan.Orchestration == OrchestrationK8s {
-		command = execute.ExecTask{Command: createK8sSecret(plan.Secrets[0])}
-	} else if plan.Orchestration == OrchestrationSwarm {
-		command = execute.ExecTask{Command: createDockerSecret(plan.Secrets[0])}
+	for _, secret := range plan.Secrets {
+
+		var command execute.ExecTask
+		if plan.Orchestration == OrchestrationK8s {
+			command = execute.ExecTask{
+				Command: types.CreateK8sSecret(secret),
+				Shell:   false,
+			}
+		} else if plan.Orchestration == OrchestrationSwarm {
+			command = execute.ExecTask{Command: types.CreateDockerSecret(secret)}
+		}
+
+		res, err := command.Execute()
+
+		if err != nil {
+			log.Println(err)
+		}
+
+		fmt.Println(res)
 	}
 
-	res, err := command.Execute()
-	fmt.Println(res)
-
-	return err
-}
-
-func generateSecret() (string, error) {
-	task := execute.ExecTask{
-		Command: "head -c 16 /dev/urandom | shasum",
-		Shell:   true,
-	}
-
-	res, err := task.Execute()
-	if res.ExitCode != 0 && err != nil {
-		err = fmt.Errorf("non-zero exit code")
-	}
-
-	return res.Stdout, err
-}
-
-func createDockerSecret(kvn types.KeyValueNamespaceTuple) string {
-	val, err := generateSecret()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	return fmt.Sprintf("echo %s | docker secret create %s", val, kvn.Name)
-}
-
-func createK8sSecret(kvn types.KeyValueNamespaceTuple) string {
-	val, err := generateSecret()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	return fmt.Sprintf("kubectl create secret generic -n %s %s --from-literal s3-access-key=\"%s\"", kvn.Namespace, kvn.Name, val)
+	return nil
 }
 
 func sealedSecretsReady() bool {
