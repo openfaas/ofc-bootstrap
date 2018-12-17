@@ -1,3 +1,7 @@
 ofc-bootstrap
 tmp
 bootstrap
+pub-cert.pem
+.idea
+.vscode
+kubeseal

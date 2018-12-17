@@ -105,8 +105,8 @@ Status:
 * [ ] Template: auth service YAML
 * [ ] Template: dashboard stack.yml
 * [x] Template: `gateway_config.yml`
-* [ ] Step: install SealedSecrets
-* [ ] Step: export SealedSecrets pub-cert
+* [x] Step: install SealedSecrets
+* [x] Step: export SealedSecrets pub-cert
 * [ ] Step: export all passwords required for user such as GW via `kubectl`
 * [ ] Step: setup issuer and certificate entries for cert-manager
 * [ ] Step: generate `payload_secret` for trust

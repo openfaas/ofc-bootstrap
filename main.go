@@ -93,7 +93,7 @@ func process(plan types.Plan) error {
 
 		retries := 260
 		for i := 0; i < retries; i++ {
-			log.Printf("Is tiller ready? %d/%d\n", i, retries-1)
+			log.Printf("Is tiller ready? %d/%d\n", i+1, retries)
 			ready := tillerReady()
 			if ready {
 				break
@@ -120,7 +120,27 @@ func process(plan types.Plan) error {
 
 		planErr := stack.Apply(plan)
 		if planErr != nil {
-			return planErr
+			log.Println(planErr)
+		}
+
+		sealedSecretsErr := installSealedSecrets()
+		if sealedSecretsErr != nil {
+			log.Println(sealedSecretsErr)
+		}
+
+		for i := 0; i < retries; i++ {
+			log.Printf("Are SealedSecrets ready? %d/%d\n", i+1, retries)
+			ready := sealedSecretsReady()
+			if ready {
+				break
+			}
+			time.Sleep(time.Second * 1)
+		}
+
+		pubCert := exportSealedSecretPubCert()
+		writeErr := ioutil.WriteFile("tmp/pubcert.pem", []byte(pubCert), 0700)
+		if writeErr != nil {
+			log.Println(writeErr)
 		}
 
 	}
@@ -167,6 +187,26 @@ func installIngressController() error {
 
 	task := execute.ExecTask{
 		Command: "scripts/install-nginx.sh",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+
+	if err != nil {
+		return err
+	}
+
+	log.Println(res.Stdout)
+	log.Println(res.Stderr)
+
+	return nil
+}
+
+func installSealedSecrets() error {
+	log.Println("Creating SealedSecrets")
+
+	task := execute.ExecTask{
+		Command: "scripts/install-sealedsecrets.sh",
 		Shell:   true,
 	}
 
@@ -291,6 +331,30 @@ func createK8sSecret(kvn types.KeyValueNamespaceTuple) string {
 	}
 
 	return fmt.Sprintf("kubectl create secret generic -n %s %s --from-literal s3-access-key=\"%s\"", kvn.Namespace, kvn.Name, val)
+}
+
+func sealedSecretsReady() bool {
+
+	task := execute.ExecTask{
+		Command: "./scripts/get-sealedsecretscontroller.sh",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+	fmt.Println("sealedsecretscontroller", res.ExitCode, res.Stdout, res.Stderr, err)
+	return res.Stdout == "1"
+}
+
+func exportSealedSecretPubCert() string {
+
+	task := execute.ExecTask{
+		Command: "./scripts/export-sealed-secret-pubcert.sh",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+	fmt.Println("secrets cert", res.ExitCode, res.Stdout, res.Stderr, err)
+	return res.Stdout
 }
 
 func tillerReady() bool {
