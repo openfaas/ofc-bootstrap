@@ -38,11 +38,12 @@ ofc-bootstrap
 
 ## Pre-reqs
 
+* Kubernetes - [development options](https://blog.alexellis.io/be-kind-to-yourself/)
+* Linux or Mac. Windows if `bash` is available
 * [Go 1.10 or newer](https://golang.org/dl/)
 * [dep](https://github.com/golang/dep)
 * [helm](https://docs.helm.sh/using_helm/#installing-helm)
-* Kubernetes
-* Linux, Mac or Windows with bash available
+* [faas-cli](https://github.com/openfaas/faas-cli) `curl -sL https://cli.openfaas.com | sudo sh`
 
 ## Getting started
 
@@ -69,6 +70,18 @@ cd $GOPATH/src/github.com/alexellis/
 mkdir -p tmp
 go run main.go -yaml init.yaml
 ```
+
+* Reset the cluster
+
+```
+./scripts/reset-kind.sh
+```
+
+Now you can edit the code and run it again. Tiller takes several seconds to come up.
+
+Notes:
+
+JetStack's cert-manager is currently pinned to an earlier version due to issues with re-creating the CRD entries. 
 
 ## Status
 
