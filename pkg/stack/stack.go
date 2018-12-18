@@ -8,15 +8,16 @@ import (
 	"github.com/alexellis/ofc-bootstrap/pkg/types"
 )
 
-type Stack struct {
+type gatewayConfig struct {
 	Registry     string
 	RootDomain   string
 	CustomersURL string
 }
 
+// Apply creates `templates/gateway_config.yml` to be referenced by stack.yml
 func Apply(plan types.Plan) error {
 
-	name := "stack"
+	name := "gateway_config"
 	data, err := ioutil.ReadFile("templates/gateway_config.yml")
 	if err != nil {
 		return err
@@ -30,7 +31,7 @@ func Apply(plan types.Plan) error {
 	}
 	defer file.Close()
 
-	executeErr := t.Execute(file, Stack{
+	executeErr := t.Execute(file, gatewayConfig{
 		Registry:     plan.Registry,
 		RootDomain:   plan.RootDomain,
 		CustomersURL: plan.CustomersURL,
