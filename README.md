@@ -28,6 +28,10 @@ ofc-bootstrap
 * Move code into official CLI via `faas-cli system install openfaas-cloud`
 * Separate out the OpenFaaS installation for the official CLI `faas-cli system install --kubernetes/--swarm`
 
+## Stretch goals
+
+* Automatic configuration of DNS Zones in GKE / AWS Route 53
+
 ## Non-goals
 
 * Deep / extensive / complicated unit-tests
