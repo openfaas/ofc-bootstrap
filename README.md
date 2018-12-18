@@ -5,7 +5,7 @@ ofc-bootstrap
 ## Goals for initial release
 
 * Install OpenFaaS and Install OpenFaaS Cloud with a single command
-* Mirror OpenFaaS Cloud Community Cluster features/coverage
+* Mirror features and config of OpenFaaS Cloud Community Cluster
 * Use Kubernetes as the underlying provider/platform
 * Use GitHub as the SCM (the source for git)
 * Build via Travis
@@ -112,7 +112,7 @@ Status:
 * [ ] Step: generate `payload_secret` for trust
 * [ ] init.yml - add `github_app_id` and `WEBHOOK_SECRET`
 * [ ] Create basic-auth secrets for the functions in `openfaas-fn`
-* [ ] Step: Install Minio and generate keys
+* [x] Step: Install Minio and generate keys
 * [ ] init.yml - define GitHub App and OAuth App and load via struct
 * [ ] Step: deploy OpenFaaS Cloud primary functions
 * [ ] Step: deploy OpenFaaS Cloud dashboard

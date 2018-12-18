@@ -8,8 +8,13 @@ type Plan struct {
 	CustomersURL  string                   `yaml:"customers_url"`
 }
 
+type KeyValueTuple struct {
+	Name  string `yaml:"name"`
+	Value string `yaml:"value"`
+}
+
 type KeyValueNamespaceTuple struct {
-	Name      string `yaml:"name"`
-	Value     string `yaml:"value"`
-	Namespace string `yaml:"namespace"`
+	Name      string          `yaml:"name"`
+	Literals  []KeyValueTuple `yaml:"literals"`
+	Namespace string          `yaml:"namespace"`
 }

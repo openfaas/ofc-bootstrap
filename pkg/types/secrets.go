@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/alexellis/ofc-bootstrap/pkg/execute"
 )
@@ -20,13 +19,22 @@ func CreateDockerSecret(kvn KeyValueNamespaceTuple) string {
 }
 
 func CreateK8sSecret(kvn KeyValueNamespaceTuple) string {
-	val, err := generateSecret()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	secretCmd := fmt.Sprintf("kubectl create secret generic -n %s %s", kvn.Namespace, kvn.Name)
 
-	return fmt.Sprintf("kubectl create secret generic -n %s %s --from-literal=%s=%s", kvn.Namespace, kvn.Name, kvn.Name, strings.TrimSpace(val))
+	for _, key := range kvn.Literals {
+		secretValue := key.Value
+		if len(secretValue) == 0 {
+			val, err := generateSecret()
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+			secretValue = val
+		}
+
+		secretCmd = fmt.Sprintf("%s --from-literal=%s=%s", secretCmd, key.Name, secretValue)
+	}
+	return secretCmd
 }
 
 func generateSecret() (string, error) {

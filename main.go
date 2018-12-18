@@ -76,14 +76,19 @@ func process(plan types.Plan) error {
 		fmt.Println("Orchestration: Swarm")
 	}
 
-	createSecrets(plan)
-
 	if plan.Orchestration == OrchestrationK8s {
 		fmt.Println("Building Ingress")
 
 		nsErr := createNamespaces()
 		if nsErr != nil {
 			log.Println(nsErr)
+		}
+
+		createSecrets(plan)
+
+		functionAuthErr := createFunctionsAuth()
+		if functionAuthErr != nil {
+			log.Println(functionAuthErr.Error())
 		}
 
 		tillerErr := installTiller()
@@ -178,6 +183,26 @@ func installTiller() error {
 
 	log.Println(res2.Stdout)
 	log.Println(res2.Stderr)
+
+	return nil
+}
+
+func createFunctionsAuth() error {
+	log.Println("Creating secrets for functions to consume")
+
+	task := execute.ExecTask{
+		Command: "scripts/create-functions-auth.sh",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+
+	if err != nil {
+		return err
+	}
+
+	log.Println(res.Stdout)
+	log.Println(res.Stderr)
 
 	return nil
 }

@@ -2,8 +2,19 @@ orchestration: kubernetes
 secrets:
   - name: s3-secret-key
     namespace: "openfaas-fn"
+    literals:
+      - name: s3-secret-key
   - name: s3-access-key
+    literals:
+      - name: s3-access-key
     namespace:  "openfaas-fn"
+  - name: basic-auth
+    literals:
+      - name: basic-auth-user
+        value: admin
+      - name: basic-auth-password
+        value: ""
+    namespace:  "openfaas"
 
 registry: docker.io/ofcommunity/
 root_domain: "stag.o6s.io"
