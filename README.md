@@ -97,30 +97,32 @@ JetStack's cert-manager is currently pinned to an earlier version due to issues 
 Help is wanted - the code is in a private repo for OpenFaaS maintainers to contribute to. Sign-off/DCO is required and standard OpenFaaS contributing procedures apply.
 
 Status:
+* [ ] Flag: Add dry-run to init.yaml
+* [ ] Step: generate `payload_secret` for trust
+* [ ] Refactor: default to init.yaml if present
 * [ ] Step: Clone OpenFaaS Cloud repo https://github.com/openfaas/openfaas-cloud
-* [ ] Library: Generate passwords via Golang code or library
+* [ ] Step: deploy container builder (buildkit)
 * [x] Step: Add Ingress controller
 * [x] Step: Install OpenFaaS via helm
 * [x] Step: Install tiller sa
 * [x] Step: Install OpenFaaS namespaces
-* [ ] Flag: Add dry-run
 * [x] Wildcard ingress
 * [x] Auth ingress
-* [ ] Template: auth service YAML
-* [ ] Template: dashboard stack.yml
+* [ ] init.yml - define GitHub App and load via struct
+* [ ] Step: deploy OpenFaaS Cloud primary functions
+* [ ] Step: deploy OpenFaaS Cloud dashboard
+* [ ] Template: dashboard stack.yml if required
 * [x] Template: `gateway_config.yml`
 * [x] Step: install SealedSecrets
 * [x] Step: export SealedSecrets pub-cert
 * [ ] Step: export all passwords required for user such as GW via `kubectl`
-* [ ] Step: setup issuer and certificate entries for cert-manager
-* [ ] Step: generate `payload_secret` for trust
+* [ ] Step: setup issuer and certificate entries for cert-manager (probably with staging cert?) - make this optional to prevent rate-limiting.
 * [ ] init.yml - add `github_app_id` and `WEBHOOK_SECRET`
 * [x] Create basic-auth secrets for the functions in `openfaas-fn`
 * [x] Step: Install Minio and generate keys
-* [ ] init.yml - define GitHub App and OAuth App and load via struct
-* [ ] Step: deploy OpenFaaS Cloud primary functions
-* [ ] Step: deploy OpenFaaS Cloud dashboard
-* [ ] Step: deploy container builder (buildkit)
+* [ ] init.yml - define and OAuth App and load via struct
+* [ ] Template: auth service YAML
+* [ ] Refactor: Generate passwords via Golang code or library
 
 Add all remaining steps from [installation guide](https://github.com/openfaas/openfaas-cloud/tree/master/docs).
 
