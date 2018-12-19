@@ -16,3 +16,5 @@ export OPENFAAS_URL=http://127.0.0.1:31111
 echo -n $ADMIN_PASSWORD | faas-cli login --username admin --password-stdin
 
 faas-cli deploy
+
+kill %1
