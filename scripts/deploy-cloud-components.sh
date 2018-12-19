@@ -6,7 +6,7 @@ cp ./tmp/generated-github.yml ./tmp/openfaas-cloud/github.yml
 cd ./tmp/openfaas-cloud
 
 
-export ADMIN_PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath='{.data.basic-auth-password}'|base64 -D)
+export ADMIN_PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath='{.data.basic-auth-password}'| base64 --decode)
 faas-cli template pull
 
 kubectl port-forward svc/gateway -n openfaas 31111:8080 &
