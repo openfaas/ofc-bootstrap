@@ -103,7 +103,7 @@ func process(plan types.Plan) error {
 			if ready {
 				break
 			}
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Second * 2)
 		}
 
 		cmErr := installCertmanager()
@@ -139,7 +139,7 @@ func process(plan types.Plan) error {
 			if ready {
 				break
 			}
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Second * 2)
 		}
 
 		pubCert := exportSealedSecretPubCert()
