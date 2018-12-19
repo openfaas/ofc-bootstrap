@@ -110,7 +110,7 @@ Status:
 * [x] Auth ingress
 * [x] init.yml - define GitHub App and load via struct
 * [ ] Step: deploy OpenFaaS Cloud primary functions
-* [ ] Step: deploy OpenFaaS Cloud dashboard
+* [x] Step: deploy OpenFaaS Cloud dashboard
 * [ ] Template: dashboard stack.yml if required
 * [x] Template: `gateway_config.yml`
 * [x] Step: install SealedSecrets
