@@ -1,5 +1,6 @@
 orchestration: kubernetes
 secrets:
+  ### Generated secrets
   - name: s3-secret-key
     namespace: "openfaas-fn"
     literals:
@@ -25,19 +26,34 @@ secrets:
       - name: payload-secret
         value: ""
     namespace: "openfaas-fn"
+
+  ### User-input
+  # Enter into GitHub UI
   - name: "github-webhook-secret"
     literals:
       - name: "github-webhook-secret"
         value: ""
     namespace: "openfaas-fn"
+  # Download from GitHub App on GitHub UI
+  - name: "private-key"
+    file:
+      - name: "private-key"
+        value_from: "./private-key.pem"
+    namespace: "openfaas-fn"
 
+### Where to publish function images
 registry: docker.io/ofcommunity/
+
+### Domain name registered with A record pointing to *.domain (wild-card)
 root_domain: "stag.o6s.io"
+
+### Users allowed to access your OpenFaaS Cloud
 customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"
 
+### User input
+## Populate from GitHub App
 github:
   app_id: "123456789"
-  private_key_filename: "my-private-key"
 
 # features:
 #   - name: sealed_secrets
