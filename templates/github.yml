@@ -1,0 +1,4 @@
+environment:
+  github_app_id: "{{.AppID}}"
+  report_status: "true"
+  private_key_filename: "{{.PrivateKeyFile}}"
