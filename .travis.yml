@@ -1,0 +1,15 @@
+sudo: required
+
+language: go1.10
+ 
+services:
+  - docker
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+script:
+  - make install-ci
+  - make ci

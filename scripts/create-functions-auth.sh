@@ -7,4 +7,3 @@ kubectl create secret generic basic-auth-user \
  --from-literal=basic-auth-user=$USER -n openfaas-fn
 kubectl create secret generic basic-auth-password \
  --from-literal=basic-auth-password=$PASSWORD -n openfaas-fn
-
