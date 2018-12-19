@@ -148,6 +148,15 @@ func process(plan types.Plan) error {
 			log.Println(writeErr)
 		}
 
+		cloneErr := cloneCloudComponents()
+		if (cloneErr) != nil {
+			return cloneErr
+		}
+
+		deployErr := deployCloudComponents()
+		if (deployErr) != nil {
+			return deployErr
+		}
 	}
 
 	return nil
@@ -369,4 +378,36 @@ func tillerReady() bool {
 	res, err := task.Execute()
 	fmt.Println("tiller", res.ExitCode, res.Stdout, res.Stderr, err)
 	return res.Stdout == "1"
+}
+
+func cloneCloudComponents() error {
+	task := execute.ExecTask{
+		Command: "./scripts/clone-cloud-components.sh",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(res)
+
+	return nil
+}
+
+func deployCloudComponents() error {
+	task := execute.ExecTask{
+		Command: "./scripts/deploy-cloud-components.sh",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(res)
+
+	return nil
 }

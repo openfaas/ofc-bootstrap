@@ -15,10 +15,29 @@ secrets:
       - name: basic-auth-password
         value: ""
     namespace:  "openfaas"
+  - name: "payload-secret"
+    literals:
+      - name: payload-secret
+        value: ""
+    namespace: "openfaas"
+  - name: "payload-secret"
+    literals:
+      - name: payload-secret
+        value: ""
+    namespace: "openfaas-fn"
+  - name: "github-webhook-secret"
+    literals:
+      - name: "github-webhook-secret"
+        value: ""
+    namespace: "openfaas-fn"
 
 registry: docker.io/ofcommunity/
 root_domain: "stag.o6s.io"
 customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"
+
+github:
+  app_id: "123456789"
+  private_key_filename: "my-private-key"
 
 # features:
 #   - name: sealed_secrets
