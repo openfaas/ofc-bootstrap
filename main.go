@@ -28,7 +28,7 @@ const (
 func main() {
 
 	vars := Vars{}
-	flag.StringVar(&vars.YamlFile, "yaml", "", "YAML file for bootstrap")
+	flag.StringVar(&vars.YamlFile, "yaml", "init.yaml", "YAML file for bootstrap")
 	flag.BoolVar(&vars.Verbose, "verbose", false, "control verbosity")
 	flag.Parse()
 

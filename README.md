@@ -99,7 +99,7 @@ Help is wanted - the code is in a private repo for OpenFaaS maintainers to contr
 Status:
 * [ ] Flag: Add dry-run to init.yaml
 * [x] Step: generate `payload_secret` for trust
-* [ ] Refactor: default to init.yaml if present
+* [x] Refactor: default to init.yaml if present
 * [x] Step: Clone OpenFaaS Cloud repo https://github.com/openfaas/openfaas-cloud
 * [ ] Step: deploy container builder (buildkit)
 * [x] Step: Add Ingress controller
