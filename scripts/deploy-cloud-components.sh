@@ -12,6 +12,18 @@ faas-cli template pull
 kubectl port-forward svc/gateway -n openfaas 31111:8080 &
 sleep 2
 
+
+while [ true ];
+do
+    echo "Checking if OpenFaaS GW is up."
+    curl -if 127.0.0.1:31111
+    if [ $? == 0 ];
+    then
+        break
+    fi
+done
+
+
 export OPENFAAS_URL=http://127.0.0.1:31111
 echo -n $ADMIN_PASSWORD | faas-cli login --username admin --password-stdin
 
