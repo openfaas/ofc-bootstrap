@@ -14,10 +14,16 @@ type KeyValueTuple struct {
 	Value string `yaml:"value"`
 }
 
+type FileSecret struct {
+	Name      string `yaml:"name"`
+	ValueFrom string `yaml:"value_from"`
+}
+
 type KeyValueNamespaceTuple struct {
 	Name      string          `yaml:"name"`
 	Literals  []KeyValueTuple `yaml:"literals"`
 	Namespace string          `yaml:"namespace"`
+	Files     []FileSecret    `yaml:"files"`
 }
 
 type Github struct {

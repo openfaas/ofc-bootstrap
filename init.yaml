@@ -36,7 +36,7 @@ secrets:
     namespace: "openfaas-fn"
   # Download from GitHub App on GitHub UI
   - name: "private-key"
-    file:
+    files:
       - name: "private-key"
         value_from: "./private-key.pem"
     namespace: "openfaas-fn"

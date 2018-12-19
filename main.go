@@ -25,6 +25,19 @@ const (
 	OrchestrationSwarm = "swarm"
 )
 
+func validatePlan(plan types.Plan) error {
+	for _, secret := range plan.Secrets {
+		if len(secret.Files) > 0 {
+			for _, file := range secret.Files {
+				if _, err := os.Stat(file.ValueFrom); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
 func main() {
 
 	vars := Vars{}
@@ -48,6 +61,12 @@ func main() {
 	if unmarshalErr != nil {
 		fmt.Fprintf(os.Stderr, "-yaml file gave error: %s\n", unmarshalErr.Error())
 		os.Exit(1)
+	}
+
+	validateErr := validatePlan(plan)
+	if validateErr != nil {
+		panic(validateErr)
+
 	}
 
 	fmt.Fprintf(os.Stdout, "Plan loaded from: %s\n", vars.YamlFile)
