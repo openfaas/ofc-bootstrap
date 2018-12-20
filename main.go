@@ -96,8 +96,13 @@ func process(plan types.Plan) error {
 	}
 
 	if plan.Orchestration == OrchestrationK8s {
-		fmt.Println("Building Ingress")
 
+		nsErr := createNamespaces()
+		if nsErr != nil {
+			log.Println(nsErr)
+		}
+
+		fmt.Println("Building Ingress")
 		tillerErr := installTiller()
 		if tillerErr != nil {
 			log.Println(tillerErr)
@@ -127,12 +132,6 @@ func process(plan types.Plan) error {
 		if cmErr != nil {
 			log.Println(cmErr)
 		}
-
-		nsErr := createNamespaces()
-		if nsErr != nil {
-			log.Println(nsErr)
-		}
-
 		createSecrets(plan)
 
 		functionAuthErr := createFunctionsAuth()
