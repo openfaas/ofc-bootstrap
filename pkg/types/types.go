@@ -1,5 +1,10 @@
 package types
 
+import (
+	"os"
+	"strings"
+)
+
 type Plan struct {
 	Orchestration string                   `yaml:"orchestration"`
 	Secrets       []KeyValueNamespaceTuple `yaml:"secrets"`
@@ -17,6 +22,14 @@ type KeyValueTuple struct {
 type FileSecret struct {
 	Name      string `yaml:"name"`
 	ValueFrom string `yaml:"value_from"`
+}
+
+// ExpandValueFrom expands ~ to the home directory of the current user
+// kept in the HOME env-var.
+func (fs FileSecret) ExpandValueFrom() string {
+	value := fs.ValueFrom
+	value = strings.Replace(value, "~", os.Getenv("HOME"), -1)
+	return value
 }
 
 type KeyValueNamespaceTuple struct {
