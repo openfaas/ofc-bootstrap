@@ -98,6 +98,11 @@ func process(plan types.Plan) error {
 	if plan.Orchestration == OrchestrationK8s {
 		fmt.Println("Building Ingress")
 
+		installIngressErr := installIngressController()
+		if installIngressErr != nil {
+			log.Println(installIngressErr.Error())
+		}
+
 		nsErr := createNamespaces()
 		if nsErr != nil {
 			log.Println(nsErr)
@@ -123,6 +128,10 @@ func process(plan types.Plan) error {
 				break
 			}
 			time.Sleep(time.Second * 2)
+		}
+		minioErr := installMinio()
+		if minioErr != nil {
+			log.Println(minioErr)
 		}
 
 		cmErr := installCertmanager()
@@ -280,6 +289,26 @@ func installOpenfaas() error {
 
 	task := execute.ExecTask{
 		Command: "scripts/install-openfaas.sh",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+
+	if err != nil {
+		return err
+	}
+
+	log.Println(res.Stdout)
+	log.Println(res.Stderr)
+
+	return nil
+}
+
+func installMinio() error {
+	log.Println("Creating Minio")
+
+	task := execute.ExecTask{
+		Command: "scripts/install-minio.sh",
 		Shell:   true,
 	}
 

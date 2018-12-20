@@ -6,6 +6,10 @@ cp ./tmp/generated-dashboard_config.yml ./tmp/openfaas-cloud/dashboard/dashboard
 
 cd ./tmp/openfaas-cloud
 
+echo "Creating payload-secret in openfaas-fn"
+
+export PAYLOAD_SECRET=$(kubectl get secret -n openfaas payload-secret -o jsonpath='{.data.payload-secret}'| base64 --decode)
+kubectl create secret generic payload-secret -n openfaas-fn --from-literal payload-secret=$PAYLOAD_SECRET
 
 export ADMIN_PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath='{.data.basic-auth-password}'| base64 --decode)
 faas-cli template pull 
