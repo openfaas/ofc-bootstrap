@@ -6,7 +6,6 @@ cp ./tmp/generated-dashboard_config.yml ./tmp/openfaas-cloud/dashboard/dashboard
 
 cd ./tmp/openfaas-cloud
 
-
 export ADMIN_PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath='{.data.basic-auth-password}'| base64 --decode)
 faas-cli template pull 
 
@@ -27,6 +26,9 @@ done
 
 export OPENFAAS_URL=http://127.0.0.1:31111
 echo -n $ADMIN_PASSWORD | faas-cli login --username admin --password-stdin
+
+kubectl apply -f ./yaml/core/of-builder-dep.yml
+kubectl apply -f ./yaml/core/of-builder-svc.yml
 
 faas-cli deploy
 

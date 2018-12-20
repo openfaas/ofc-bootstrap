@@ -70,6 +70,24 @@ kind create cluster --name 1
 export KUBECONFIG=$(kind get kubeconfig-path --name 1)
 ```
 
+* Login to Docker Registry
+
+Run `docker login` to generate ~/.docker/config.json. Remove "credSstore" if available in the file.
+
+It should look like:
+```
+{
+    "auths": {
+    "https://index.docker.io/v1/": {
+        "auth": "asdf12djs37ASfs732sFa3fdsw=="
+    }
+    },
+    "HttpHeaders": {
+    "User-Agent": "Docker-Client/18.06.0-ce (darwin)"
+    }
+}
+```
+
 * Run the code
 
 ```bash
@@ -101,7 +119,7 @@ Status:
 * [x] Step: generate `payload_secret` for trust
 * [x] Refactor: default to init.yaml if present
 * [x] Step: Clone OpenFaaS Cloud repo https://github.com/openfaas/openfaas-cloud
-* [ ] Step: deploy container builder (buildkit)
+* [x] Step: deploy container builder (buildkit)
 * [x] Step: Add Ingress controller
 * [x] Step: Install OpenFaaS via helm
 * [x] Step: Install tiller sa

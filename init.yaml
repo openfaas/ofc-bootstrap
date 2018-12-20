@@ -40,6 +40,11 @@ secrets:
       - name: "private-key"
         value_from: "./private-key.pem"
     namespace: "openfaas-fn"
+  - name: "registry-secret"
+    files:
+      - name: registry-secret
+        value_from: "~/.docker/config.json"
+    namespace: "openfaas"
 
 ### Where to publish function images
 registry: docker.io/ofcommunity/
