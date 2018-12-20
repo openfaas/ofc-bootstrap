@@ -14,14 +14,17 @@ kubectl port-forward svc/gateway -n openfaas 31111:8080 &
 sleep 2
 
 
-while [ true ];
+for i in {1..60};
 do
     echo "Checking if OpenFaaS GW is up."
+
     curl -if 127.0.0.1:31111
     if [ $? == 0 ];
     then
         break
     fi
+
+    sleep 1
 done
 
 
