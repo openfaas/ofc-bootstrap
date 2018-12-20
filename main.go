@@ -39,15 +39,19 @@ func validatePlan(plan types.Plan) error {
 }
 
 func main() {
+	var pauseTime time.Duration = 5
+	defaultYaml := "init.yaml"
 
 	vars := Vars{}
-	flag.StringVar(&vars.YamlFile, "yaml", "init.yaml", "YAML file for bootstrap")
+	flag.StringVar(&vars.YamlFile, "yaml", "", "YAML file for bootstrap")
 	flag.BoolVar(&vars.Verbose, "verbose", false, "control verbosity")
 	flag.Parse()
 
 	if len(vars.YamlFile) == 0 {
-		fmt.Fprintf(os.Stderr, "No -yaml flag given\n")
-		os.Exit(1)
+		fmt.Fprintf(os.Stderr, "No -yaml flag given. Loading plan from the default yaml file: %s\n", defaultYaml)
+		fmt.Fprintf(os.Stdout, "Continuing in %d seconds.. Press Control+C to cancel\n", pauseTime)
+		vars.YamlFile = defaultYaml
+		time.Sleep(pauseTime * time.Second)
 	}
 
 	yamlBytes, yamlErr := ioutil.ReadFile(vars.YamlFile)
