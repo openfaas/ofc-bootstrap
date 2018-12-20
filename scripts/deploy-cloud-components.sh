@@ -6,6 +6,12 @@ cp ./tmp/generated-dashboard_config.yml ./tmp/openfaas-cloud/dashboard/dashboard
 
 cd ./tmp/openfaas-cloud
 
+kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-dep.yml
+kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-svc.yml
+
+sed s/auth.openfaas/echo.openfaas-fn/g tmp/openfaas-cloud/yaml/core/of-router-dep.yml | kubectl apply -f
+kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-router-svc.yml
+
 echo "Creating payload-secret in openfaas-fn"
 
 export PAYLOAD_SECRET=$(kubectl get secret -n openfaas payload-secret -o jsonpath='{.data.payload-secret}'| base64 --decode)

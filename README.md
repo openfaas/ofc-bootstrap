@@ -101,7 +101,7 @@ Status:
 * [x] Step: generate `payload_secret` for trust
 * [x] Refactor: default to init.yaml if present
 * [x] Step: Clone OpenFaaS Cloud repo https://github.com/openfaas/openfaas-cloud
-* [ ] Step: deploy container builder (buildkit)
+* [x] Step: deploy container builder (buildkit)
 * [x] Step: Add Ingress controller
 * [x] Step: Install OpenFaaS via helm
 * [x] Step: Install tiller sa
@@ -109,20 +109,21 @@ Status:
 * [x] Wildcard ingress
 * [x] Auth ingress
 * [x] init.yml - define GitHub App and load via struct
-* [ ] Step: deploy OpenFaaS Cloud primary functions
+* [x] Step: deploy OpenFaaS Cloud primary functions
 * [x] Step: deploy OpenFaaS Cloud dashboard
-* [ ] Template: dashboard stack.yml if required
+* [x] Template: dashboard stack.yml if required
 * [x] Template: `gateway_config.yml`
 * [x] Step: install SealedSecrets
 * [x] Step: export SealedSecrets pub-cert
 * [ ] Step: export all passwords required for user such as GW via `kubectl`
 * [ ] Step: setup issuer and certificate entries for cert-manager (probably with staging cert?) - make this optional to prevent rate-limiting.
+* [ ] Make TLS optional in the Ingress config (not to get rate-limited by LetsEncrypt)
 * [x] init.yml - add `github_app_id` and `WEBHOOK_SECRET`
 * [x] Create basic-auth secrets for the functions in `openfaas-fn`
 * [x] Step: Install Minio and generate keys
 * [ ] init.yml - define and OAuth App and load via struct
-* [ ] Template: auth service YAML
+* [ ] Step: generate secrets and keys for the auth service (see auth/README.md)
+* [ ] Template: auth service deployment YAML file
 * [ ] Refactor: Generate passwords via Golang code or library
 
 Add all remaining steps from [installation guide](https://github.com/openfaas/openfaas-cloud/tree/master/docs).
-
