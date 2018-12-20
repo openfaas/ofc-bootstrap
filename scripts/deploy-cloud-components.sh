@@ -4,13 +4,13 @@ cp ./tmp/generated-gateway_config.yml ./tmp/openfaas-cloud/gateway_config.yml
 cp ./tmp/generated-github.yml ./tmp/openfaas-cloud/github.yml
 cp ./tmp/generated-dashboard_config.yml ./tmp/openfaas-cloud/dashboard/dashboard_config.yml
 
-cd ./tmp/openfaas-cloud
-
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-dep.yml
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-svc.yml
 
 sed s/auth.openfaas/echo.openfaas-fn/g ./tmp/openfaas-cloud/yaml/core/of-router-dep.yml | kubectl apply -f -
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-router-svc.yml
+
+cd ./tmp/openfaas-cloud
 
 echo "Creating payload-secret in openfaas-fn"
 

@@ -12,6 +12,7 @@ type Plan struct {
 	Registry      string                   `yaml:"registry"`
 	CustomersURL  string                   `yaml:"customers_url"`
 	Github        Github                   `yaml:"github"`
+	TLS           bool                     `yaml:"tls"`
 }
 
 type KeyValueTuple struct {

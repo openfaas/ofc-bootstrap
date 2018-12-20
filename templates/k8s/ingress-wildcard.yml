@@ -13,10 +13,12 @@ metadata:
   labels:
     app: faas-netesd
 spec:
+  {{ if .TLS }}
   tls:
   - hosts:
     - '*.{{.RootDomain}}'
     secretName: o6s-com-tls
+  {{ end }}
   rules:
   - host: '*.{{.RootDomain}}'
     http:

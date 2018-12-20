@@ -98,23 +98,6 @@ func process(plan types.Plan) error {
 	if plan.Orchestration == OrchestrationK8s {
 		fmt.Println("Building Ingress")
 
-		installIngressErr := installIngressController()
-		if installIngressErr != nil {
-			log.Println(installIngressErr.Error())
-		}
-
-		nsErr := createNamespaces()
-		if nsErr != nil {
-			log.Println(nsErr)
-		}
-
-		createSecrets(plan)
-
-		functionAuthErr := createFunctionsAuth()
-		if functionAuthErr != nil {
-			log.Println(functionAuthErr.Error())
-		}
-
 		tillerErr := installTiller()
 		if tillerErr != nil {
 			log.Println(tillerErr)
@@ -129,6 +112,12 @@ func process(plan types.Plan) error {
 			}
 			time.Sleep(time.Second * 2)
 		}
+
+		installIngressErr := installIngressController()
+		if installIngressErr != nil {
+			log.Println(installIngressErr.Error())
+		}
+
 		minioErr := installMinio()
 		if minioErr != nil {
 			log.Println(minioErr)
@@ -137,6 +126,18 @@ func process(plan types.Plan) error {
 		cmErr := installCertmanager()
 		if cmErr != nil {
 			log.Println(cmErr)
+		}
+
+		nsErr := createNamespaces()
+		if nsErr != nil {
+			log.Println(nsErr)
+		}
+
+		createSecrets(plan)
+
+		functionAuthErr := createFunctionsAuth()
+		if functionAuthErr != nil {
+			log.Println(functionAuthErr.Error())
 		}
 
 		ofErr := installOpenfaas()

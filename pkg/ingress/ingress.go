@@ -12,6 +12,7 @@ import (
 
 type IngressTemplate struct {
 	RootDomain string
+	TLS        bool
 }
 
 func Apply(plan types.Plan) error {
@@ -26,6 +27,7 @@ func Apply(plan types.Plan) error {
 
 	err1 := apply("ingress.yml", "ingress", IngressTemplate{
 		RootDomain: plan.RootDomain,
+		TLS:        plan.TLS,
 	})
 
 	if err1 != nil {
