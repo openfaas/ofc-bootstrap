@@ -29,7 +29,7 @@ func validatePlan(plan types.Plan) error {
 	for _, secret := range plan.Secrets {
 		if len(secret.Files) > 0 {
 			for _, file := range secret.Files {
-				if _, err := os.Stat(file.ValueFrom); err != nil {
+				if _, err := os.Stat(file.ExpandValueFrom()); err != nil {
 					return err
 				}
 			}
