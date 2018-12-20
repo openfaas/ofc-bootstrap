@@ -36,6 +36,7 @@ secrets:
         value_from: "~/Downloads/ofc-bootstrap-test.2018-12-20.private-key.pem"
     namespace: "openfaas-fn"
 
+### User input
   - name: "registry-secret"
     files:
       - name: "registry-secret"
@@ -47,14 +48,12 @@ registry: docker.io/ofctest/
 
 ### Domain name registered with A record pointing to *.domain (wild-card)
 root_domain: "stag.o6s.io"
-
-### Users allowed to access your OpenFaaS Cloud
-customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"
-
-### User input
 ## Populate from GitHub App
 github:
   app_id: "22586"
+
+### Users allowed to access your OpenFaaS Cloud
+customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"
 
 # features:
 #   - name: sealed_secrets
