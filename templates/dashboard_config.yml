@@ -5,7 +5,7 @@ environment:
   # base_href: `/function/system-dashboard/` # if not using router
   base_href: '/dashboard/'
   # public_url: http://laptop-ip:8080/ # use IP of laptop or remote machine, do not use localhost/127.0.0.1
-  public_url: https://cloud.{{.RootDomain}}
+  public_url: https://system.{{.RootDomain}}
   # Comment out if not using public pretty-URL
   pretty_url: https://user.{{.RootDomain}}/function
   # Comment out if not using public pretty-URL
