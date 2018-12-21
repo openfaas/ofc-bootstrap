@@ -21,18 +21,6 @@ secrets:
       - name: payload-secret
         value: ""
     namespace: "openfaas"
-  - name: "jwt-private-key"
-    files:
-      - name: "key"
-        value_from: "./tmp/key"
-        value_command: "openssl ecparam -genkey -name prime256v1 -noout -out ./tmp/key"
-    namespace: "openfaas"
-  - name: "jwt-public-key"
-    files:
-      - name: "key.pub"
-        value_from: "./tmp/key.pub"
-        value_command: "openssl ec -in ./tmp/key -pubout -out ./tmp/key.pub"
-    namespace: "openfaas"
 
   ### User-input
   # Enter into GitHub UI

@@ -164,6 +164,7 @@ func process(plan types.Plan) error {
 			log.Println(installIngressErr.Error())
 		}
 
+		createJwtSecrets()
 		createSecrets(plan)
 
 		minioErr := installMinio()
@@ -489,6 +490,22 @@ func cloneCloudComponents() error {
 func deployCloudComponents() error {
 	task := execute.ExecTask{
 		Command: "./scripts/deploy-cloud-components.sh",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(res)
+
+	return nil
+}
+
+func createJwtSecrets() error {
+	task := execute.ExecTask{
+		Command: "./scripts/create-jwt-secrets.sh",
 		Shell:   true,
 	}
 
