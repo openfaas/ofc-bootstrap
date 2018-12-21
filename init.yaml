@@ -80,3 +80,7 @@ oauth:
 
 ### Users allowed to access your OpenFaaS Cloud
 customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"
+
+## Enable auth:
+enable_oauth: false
+

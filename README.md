@@ -165,9 +165,9 @@ Status:
 * [x] init.yml - add `github_app_id` and `WEBHOOK_SECRET`
 * [x] Create basic-auth secrets for the functions in `openfaas-fn`
 * [x] Step: Install Minio and generate keys
-* [ ] init.yml - define and OAuth App and load via struct
+* [x] init.yml - define and OAuth App and load via struct
 * [x] Step: generate secrets and keys for the auth service (see auth/README.md)
-* [ ] Template: auth service deployment YAML file
+* [x] Template: auth service deployment YAML file
 * [ ] Refactor: Generate passwords via Golang code or library
 
 Add all remaining steps from [installation guide](https://github.com/openfaas/openfaas-cloud/tree/master/docs).
