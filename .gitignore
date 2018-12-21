@@ -5,3 +5,6 @@ pub-cert.pem
 .idea
 .vscode
 kubeseal
+key
+key.pub
+
