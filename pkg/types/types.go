@@ -24,6 +24,10 @@ type KeyValueTuple struct {
 type FileSecret struct {
 	Name      string `yaml:"name"`
 	ValueFrom string `yaml:"value_from"`
+
+	// ValueCommand is a command to execute to generate
+	// a secret file specified in ValueFrom
+	ValueCommand string `yaml:"value_command"`
 }
 
 // ExpandValueFrom expands ~ to the home directory of the current user

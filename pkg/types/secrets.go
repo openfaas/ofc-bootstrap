@@ -3,6 +3,7 @@ package types
 import (
 	"crypto/sha256"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/alexellis/ofc-bootstrap/pkg/execute"
@@ -36,6 +37,17 @@ func CreateK8sSecret(kvn KeyValueNamespaceTuple) string {
 	}
 
 	for _, file := range kvn.Files {
+		if len(file.ValueCommand) > 0 {
+			task := execute.ExecTask{
+				Command: file.ValueCommand,
+			}
+			_, err := task.Execute()
+
+			if err != nil {
+				log.Println(err)
+			}
+		}
+
 		secretCmd = fmt.Sprintf("%s --from-file=%s=%s", secretCmd, file.Name, file.ExpandValueFrom())
 	}
 
