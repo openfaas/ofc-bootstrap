@@ -25,6 +25,21 @@ func TestExec_WithShell(t *testing.T) {
 }
 
 func TestExec_WithEnvVars(t *testing.T) {
+	task := ExecTask{Command: "env", Shell: false, Env: []string{"GOTEST=1"}}
+	res, err := task.Execute()
+	if err != nil {
+		t.Errorf(err.Error())
+		t.Fail()
+	}
+
+	if !strings.Contains(res.Stdout, "GOTEST") {
+		t.Errorf("want env to show GOTEST=1 since we passed that variable")
+		t.Fail()
+	}
+
+}
+
+func TestExec_WithEnvVarsAndShell(t *testing.T) {
 	task := ExecTask{Command: "env", Shell: true, Env: []string{"GOTEST=1"}}
 	res, err := task.Execute()
 	if err != nil {
