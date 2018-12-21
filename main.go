@@ -95,7 +95,7 @@ func main() {
 
 	var tools []string
 	if plan.Orchestration == OrchestrationK8s {
-		tools = []string{"kubectl version", "openssl version", "helm version", "faas-cli version"}
+		tools = []string{"kubectl version -c", "openssl version", "helm version -c", "faas-cli version"}
 	}
 
 	validateToolsErr := validateTools(tools)
