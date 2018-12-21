@@ -21,6 +21,16 @@ secrets:
       - name: payload-secret
         value: ""
     namespace: "openfaas"
+  - name: "jwt-private-key"
+    files:
+      - name: "key"
+        value_from: "./key"
+    namespace: "openfaas"
+  - name: "jwt-public-key"
+    files:
+      - name: "key.pub"
+        value_from: "./key.pub"
+    namespace: "openfaas"
 
   ### User-input
   # Enter into GitHub UI
@@ -35,6 +45,12 @@ secrets:
       - name: "private-key"
         value_from: "~/Downloads/ofc-bootstrap-test.2018-12-20.private-key.pem"
     namespace: "openfaas-fn"
+  # Enter your OAuth client_secret
+  - name: "of-client-secret"
+    literals:
+      - name: of-client-secret
+        value: "fb58e886977efbece9cd77452be27e9"
+    namespace: "openfaas"
 
 ### User input
   - name: "registry-secret"
@@ -54,6 +70,11 @@ tls: false
 ## Populate from GitHub App
 github:
   app_id: "22586"
+
+## Populate from OAuth App
+oauth:
+  client_id: 914f3fb036ce9cd774
+  client_secret: fb58e886977efbece9cd77452be27e9
 
 ### Users allowed to access your OpenFaaS Cloud
 customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"

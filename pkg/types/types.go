@@ -13,6 +13,7 @@ type Plan struct {
 	CustomersURL  string                   `yaml:"customers_url"`
 	Github        Github                   `yaml:"github"`
 	TLS           bool                     `yaml:"tls"`
+	OAuth         OAuth                    `yaml:"oauth"`
 }
 
 type KeyValueTuple struct {
@@ -43,4 +44,9 @@ type KeyValueNamespaceTuple struct {
 type Github struct {
 	AppID          string `yaml:"app_id"`
 	PrivateKeyFile string `yaml:"private_key_filename"`
+}
+
+type OAuth struct {
+	ClientId     string `yaml:"client_id`
+	ClientSecret string `yaml:"client_secret`
 }
