@@ -123,6 +123,8 @@ func process(plan types.Plan) error {
 			log.Println(installIngressErr.Error())
 		}
 
+		createSecrets(plan)
+
 		minioErr := installMinio()
 		if minioErr != nil {
 			log.Println(minioErr)
@@ -132,7 +134,6 @@ func process(plan types.Plan) error {
 		if cmErr != nil {
 			log.Println(cmErr)
 		}
-		createSecrets(plan)
 
 		functionAuthErr := createFunctionsAuth()
 		if functionAuthErr != nil {

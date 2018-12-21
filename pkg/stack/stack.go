@@ -12,15 +12,21 @@ type gatewayConfig struct {
 	Registry     string
 	RootDomain   string
 	CustomersURL string
+	Scheme       string
 }
 
 // Apply creates `templates/gateway_config.yml` to be referenced by stack.yml
 func Apply(plan types.Plan) error {
+	scheme := "http"
+	if plan.TLS {
+		scheme += "s"
+	}
 
 	gwConfigErr := generateTemplate("gateway_config", plan, gatewayConfig{
 		Registry:     plan.Registry,
 		RootDomain:   plan.RootDomain,
 		CustomersURL: plan.CustomersURL,
+		Scheme:       scheme,
 	})
 	if gwConfigErr != nil {
 		return gwConfigErr
@@ -35,7 +41,7 @@ func Apply(plan types.Plan) error {
 	}
 
 	dashboardConfigErr := generateTemplate("dashboard_config", plan, gatewayConfig{
-		RootDomain: plan.RootDomain,
+		RootDomain: plan.RootDomain, Scheme: scheme,
 	})
 	if dashboardConfigErr != nil {
 		return dashboardConfigErr
