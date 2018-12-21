@@ -50,6 +50,7 @@ ofc-bootstrap
 * [dep](https://github.com/golang/dep)
 * [helm](https://docs.helm.sh/using_helm/#installing-helm)
 * [faas-cli](https://github.com/openfaas/faas-cli) `curl -sL https://cli.openfaas.com | sudo sh`
+* OpenSSL - the `openssl` binary must be available in `PATH`
 
 ## Getting started
 
