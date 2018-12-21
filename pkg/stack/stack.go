@@ -15,6 +15,13 @@ type gatewayConfig struct {
 	Scheme       string
 }
 
+type authConfig struct {
+	RootDomain   string
+	ClientId     string
+	ClientSecret string
+	Scheme       string
+}
+
 // Apply creates `templates/gateway_config.yml` to be referenced by stack.yml
 func Apply(plan types.Plan) error {
 	scheme := "http"
@@ -45,6 +52,16 @@ func Apply(plan types.Plan) error {
 	})
 	if dashboardConfigErr != nil {
 		return dashboardConfigErr
+	}
+
+	ofAuthDepErr := generateTemplate("of-auth-dep", plan, authConfig{
+		RootDomain:   plan.RootDomain,
+		ClientId:     plan.OAuth.ClientId,
+		ClientSecret: plan.OAuth.ClientSecret,
+		Scheme:       scheme,
+	})
+	if ofAuthDepErr != nil {
+		return ofAuthDepErr
 	}
 
 	return nil

@@ -1,6 +1,7 @@
 package execute
 
 import (
+	"os"
 	"strings"
 	"testing"
 )
@@ -29,6 +30,27 @@ func TestExec_WithEnvVars(t *testing.T) {
 	res, err := task.Execute()
 	if err != nil {
 		t.Errorf(err.Error())
+		t.Fail()
+	}
+
+	if !strings.Contains(res.Stdout, "GOTEST") {
+		t.Errorf("want env to show GOTEST=1 since we passed that variable")
+		t.Fail()
+	}
+
+}
+
+func TestExec_WithEnvVarsInheritedFromParent(t *testing.T) {
+	os.Setenv("TEST", "value")
+	task := ExecTask{Command: "env", Shell: false, Env: []string{"GOTEST=1"}}
+	res, err := task.Execute()
+	if err != nil {
+		t.Errorf(err.Error())
+		t.Fail()
+	}
+
+	if !strings.Contains(res.Stdout, "TEST") {
+		t.Errorf("want env to show TEST=value since we passed that variable")
 		t.Fail()
 	}
 

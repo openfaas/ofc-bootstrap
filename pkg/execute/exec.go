@@ -3,6 +3,7 @@ package execute
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -48,6 +49,7 @@ func (et ExecTask) Execute() (ExecResult, error) {
 	}
 
 	if len(et.Env) > 0 {
+		cmd.Env = os.Environ()
 		for _, env := range et.Env {
 			cmd.Env = append(cmd.Env, env)
 		}

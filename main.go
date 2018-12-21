@@ -223,7 +223,7 @@ func process(plan types.Plan) error {
 			return cloneErr
 		}
 
-		deployErr := deployCloudComponents()
+		deployErr := deployCloudComponents(plan)
 		if (deployErr) != nil {
 			return deployErr
 		}
@@ -486,10 +486,16 @@ func cloneCloudComponents() error {
 	return nil
 }
 
-func deployCloudComponents() error {
+func deployCloudComponents(plan types.Plan) error {
+
+	env := ""
+	if plan.EnableOAuth {
+		env = "ENABLE_OAUTH=true"
+	}
 	task := execute.ExecTask{
 		Command: "./scripts/deploy-cloud-components.sh",
 		Shell:   true,
+		Env:     []string{env},
 	}
 
 	res, err := task.Execute()

@@ -3,15 +3,21 @@
 cp ./tmp/generated-gateway_config.yml ./tmp/openfaas-cloud/gateway_config.yml
 cp ./tmp/generated-github.yml ./tmp/openfaas-cloud/github.yml
 cp ./tmp/generated-dashboard_config.yml ./tmp/openfaas-cloud/dashboard/dashboard_config.yml
+cp ./tmp/generated-of-auth-dep.yml ./tmp/openfaas-cloud/yaml/core/of-auth-dep.yml
 
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-dep.yml
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-svc.yml
 
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/import-secrets-role.yml
 
-# Disable auth service by pointing the router at the echo function:
-sed s/auth.openfaas/echo.openfaas-fn/g ./tmp/openfaas-cloud/yaml/core/of-router-dep.yml | kubectl apply -f -
-
+if [ "$ENABLE_OAUTH" = "true" ] ; then
+    kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-auth-dep.yml
+    kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-auth-svc.yml
+    kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-router-dep.yml
+else
+    #  Disable auth service by pointing the router at the echo function:
+    sed s/auth.openfaas/echo.openfaas-fn/g ./tmp/openfaas-cloud/yaml/core/of-router-dep.yml | kubectl apply -f -
+fi
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-router-svc.yml
 
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-auth-svc.yml
