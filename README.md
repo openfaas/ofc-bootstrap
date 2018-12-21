@@ -123,7 +123,7 @@ Status:
 * [x] Create basic-auth secrets for the functions in `openfaas-fn`
 * [x] Step: Install Minio and generate keys
 * [ ] init.yml - define and OAuth App and load via struct
-* [ ] Step: generate secrets and keys for the auth service (see auth/README.md)
+* [x] Step: generate secrets and keys for the auth service (see auth/README.md)
 * [ ] Template: auth service deployment YAML file
 * [ ] Refactor: Generate passwords via Golang code or library
 
