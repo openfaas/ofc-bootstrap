@@ -25,6 +25,31 @@ const (
 	OrchestrationSwarm = "swarm"
 )
 
+func taskGivesStdout(tool string) error {
+	task := execute.ExecTask{Command: tool}
+	res, err := task.Execute()
+	if err != nil {
+		return fmt.Errorf("could not run: '%s', error: %s", tool, err)
+	}
+	if len(res.Stdout) == 0 {
+		return fmt.Errorf("error executing '%s', no output was given - tool is available in PATH")
+	}
+	return nil
+}
+
+func validateTools(tools []string) error {
+
+	for _, tool := range tools {
+		err := taskGivesStdout(tool)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+
+}
+
 func validatePlan(plan types.Plan) error {
 	for _, secret := range plan.Secrets {
 		if len(secret.Files) > 0 {
@@ -35,6 +60,7 @@ func validatePlan(plan types.Plan) error {
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -61,6 +87,19 @@ func main() {
 	if unmarshalErr != nil {
 		fmt.Fprintf(os.Stderr, "-yaml file gave error: %s\n", unmarshalErr.Error())
 		os.Exit(1)
+	}
+
+	log.Println("Validating tools available in PATH")
+
+	var tools []string
+	if plan.Orchestration == OrchestrationK8s {
+		tools = []string{"kubectl version", "openssl version", "helm version", "faas-cli version"}
+	}
+
+	validateToolsErr := validateTools(tools)
+
+	if validateToolsErr != nil {
+		panic(validateToolsErr)
 	}
 
 	validateErr := validatePlan(plan)
