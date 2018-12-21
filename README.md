@@ -71,6 +71,8 @@ kind create cluster --name 1
 export KUBECONFIG=$(kind get kubeconfig-path --name 1)
 ```
 
+* Update the `### User-input` variables in `init.yml`
+
 * Run the code
 
 ```bash
