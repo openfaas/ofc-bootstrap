@@ -55,7 +55,9 @@ ofc-bootstrap
 
 ## Getting started
 
-* Get the code:
+You can run ofc-boostrap against a remote Kubernetes cluster. The instructions below use `kind` or Kubernetes in Docker to test out the instructions on your local Docker daemon.
+
+### Get the code:
 
 ```bash
 git clone https://github.com/alexellis/ofc-bootstrap
@@ -72,9 +74,15 @@ kind create cluster --name 1
 export KUBECONFIG=$(kind get kubeconfig-path --name 1)
 ```
 
-* Update the `### User-input` variables in `init.yml`
+### Update your config
 
-* Run the code
+* Open the Docker for Mac/Windows settings and uncheck "store my password securely" / "in a keychain"
+* Run `docker login` to populate ~/.docker/config.json
+* Create a GitHub App and download the private key file
+* If your username is not part of the default CUSTOMERS file for OpenFaaS then you should point to your own plaintext file - make sure you use the GitHub Raw CDN URL for this
+* Update `init.yaml` where you see the `### User-input` section including your GitHub App's ID and the path to its private key
+
+### Run the code
 
 ```bash
 cd $GOPATH/src/github.com/alexellis/
@@ -84,17 +92,49 @@ mkdir -p tmp
 go run main.go -yaml init.yaml
 ```
 
-* Reset the cluster
+### Test end-to-end
+
+* Configure DNS
+
+If you are running against a remote Kubernetes cluster you can now update your DNS entries so that they point at the IP address of your LoadBalancer found via `kubectl get svc`.
+
+Add an A entry for *.domain.com pointing to your domain.
+
+Now over on GitHub enter the URL for webhooks:
+
+```
+http://system.domain.com/github-event
+```
+
+* Push code
+
+Now you can install your GitHub app on a repo, run `faas-cli new` and then rename the YAML file to `stack.yml` and do a `git push`. Your OpenFaaS Cloud cluster will build and deploy the functions found in that GitHub repo.
+
+* View your dashboard
+
+Now view your dashboard over at:
+
+```
+http://system.domain.com/dashboard/<username>
+```
+
+Just replace `<username>` with your GitHub account. 
+
+### Rinse & repeat
+
+You can now edit the code or settings - do a reset of the kind or remote cluster and try again.
+
+* Reset via kind
 
 ```
 ./scripts/reset-kind.sh
 ```
 
-Now you can edit the code and run it again. Tiller takes several seconds to come up.
+* Reset a remote cluster
 
-Notes:
-
-JetStack's cert-manager is currently pinned to an earlier version due to issues with re-creating the CRD entries. 
+```
+./scripts/reset.sh
+```
 
 ## Status
 
@@ -131,3 +171,8 @@ Status:
 * [ ] Refactor: Generate passwords via Golang code or library
 
 Add all remaining steps from [installation guide](https://github.com/openfaas/openfaas-cloud/tree/master/docs).
+
+Caveats:
+
+* JetStack's cert-manager is currently pinned to an earlier version due to issues with re-creating the CRD entries. 
+
