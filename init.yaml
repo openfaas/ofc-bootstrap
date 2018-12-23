@@ -45,7 +45,7 @@ secrets:
   - name: "private-key"
     files:
       - name: "private-key"
-        value_from: "~/Downloads/ofc-bootstrap-test.2018-12-20.private-key.pem"
+        value_from: "~/Downloads/ofc-bootstrap-test.2018-12-23.private-key.pem"
     namespace: "openfaas-fn"
   # Enter your OAuth client_secret
   - name: "of-client-secret"

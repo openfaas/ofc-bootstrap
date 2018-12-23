@@ -45,6 +45,7 @@ ofc-bootstrap
 ## Pre-reqs
 
 * Kubernetes - [development options](https://blog.alexellis.io/be-kind-to-yourself/)
+    * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-using-curl)
 * Linux or Mac. Windows if `bash` is available
 * [Go 1.10 or newer](https://golang.org/dl/)
 * [dep](https://github.com/golang/dep)

@@ -33,7 +33,7 @@ func CreateK8sSecret(kvn KeyValueNamespaceTuple) string {
 			secretValue = val
 		}
 
-		secretCmd = fmt.Sprintf("%s --from-literal=%s=%s", secretCmd, key.Name, secretValue)
+		secretCmd = fmt.Sprintf(`%s --from-literal=%s=%s`, secretCmd, key.Name, secretValue)
 	}
 
 	for _, file := range kvn.Files {
