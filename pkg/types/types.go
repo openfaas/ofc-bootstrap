@@ -14,6 +14,7 @@ type Plan struct {
 	Github        Github                   `yaml:"github"`
 	TLS           bool                     `yaml:"tls"`
 	OAuth         OAuth                    `yaml:"oauth"`
+	S3            S3                       `yaml:"s3"`
 	EnableOAuth   bool                     `yaml:"enable_oauth"`
 	TLSConfig     TLSConfig                `yaml:"tls_config"`
 }
@@ -55,6 +56,13 @@ type Github struct {
 type OAuth struct {
 	ClientId     string `yaml:"client_id"`
 	ClientSecret string `yaml:"client_secret"`
+}
+
+type S3 struct {
+	Url    string `yaml:"s3_url"`
+	Region string `yaml:"s3_region"`
+	TLS    bool   `yaml:"s3_tls"`
+	Bucket string `yaml:"s3_bucket"`
 }
 
 type TLSConfig struct {

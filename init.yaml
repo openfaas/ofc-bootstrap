@@ -91,6 +91,13 @@ oauth:
 ### Users allowed to access your OpenFaaS Cloud
 customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"
 
+## S3 configuration. These default to minio settings
+s3:
+  s3_url: cloud-minio.openfaas.svc.cluster.local:9000
+  s3_region: us-east-1
+  s3_tls: false
+  s3_bucket: pipeline
+
 ## Enable auth:
 enable_oauth: false
 
