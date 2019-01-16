@@ -1,0 +1,21 @@
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: auth-system-{{.RootDomain}}
+  namespace: openfaas
+spec:
+  secretName: auth-system-{{.RootDomain}}-cert
+  issuerRef:
+    name: letsencrypt-{{.IssuerType}}
+    kind: ClusterIssuer
+  commonName: 'auth.system.{{.RootDomain}}'
+  dnsNames:
+  - 'auth.system.{{.RootDomain}}'
+  acme:
+    config:
+    - dns01:
+        ingressClass: nginx
+        provider: {{.DNSService}}
+      domains:
+      - auth.system.{{.RootDomain}}

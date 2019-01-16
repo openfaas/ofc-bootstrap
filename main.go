@@ -11,6 +11,7 @@ import (
 	"github.com/alexellis/ofc-bootstrap/pkg/execute"
 	"github.com/alexellis/ofc-bootstrap/pkg/ingress"
 	"github.com/alexellis/ofc-bootstrap/pkg/stack"
+	"github.com/alexellis/ofc-bootstrap/pkg/tls"
 	"github.com/alexellis/ofc-bootstrap/pkg/types"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -189,6 +190,13 @@ func process(plan types.Plan) error {
 		ingressErr := ingress.Apply(plan)
 		if ingressErr != nil {
 			log.Println(ingressErr)
+		}
+
+		if plan.TLS {
+			tlsErr := tls.Apply(plan)
+			if tlsErr != nil {
+				log.Println(tlsErr)
+			}
 		}
 
 		fmt.Println("Creating stack.yml")

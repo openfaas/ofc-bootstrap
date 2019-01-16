@@ -6,10 +6,12 @@ metadata:
   namespace: openfaas
   annotations:
     certmanager.k8s.io/acme-challenge-type: dns01
-    certmanager.k8s.io/acme-dns01-provider: clouddns
+    certmanager.k8s.io/acme-dns01-provider: {{.DNSService}}
     kubernetes.io/tls-acme: "true"
     kubernetes.io/ingress.class: "nginx"
-    certmanager.k8s.io/cluster-issuer: "letsencrypt-prod"
+    certmanager.k8s.io/cluster-issuer: letsencrypt-{{.IssuerType}}
+    nginx.ingress.kubernetes.io/limit-connections: "20"
+    nginx.ingress.kubernetes.io/limit-rpm: "600"
   labels:
     app: faas-netesd
 spec:
@@ -17,7 +19,7 @@ spec:
   tls:
   - hosts:
     - '*.{{.RootDomain}}'
-    secretName: o6s-com-tls
+    secretName: wildcard-{{.RootDomain}}-cert
   {{ end }}
   rules:
   - host: '*.{{.RootDomain}}'

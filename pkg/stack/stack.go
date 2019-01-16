@@ -54,14 +54,16 @@ func Apply(plan types.Plan) error {
 		return dashboardConfigErr
 	}
 
-	ofAuthDepErr := generateTemplate("of-auth-dep", plan, authConfig{
-		RootDomain:   plan.RootDomain,
-		ClientId:     plan.OAuth.ClientId,
-		ClientSecret: plan.OAuth.ClientSecret,
-		Scheme:       scheme,
-	})
-	if ofAuthDepErr != nil {
-		return ofAuthDepErr
+	if plan.EnableOAuth {
+		ofAuthDepErr := generateTemplate("of-auth-dep", plan, authConfig{
+			RootDomain:   plan.RootDomain,
+			ClientId:     plan.OAuth.ClientId,
+			ClientSecret: plan.OAuth.ClientSecret,
+			Scheme:       scheme,
+		})
+		if ofAuthDepErr != nil {
+			return ofAuthDepErr
+		}
 	}
 
 	return nil

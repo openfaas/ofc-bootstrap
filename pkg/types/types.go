@@ -15,6 +15,7 @@ type Plan struct {
 	TLS           bool                     `yaml:"tls"`
 	OAuth         OAuth                    `yaml:"oauth"`
 	EnableOAuth   bool                     `yaml:"enable_oauth"`
+	TLSConfig     TLSConfig                `yaml:"tls_config"`
 }
 
 type KeyValueTuple struct {
@@ -54,4 +55,14 @@ type Github struct {
 type OAuth struct {
 	ClientId     string `yaml:"client_id"`
 	ClientSecret string `yaml:"client_secret"`
+}
+
+type TLSConfig struct {
+	Email             string `yaml:"email"`
+	DNSService        string `yaml:"dns_service"`
+	ProjectID         string `yaml:"project_id"`
+	IssuerType        string `yaml:"issuer_type"`
+	LetsencryptServer string `yaml:"letsencrypt_server"`
+	Region            string `yaml:"region"`
+	AccessKeyID       string `yaml:"access_key_id"`
 }
