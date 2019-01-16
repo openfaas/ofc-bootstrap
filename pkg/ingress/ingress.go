@@ -1,10 +1,11 @@
 package ingress
 
 import (
+	"bytes"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"os"
-	"text/template"
 
 	"github.com/alexellis/ofc-bootstrap/pkg/execute"
 	"github.com/alexellis/ofc-bootstrap/pkg/types"
@@ -13,12 +14,17 @@ import (
 type IngressTemplate struct {
 	RootDomain string
 	TLS        bool
+	IssuerType string
+	DNSService string
 }
 
 func Apply(plan types.Plan) error {
 
 	err := apply("ingress-wildcard.yml", "ingress-wildcard", IngressTemplate{
 		RootDomain: plan.RootDomain,
+		TLS:        plan.TLS,
+		IssuerType: plan.TLSConfig.IssuerType,
+		DNSService: plan.TLSConfig.DNSService,
 	})
 
 	if err != nil {
@@ -28,6 +34,7 @@ func Apply(plan types.Plan) error {
 	err1 := apply("ingress.yml", "ingress", IngressTemplate{
 		RootDomain: plan.RootDomain,
 		TLS:        plan.TLS,
+		IssuerType: plan.TLSConfig.IssuerType,
 	})
 
 	if err1 != nil {
@@ -37,14 +44,27 @@ func Apply(plan types.Plan) error {
 	return nil
 }
 
+func applyTemplate(templateFileName string, templateValues IngressTemplate) ([]byte, error) {
+	data, err := ioutil.ReadFile(templateFileName)
+	if err != nil {
+		return nil, err
+	}
+	t := template.Must(template.New(templateFileName).Parse(string(data)))
+
+	buffer := new(bytes.Buffer)
+
+	executeErr := t.Execute(buffer, templateValues)
+
+	return buffer.Bytes(), executeErr
+}
+
 func apply(source string, name string, ingress IngressTemplate) error {
 
-	data, err := ioutil.ReadFile("templates/k8s/" + source)
+	generatedData, err := applyTemplate("templates/k8s/"+source, ingress)
 	if err != nil {
 		return err
 	}
 
-	t := template.Must(template.New(name).Parse(string(data)))
 	tempFilePath := "tmp/generated-ingress-" + name + ".yaml"
 	file, fileErr := os.Create(tempFilePath)
 	if fileErr != nil {
@@ -52,13 +72,11 @@ func apply(source string, name string, ingress IngressTemplate) error {
 	}
 	defer file.Close()
 
-	executeErr := t.Execute(file, IngressTemplate{
-		RootDomain: ingress.RootDomain,
-	})
+	_, writeErr := file.Write(generatedData)
 	file.Close()
 
-	if executeErr != nil {
-		return executeErr
+	if writeErr != nil {
+		return writeErr
 	}
 
 	execTask := execute.ExecTask{
@@ -67,7 +85,7 @@ func apply(source string, name string, ingress IngressTemplate) error {
 	}
 
 	execRes, execErr := execTask.Execute()
-	if err != nil {
+	if execErr != nil {
 		return execErr
 	}
 

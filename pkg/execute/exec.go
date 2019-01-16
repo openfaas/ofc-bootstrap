@@ -39,8 +39,6 @@ func (et ExecTask) Execute() (ExecResult, error) {
 			parts := strings.Split(et.Command, " ")
 			command := parts[0]
 			args := parts[1:]
-			fmt.Println("c", command)
-			fmt.Println("a", args)
 			cmd = exec.Command(command, args...)
 
 		} else {
