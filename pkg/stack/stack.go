@@ -20,7 +20,6 @@ type gatewayConfig struct {
 type authConfig struct {
 	RootDomain   string
 	ClientId     string
-	ClientSecret string
 	CustomersURL string
 	Scheme       string
 }
@@ -62,7 +61,6 @@ func Apply(plan types.Plan) error {
 		ofAuthDepErr := generateTemplate("of-auth-dep", plan, authConfig{
 			RootDomain:   plan.RootDomain,
 			ClientId:     plan.OAuth.ClientId,
-			ClientSecret: plan.OAuth.ClientSecret,
 			CustomersURL: plan.CustomersURL,
 			Scheme:       scheme,
 		})

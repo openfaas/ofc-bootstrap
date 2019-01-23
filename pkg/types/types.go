@@ -54,8 +54,7 @@ type Github struct {
 }
 
 type OAuth struct {
-	ClientId     string `yaml:"client_id"`
-	ClientSecret string `yaml:"client_secret"`
+	ClientId string `yaml:"client_id"`
 }
 
 type S3 struct {
