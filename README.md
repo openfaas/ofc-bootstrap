@@ -53,9 +53,18 @@ ofc-bootstrap
 * [faas-cli](https://github.com/openfaas/faas-cli) `curl -sL https://cli.openfaas.com | sudo sh`
 * OpenSSL - the `openssl` binary must be available in `PATH`
 
+If you are using a cluster with GKE then you must run the following command:
+
+```bash
+kubectl create clusterrolebinding "cluster-admin-$(whoami)" \
+    --clusterrole=cluster-admin \
+    --user="$(gcloud config get-value core/account)"
+```
+
 ## Getting started
 
-You can run ofc-boostrap against a remote Kubernetes cluster. The instructions below use `kind` or Kubernetes in Docker to test out the instructions on your local Docker daemon.
+You can run ofc-bootsrap against a remote Kubernetes cluster. The instructions below use `kind` or Kubernetes in Docker to test out the instructions on your local Docker daemon.
+
 
 ### Get the code:
 
@@ -74,31 +83,58 @@ kind create cluster --name 1
 export KUBECONFIG=$(kind get kubeconfig-path --name 1)
 ```
 
-### Update your config
+### Update `init.yaml`
 
 * Open the Docker for Mac/Windows settings and uncheck "store my password securely" / "in a keychain"
-* Run `docker login` to populate ~/.docker/config.json
+* Run `docker login` to populate `~/.docker/config.json` - this will be used to configure your Docker registry or Docker Hub account for functions.
 * Create a GitHub App and download the private key file
 * If your username is not part of the default CUSTOMERS file for OpenFaaS then you should point to your own plaintext file - make sure you use the GitHub Raw CDN URL for this
 * Update `init.yaml` where you see the `### User-input` section including your GitHub App's ID and the path to its private key
 
-### Run the code
+#### Use authz (optional)
+
+If you'd like to restrict who can log in to just those who use a GitHub account then create a GitHub OAuth App.
+
+Enable `auth` and fill out the required fields such as `client_secret` and `client_id`
+
+#### Use TLS (optional)
+
+We can automatically provision TLS certificates for your OpenFaaS Cloud cluster using the DNS01 challenge.
+
+Pick between the following two providers for the DNS01 challenge:
+
+* Google Cloud DNS
+* AWS Route53
+
+> Note: we will add DigitalOcean as an option when cert-manager 0.6 becomes available in helm
+
+Configure or comment out as required in the relevant section.
+
+You should also set up the corresponding DNS A records.
+
+### Run the Bootstrapper
 
 ```bash
 cd $GOPATH/src/github.com/alexellis/
 
-mkdir -p tmp
+go build
 
-go run main.go -yaml init.yaml
+./ofc-bootstrap -yaml=init.yaml
 ```
 
-### Test end-to-end
+### Finish the configuration
 
-* Configure DNS
+#### Configure DNS
 
 If you are running against a remote Kubernetes cluster you can now update your DNS entries so that they point at the IP address of your LoadBalancer found via `kubectl get svc`.
 
-Add an A entry for *.domain.com pointing to your domain.
+When ofc-bootstrap has completed and you know the IP of your LoadBalancer:
+
+* `system.domain`
+* `auth.system.domain`
+* `*.domain`
+
+#### Configure the GitHub App webhook
 
 Now over on GitHub enter the URL for webhooks:
 
@@ -106,11 +142,11 @@ Now over on GitHub enter the URL for webhooks:
 http://system.domain.com/github-event
 ```
 
-* Push code
+### Smoke-test
 
-Now you can install your GitHub app on a repo, run `faas-cli new` and then rename the YAML file to `stack.yml` and do a `git push`. Your OpenFaaS Cloud cluster will build and deploy the functions found in that GitHub repo.
+We'll now run a smoke-test to check the dashboard shows correctly and that you can trigger a successful build.
 
-* View your dashboard
+#### View your dashboard
 
 Now view your dashboard over at:
 
@@ -119,6 +155,10 @@ http://system.domain.com/dashboard/<username>
 ```
 
 Just replace `<username>` with your GitHub account. 
+
+#### Trigger a build
+
+Now you can install your GitHub app on a repo, run `faas-cli new` and then rename the YAML file to `stack.yml` and do a `git push`. Your OpenFaaS Cloud cluster will build and deploy the functions found in that GitHub repo.
 
 ### Rinse & repeat
 
@@ -160,8 +200,8 @@ Status:
 * [x] Step: install SealedSecrets
 * [x] Step: export SealedSecrets pub-cert
 * [ ] Step: export all passwords required for user such as GW via `kubectl`
-* [ ] Step: setup issuer and certificate entries for cert-manager (probably with staging cert?) - make this optional to prevent rate-limiting.
-* [ ] Make TLS optional in the Ingress config (not to get rate-limited by LetsEncrypt)
+* [x] Step: setup issuer and certificate entries for cert-manager (probably with staging cert?) - make this optional to prevent rate-limiting.
+* [x] Make TLS optional in the Ingress config (not to get rate-limited by LetsEncrypt)
 * [x] init.yml - add `github_app_id` and `WEBHOOK_SECRET`
 * [x] Create basic-auth secrets for the functions in `openfaas-fn`
 * [x] Step: Install Minio and generate keys
