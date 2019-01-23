@@ -11,14 +11,13 @@ import (
 )
 
 type TlsTemplate struct {
-	RootDomain        string
-	Email             string
-	DNSService        string
-	ProjectID         string
-	IssuerType        string
-	LetsencryptServer string
-	Region            string
-	AccessKeyID       string
+	RootDomain  string
+	Email       string
+	DNSService  string
+	ProjectID   string
+	IssuerType  string
+	Region      string
+	AccessKeyID string
 }
 
 var tlsTemplatesPath = "templates/k8s/tls/"
@@ -27,14 +26,13 @@ func Apply(plan types.Plan) error {
 
 	tlsTemplatesList, _ := listTLSTemplates()
 	tlsTemplate := TlsTemplate{
-		RootDomain:        plan.RootDomain,
-		Email:             plan.TLSConfig.Email,
-		DNSService:        plan.TLSConfig.DNSService,
-		ProjectID:         plan.TLSConfig.ProjectID,
-		IssuerType:        plan.TLSConfig.IssuerType,
-		LetsencryptServer: plan.TLSConfig.LetsencryptServer,
-		Region:            plan.TLSConfig.Region,
-		AccessKeyID:       plan.TLSConfig.AccessKeyID,
+		RootDomain:  plan.RootDomain,
+		Email:       plan.TLSConfig.Email,
+		DNSService:  plan.TLSConfig.DNSService,
+		ProjectID:   plan.TLSConfig.ProjectID,
+		IssuerType:  plan.TLSConfig.IssuerType,
+		Region:      plan.TLSConfig.Region,
+		AccessKeyID: plan.TLSConfig.AccessKeyID,
 	}
 	for _, template := range tlsTemplatesList {
 		tempFilePath, tlsTemplateErr := generateTemplate(template, tlsTemplate)

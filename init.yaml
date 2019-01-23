@@ -97,6 +97,9 @@ enable_oauth: false
 ## TLS
 tls: false
 tls_config:
+  issuer_type: "prod"
+  # issuer_type: "staging"
+
   ## Select DNS web service between Amazon Route 53 (route53) and Google Cloud DNS (clouddns)
   # by uncommenting the required option
   dns_service: route53
@@ -107,7 +110,3 @@ tls_config:
   # project_id: "my-openfaas-cloud"
 
   email: "email@domain"
-  issuer_type: "prod"
-  letsencrypt_server: https://acme-v02.api.letsencrypt.org/directory
-  # issuer_type: "staging"
-  # letsencrypt_server: https://acme-staging-v02.api.letsencrypt.org/directory
