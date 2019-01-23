@@ -35,6 +35,7 @@ func Apply(plan types.Plan) error {
 		RootDomain: plan.RootDomain,
 		TLS:        plan.TLS,
 		IssuerType: plan.TLSConfig.IssuerType,
+		DNSService: plan.TLSConfig.DNSService,
 	})
 
 	if err1 != nil {
