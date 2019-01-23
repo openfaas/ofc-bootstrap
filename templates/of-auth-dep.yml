@@ -59,7 +59,7 @@ spec:
 
 # This is a default and can be overriden
           - name: customers_url
-            value: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"
+            value: "{{.CustomersURL}}"
 
           - name: write_debug
             value: "false"

@@ -1,6 +1,7 @@
 package stack
 
 import (
+	"bytes"
 	"html/template"
 	"io/ioutil"
 	"os"
@@ -19,6 +20,7 @@ type authConfig struct {
 	RootDomain   string
 	ClientId     string
 	ClientSecret string
+	CustomersURL string
 	Scheme       string
 }
 
@@ -59,6 +61,7 @@ func Apply(plan types.Plan) error {
 			RootDomain:   plan.RootDomain,
 			ClientId:     plan.OAuth.ClientId,
 			ClientSecret: plan.OAuth.ClientSecret,
+			CustomersURL: plan.CustomersURL,
 			Scheme:       scheme,
 		})
 		if ofAuthDepErr != nil {
@@ -69,14 +72,27 @@ func Apply(plan types.Plan) error {
 	return nil
 }
 
+func applyTemplate(templateFileName string, templateType interface{}) ([]byte, error) {
+	data, err := ioutil.ReadFile(templateFileName)
+	if err != nil {
+		return nil, err
+	}
+	t := template.Must(template.New(templateFileName).Parse(string(data)))
+
+	buffer := new(bytes.Buffer)
+
+	executeErr := t.Execute(buffer, templateType)
+
+	return buffer.Bytes(), executeErr
+}
+
 func generateTemplate(fileName string, plan types.Plan, templateType interface{}) error {
 
-	data, err := ioutil.ReadFile("templates/" + fileName + ".yml")
+	generatedData, err := applyTemplate("templates/"+fileName+".yml", templateType)
 	if err != nil {
 		return err
 	}
 
-	t := template.Must(template.New(fileName).Parse(string(data)))
 	tempFilePath := "tmp/generated-" + fileName + ".yml"
 	file, fileErr := os.Create(tempFilePath)
 	if fileErr != nil {
@@ -84,11 +100,11 @@ func generateTemplate(fileName string, plan types.Plan, templateType interface{}
 	}
 	defer file.Close()
 
-	executeErr := t.Execute(file, templateType)
+	_, writeErr := file.Write(generatedData)
 	file.Close()
 
-	if executeErr != nil {
-		return executeErr
+	if writeErr != nil {
+		return writeErr
 	}
 
 	return nil
