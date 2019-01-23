@@ -86,7 +86,6 @@ github:
 ## Populate from OAuth App
 oauth:
   client_id: 914f3fb036ce9cd774
-  client_secret: fb58e886977efbece9cd77452be27e9
 
 ### Users allowed to access your OpenFaaS Cloud
 customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"
