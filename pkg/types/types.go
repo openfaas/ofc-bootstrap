@@ -58,11 +58,10 @@ type OAuth struct {
 }
 
 type TLSConfig struct {
-	Email             string `yaml:"email"`
-	DNSService        string `yaml:"dns_service"`
-	ProjectID         string `yaml:"project_id"`
-	IssuerType        string `yaml:"issuer_type"`
-	LetsencryptServer string `yaml:"letsencrypt_server"`
-	Region            string `yaml:"region"`
-	AccessKeyID       string `yaml:"access_key_id"`
+	Email       string `yaml:"email"`
+	DNSService  string `yaml:"dns_service"`
+	ProjectID   string `yaml:"project_id"`
+	IssuerType  string `yaml:"issuer_type"`
+	Region      string `yaml:"region"`
+	AccessKeyID string `yaml:"access_key_id"`
 }

@@ -112,6 +112,30 @@ Configure or comment out as required in the relevant section.
 
 You should also set up the corresponding DNS A records.
 
+In order to enable TLS, edit the following configuration:
+
+* Set `tls: true`
+* Choose between `issuer_type: "prod"` or `issuer_type: "staging"`
+* Choose between DNS Service `route53` or `clouddns` and update your service data
+* Go to `# DNS Service Account secret` and choose the same service
+
+If you need to test in Staging and then go to Production without resetting the cluster:
+* Use `issuer_type: "staging"`
+* Run ofc-bootstrap with the instructions bellow
+* Once you want to switch to Production run
+```
+sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-ingress-ingress-wildcard.yaml
+kubectl apply -f ./tmp/generated-ingress-ingress-wildcard.yaml
+sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-ingress-ingress.yaml
+kubectl apply -f ./tmp/generated-ingress-ingress.yaml
+sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-tls-auth-domain-cert.yml
+kubectl apply -f ./tmp/generated-tls-auth-domain-cert.yml
+sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-tls-wildcard-domain-cert.yml
+kubectl apply -f ./tmp/generated-tls-wildcard-domain-cert.yml
+
+kubectl delete certificates --all  -n openfaas
+```
+
 ### Run the Bootstrapper
 
 ```bash

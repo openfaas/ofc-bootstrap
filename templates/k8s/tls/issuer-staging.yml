@@ -1,14 +1,14 @@
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-{{.IssuerType}}
+  name: letsencrypt-staging
   namespace: openfaas
 spec:
   acme:
-    server: "{{.LetsencryptServer}}"
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
     email: "{{.Email}}"
     privateKeySecretRef:
-      name: letsencrypt-{{.IssuerType}}
+      name: letsencrypt-staging
     dns01:
       providers:
       - name: {{.DNSService}}
