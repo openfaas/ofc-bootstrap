@@ -586,14 +586,19 @@ func cloneCloudComponents() error {
 
 func deployCloudComponents(plan types.Plan) error {
 
-	env := ""
+	authEnv := ""
 	if plan.EnableOAuth {
-		env = "ENABLE_OAUTH=true"
+		authEnv = "ENABLE_OAUTH=true"
 	}
+	gitlabEnv := ""
+	if plan.SCM == "gitlab" {
+		gitlabEnv = "GITLAB=true"
+	}
+
 	task := execute.ExecTask{
 		Command: "./scripts/deploy-cloud-components.sh",
 		Shell:   true,
-		Env:     []string{env},
+		Env:     []string{authEnv, gitlabEnv},
 	}
 
 	res, err := task.Execute()

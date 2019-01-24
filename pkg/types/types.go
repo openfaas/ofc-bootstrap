@@ -36,7 +36,9 @@ type Plan struct {
 	RootDomain    string                   `yaml:"root_domain"`
 	Registry      string                   `yaml:"registry"`
 	CustomersURL  string                   `yaml:"customers_url"`
+	SCM           string                   `yaml:"scm"`
 	Github        Github                   `yaml:"github"`
+	Gitlab        Gitlab                   `yaml:"gitlab"`
 	TLS           bool                     `yaml:"tls"`
 	OAuth         OAuth                    `yaml:"oauth"`
 	S3            S3                       `yaml:"s3"`
@@ -82,12 +84,17 @@ type Github struct {
 	PrivateKeyFile string `yaml:"private_key_filename"`
 }
 
+type Gitlab struct {
+	GitLabInstance string `yaml:"gitlab_instance"`
+}
+
 type Slack struct {
 	URL string `yaml:"url"`
 }
 
 type OAuth struct {
-	ClientId string `yaml:"client_id"`
+	ClientId             string `yaml:"client_id"`
+	OAuthProviderBaseURL string `yaml:"oauth_provider_base_url"`
 }
 
 type S3 struct {

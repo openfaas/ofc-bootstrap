@@ -101,12 +101,17 @@ Log into your Docker registry or the Docker Hub:
 * Open the Docker for Mac/Windows settings and uncheck "store my password securely" / "in a keychain"
 * Run `docker login` to populate `~/.docker/config.json` - this will be used to configure your Docker registry or Docker Hub account for functions.
 
-Setup the GitHub App and OAuth App
+Choose SCM between GitHub and GitLab, by setting `scm: github` or `scm: gitlab`
 
-* Create a GitHub App and download the private key file
+Setup the GitHub / GitLab App and OAuth App
+
+* For GitHub create a GitHub App and download the private key file
   * Read the docs for how to [configure your GitHub App](https://docs.openfaas.com/openfaas-cloud/self-hosted/github/)
-* Create your GitHub OAuth App which is used for logging in to the dashboard
-  * Update `init.yaml` where you see the `### User-input` section including your GitHub App's ID and the path to its private key
+  * Update `init.yaml` where you see the `### User-input` section including your GitHub App's ID, Webhook secret and the path to its private key
+* For GitLab create a System Hook
+  * Update the `### User-input` section including your System Hook's API Token and Webhook secret
+* Create your GitHub / GitLab OAuth App which is used for logging in to the dashboard
+* For GitLab update `init.yaml` with your `gitlab_instance`
 
 Create your own GitHub repo with a CUSTOMERS ACL file
 
@@ -122,7 +127,8 @@ It can be set up on a public cloud provider with a managed Kubernetes offering, 
 
 If you'd like to restrict who can log in to just those who use a GitHub account then create a GitHub OAuth App.
 
-Enable `auth` and fill out the required fields such as `client_secret` and `client_id`
+Enable `auth` and fill out the OAuth App `client_id`. Configure `of-client-secret` with the OAuth App Client Secret.
+For GitLab set your `oauth_provider_base_url`.
 
 #### Use TLS (optional)
 
@@ -202,13 +208,20 @@ When ofc-bootstrap has completed and you know the IP of your LoadBalancer:
 * `auth.system.domain`
 * `*.domain`
 
-#### Configure the GitHub App webhook
+#### Configure the GitHub / GitLab App Webhook
 
-Now over on GitHub enter the URL for webhooks:
+Now over on GitHub / GitLab enter the URL for webhooks:
 
+GitHub:
 ```
 http://system.domain.com/github-event
 ```
+GitLab:
+```
+http://system.domain.com/gitlab-event
+```
+
+For more details see the [GitLab instructions](https://github.com/openfaas/openfaas-cloud/blob/master/docs/GITLAB.md) in OpenFaaS Cloud.
 
 Then you need to enter the Webhook secret that was generated during the bootstrap process. Run the following commands to extract and decode it:
 

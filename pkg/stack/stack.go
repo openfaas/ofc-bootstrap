@@ -18,10 +18,12 @@ type gatewayConfig struct {
 }
 
 type authConfig struct {
-	RootDomain   string
-	ClientId     string
-	CustomersURL string
-	Scheme       string
+	RootDomain           string
+	ClientId             string
+	CustomersURL         string
+	Scheme               string
+	OAuthProvider        string
+	OAuthProviderBaseURL string
 }
 
 // Apply creates `templates/gateway_config.yml` to be referenced by stack.yml
@@ -56,6 +58,16 @@ func Apply(plan types.Plan) error {
 		return slackConfigErr
 	}
 
+	if plan.SCM == "gitlab" {
+		gitlabConfigErr := generateTemplate("gitlab", plan, types.Gitlab{
+			GitLabInstance: plan.Gitlab.GitLabInstance,
+		})
+		if gitlabConfigErr != nil {
+			return gitlabConfigErr
+		}
+
+	}
+
 	dashboardConfigErr := generateTemplate("dashboard_config", plan, gatewayConfig{
 		RootDomain: plan.RootDomain, Scheme: scheme,
 	})
@@ -65,10 +77,12 @@ func Apply(plan types.Plan) error {
 
 	if plan.EnableOAuth {
 		ofAuthDepErr := generateTemplate("of-auth-dep", plan, authConfig{
-			RootDomain:   plan.RootDomain,
-			ClientId:     plan.OAuth.ClientId,
-			CustomersURL: plan.CustomersURL,
-			Scheme:       scheme,
+			RootDomain:           plan.RootDomain,
+			ClientId:             plan.OAuth.ClientId,
+			CustomersURL:         plan.CustomersURL,
+			Scheme:               scheme,
+			OAuthProvider:        plan.SCM,
+			OAuthProviderBaseURL: plan.OAuth.OAuthProviderBaseURL,
 		})
 		if ofAuthDepErr != nil {
 			return ofAuthDepErr
