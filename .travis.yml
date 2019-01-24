@@ -1,7 +1,9 @@
 sudo: required
 
-language: go1.10
- 
+language: go
+go:
+ - "1.10.x"
+
 services:
   - docker
 
