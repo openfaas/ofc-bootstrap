@@ -58,6 +58,12 @@ echo -n $ADMIN_PASSWORD | faas-cli login --username admin --password-stdin
 
 faas-cli deploy
 
+if [ "$GITLAB" = "true" ] ; then
+    cp ../generated-gitlab.yml ./gitlab.yml
+    echo "Deploying gitlab functions..."
+    faas deploy -f ./gitlab.yml
+fi
+
 cd ./dashboard
 faas-cli template pull https://github.com/openfaas-incubator/node8-express-template
 faas-cli deploy
