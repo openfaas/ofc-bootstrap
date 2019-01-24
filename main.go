@@ -16,13 +16,17 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+// Vars are variables parsed from flags
 type Vars struct {
 	YamlFile string
 	Verbose  bool
 }
 
 const (
-	OrchestrationK8s   = "kubernetes"
+	// OrchestrationK8s uses Kubernetes
+	OrchestrationK8s = "kubernetes"
+
+	// OrchestrationSwarm uses Docker Swarm
 	OrchestrationSwarm = "swarm"
 )
 
@@ -33,7 +37,7 @@ func taskGivesStdout(tool string) error {
 		return fmt.Errorf("could not run: '%s', error: %s", tool, err)
 	}
 	if len(res.Stdout) == 0 {
-		return fmt.Errorf("error executing '%s', no output was given - tool is available in PATH")
+		return fmt.Errorf("error executing '%s', no output was given - tool is available in PATH", task.Command)
 	}
 	return nil
 }
