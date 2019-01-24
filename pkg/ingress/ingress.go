@@ -7,8 +7,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/alexellis/ofc-bootstrap/pkg/execute"
-	"github.com/alexellis/ofc-bootstrap/pkg/types"
+	"github.com/openfaas-incubator/ofc-bootstrap/pkg/execute"
+	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 )
 
 type IngressTemplate struct {

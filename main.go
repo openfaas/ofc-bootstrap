@@ -8,11 +8,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/alexellis/ofc-bootstrap/pkg/execute"
-	"github.com/alexellis/ofc-bootstrap/pkg/ingress"
-	"github.com/alexellis/ofc-bootstrap/pkg/stack"
-	"github.com/alexellis/ofc-bootstrap/pkg/tls"
-	"github.com/alexellis/ofc-bootstrap/pkg/types"
+	"github.com/openfaas-incubator/ofc-bootstrap/pkg/execute"
+	"github.com/openfaas-incubator/ofc-bootstrap/pkg/ingress"
+	"github.com/openfaas-incubator/ofc-bootstrap/pkg/stack"
+	"github.com/openfaas-incubator/ofc-bootstrap/pkg/tls"
+	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 	yaml "gopkg.in/yaml.v2"
 )
 

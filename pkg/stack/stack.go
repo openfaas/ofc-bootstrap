@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/alexellis/ofc-bootstrap/pkg/types"
+	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 )
 
 type gatewayConfig struct {

@@ -57,7 +57,7 @@ secrets:
   - name: "route53-credentials-secret"
     files:
       - name: "secret-access-key"
-        value_from: "/Downloads/secret-access-key"
+        value_from: "~/Downloads/secret-access-key"
     namespace: "kube-system"
   # - name: "clouddns-service-account"
   #   files:
