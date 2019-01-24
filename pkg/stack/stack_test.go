@@ -7,9 +7,12 @@ import (
 
 func Test_applyTemplateWithAuth(t *testing.T) {
 
+	clientID := "test_oauth_app_client_id"
+	customersURL := "https://raw.githubusercontent.com/test/path/CUSTOMERS"
+
 	templateValues := authConfig{
-		ClientId:     "7gbfgsbh9gbgbg786gs7bs",
-		CustomersURL: "https://raw.githubusercontent.com/test/path/CUSTOMERS",
+		ClientId:     clientID,
+		CustomersURL: customersURL,
 		Scheme:       "http",
 	}
 
@@ -23,7 +26,7 @@ func Test_applyTemplateWithAuth(t *testing.T) {
 		return
 	}
 
-	values := []string{"7gbfgsbh9gbgbg786gs7bs", "https://raw.githubusercontent.com/test/path/CUSTOMERS"}
+	values := []string{clientID, customersURL}
 	for _, want := range values {
 		if strings.Contains(string(generatedValue), want) == false {
 			t.Errorf("want generated value to contain: %q, generated was: %q", want, string(generatedValue))
