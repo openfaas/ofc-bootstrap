@@ -70,8 +70,8 @@ You can run ofc-bootsrap against a remote Kubernetes cluster. The instructions b
 
 ```bash
 git clone https://github.com/alexellis/ofc-bootstrap
-mkdir -p $GOPATH/src/github.com/alexellis
-mv ofc-bootstrap $GOPATH/src/github.com/alexellis/
+mkdir -p $GOPATH/src/github.com/openfaas-incubator
+mv ofc-bootstrap $GOPATH/src/github.com/openfaas-incubator/
 ```
 
 * Create a temporary cluster with `kind` or similar
@@ -139,7 +139,7 @@ kubectl delete certificates --all  -n openfaas
 ### Run the Bootstrapper
 
 ```bash
-cd $GOPATH/src/github.com/alexellis/
+cd $GOPATH/src/github.com/openfaas-incubator/
 
 go build
 
