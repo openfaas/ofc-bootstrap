@@ -1,6 +1,6 @@
 orchestration: kubernetes
 secrets:
-  ### Generated secrets
+  ### Generated secrets (do not edit)
   - name: s3-secret-key
     namespace: "openfaas-fn"
     literals:
@@ -35,48 +35,61 @@ secrets:
     namespace: "openfaas"
 
   ### User-input
-  # Enter into GitHub UI
+  ### In this section, you must populate all your secrets or secret file-locations
+  ### and your desired configuration.
+  ### For more information see: https://github.com/openfaas/openfaas-cloud/tree/master/docs
+
+  # Value you entered into the GitHub App UI, or generate random password if left blank
   - name: "github-webhook-secret"
     literals:
       - name: "github-webhook-secret"
-        value: "secret"
+        value: ""
     namespace: "openfaas-fn"
+
   # Download from GitHub App on GitHub UI
   - name: "private-key"
     files:
       - name: "private-key"
-        value_from: "~/Downloads/ofc-bootstrap-test.2018-12-23.private-key.pem"
+        value_from: "~/Downloads/private-key.pem"
     namespace: "openfaas-fn"
-  # Enter your OAuth client_secret
+
+  # Populate your OAuth client_secret
   - name: "of-client-secret"
     literals:
       - name: of-client-secret
-        value: "fb58e886977efbece9cd77452be27e9"
+        value: "PASTE_SECRET_KEY_HERE"
     namespace: "openfaas"
+
   # DNS Service Account secret
-  - name: "route53-credentials-secret"
+
+  ## Use Google Cloud DNS
+  - name: "clouddns-service-account"
     files:
-      - name: "secret-access-key"
-        value_from: "~/Downloads/secret-access-key"
+      - name: "service-account.json"
+        value_from: "~/Downloads/service-account.json"
     namespace: "kube-system"
-  # - name: "clouddns-service-account"
+
+  ## or Use Route 53
+  # - name: "route53-credentials-secret"
   #   files:
-  #     - name: "service-account.json"
-  #       value_from: "/Downloads/service-account.json"
+  #     - name: "secret-access-key"
+  #       value_from: "~/Downloads/route53-secret-access-key"
   #   namespace: "kube-system"
 
-### User input
+
+### Docker registry
+#### This can be any cluster accessible by your cluster. To populate the file
+#### run `docker login` with "store in keychain" turned off in Docker Desktop.
   - name: "registry-secret"
     files:
       - name: "config.json"
         value_from: "~/.docker/config.json"
     namespace: "openfaas"
 
-
-### Where to publish function images
+#### Acount or registry and user for your cluster's Docker images for functions
 registry: docker.io/ofctest/
 
-### Domain name registered with A record pointing to *.domain (wild-card)
+### Your root DNS domain name, this can be a sub-domain i.e. staging.o6s.io / prod.o6s.io
 root_domain: "stag.o6s.io"
 
 ## Populate from GitHub App
@@ -88,9 +101,12 @@ oauth:
   client_id: 914f3fb036ce9cd774
 
 ### Users allowed to access your OpenFaaS Cloud
+#### ACL for your users, it must be a raw text file or GitHub RAW URL
 customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"
 
-## S3 configuration. These default to minio settings
+##  S3 configuration
+### Build logs from buildkit are stored in S3
+### Defaults to in-cluster deployment of Minio. AWS S3 is also possible
 s3:
   s3_url: cloud-minio.openfaas.svc.cluster.local:9000
   s3_region: us-east-1
@@ -98,21 +114,30 @@ s3:
   s3_bucket: pipeline
 
 ## Enable auth:
+### When enabled users must log in with a valid GitHub account and be present in the
+### customers file to view any dashboard
 enable_oauth: false
 
 ## TLS
+### When enabled cert-manager will be used to provision wildcard TLS certificates for
+### your OpenFaaS Cloud.
 tls: false
 tls_config:
+
+  email: "email@domain"
+
   issuer_type: "prod"
   # issuer_type: "staging"
 
   ## Select DNS web service between Amazon Route 53 (route53) and Google Cloud DNS (clouddns)
   # by uncommenting the required option
-  dns_service: route53
-  region: us-east-1
-  access_key_id: ASYAKIUJE8AYRQQ7DU3M
 
-  # dns_service: clouddns
-  # project_id: "my-openfaas-cloud"
+  ### Google Cloud DNS
+  dns_service: clouddns
+  project_id: "my-openfaas-cloud"
 
-  email: "email@domain"
+  ### AWS Route53
+  # dns_service: route53
+  # region: us-east-1
+  # access_key_id: ASYAKIUJE8AYRQQ7DU3M
+
