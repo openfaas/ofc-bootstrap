@@ -9,10 +9,11 @@ helm upgrade openfaas --install openfaas/openfaas \
     --set functionNamespace=openfaas-fn \
     --set ingress.enabled=true \
     --set gateway.scaleFromZero=true \
-    --set gateway.readTimeout=300s \
-    --set gateway.writeTimeout=300s \
-    --set gateway.upstreamTimeout=295s \
-    --set faasnetesd.readTimeout=300s \
-    --set faasnetesd.writeTimeout=300s \
+    --set gateway.readTimeout=15m \
+    --set gateway.writeTimeout=15m \
+    --set gateway.upstreamTimeout=14m55s \
+    --set queueWorker.ackWait=15m \
+    --set faasnetesd.readTimeout=5m \
+    --set faasnetesd.writeTimeout=5m \
     --set gateway.replicas=2 \
     --set queueWorker.replicas=2
