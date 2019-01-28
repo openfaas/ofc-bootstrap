@@ -100,6 +100,11 @@ github:
 oauth:
   client_id: 914f3fb036ce9cd774
 
+## Slack
+### You can set your own url to get an audit trail in your Slack workspace
+slack:
+  url: http://gateway.openfaas:8080/function/echo
+
 ### Users allowed to access your OpenFaaS Cloud
 #### ACL for your users, it must be a raw text file or GitHub RAW URL
 customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"

@@ -17,6 +17,7 @@ type Plan struct {
 	S3            S3                       `yaml:"s3"`
 	EnableOAuth   bool                     `yaml:"enable_oauth"`
 	TLSConfig     TLSConfig                `yaml:"tls_config"`
+	Slack         Slack                    `yaml:"slack"`
 }
 
 type KeyValueTuple struct {
@@ -51,6 +52,10 @@ type KeyValueNamespaceTuple struct {
 type Github struct {
 	AppID          string `yaml:"app_id"`
 	PrivateKeyFile string `yaml:"private_key_filename"`
+}
+
+type Slack struct {
+	URL string `yaml:"url"`
 }
 
 type OAuth struct {
