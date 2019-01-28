@@ -164,6 +164,10 @@ func process(plan types.Plan) error {
 			time.Sleep(time.Second * 2)
 		}
 
+		if err := helmRepoUpdate(); err != nil {
+			log.Println(err.Error())
+		}
+
 		installIngressErr := installIngressController()
 		if installIngressErr != nil {
 			log.Println(installIngressErr.Error())
@@ -240,6 +244,25 @@ func process(plan types.Plan) error {
 			return deployErr
 		}
 	}
+
+	return nil
+}
+
+func helmRepoUpdate() error {
+	log.Println("Updating helm repos")
+
+	task := execute.ExecTask{
+		Command: "helm repo update",
+	}
+
+	taskRes, taskErr := task.Execute()
+
+	if taskErr != nil {
+		return taskErr
+	}
+
+	log.Println(taskRes.Stdout)
+	log.Println(taskRes.Stderr)
 
 	return nil
 }
