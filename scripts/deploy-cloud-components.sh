@@ -3,7 +3,6 @@
 cp ./tmp/generated-gateway_config.yml ./tmp/openfaas-cloud/gateway_config.yml
 cp ./tmp/generated-github.yml ./tmp/openfaas-cloud/github.yml
 cp ./tmp/generated-dashboard_config.yml ./tmp/openfaas-cloud/dashboard/dashboard_config.yml
-cp ./tmp/generated-of-auth-dep.yml ./tmp/openfaas-cloud/yaml/core/of-auth-dep.yml
 
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-dep.yml
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-svc.yml
@@ -11,6 +10,7 @@ kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-svc.yml
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/import-secrets-role.yml
 
 if [ "$ENABLE_OAUTH" = "true" ] ; then
+    cp ./tmp/generated-of-auth-dep.yml ./tmp/openfaas-cloud/yaml/core/of-auth-dep.yml
     kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-auth-dep.yml
     kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-auth-svc.yml
     kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-router-dep.yml
