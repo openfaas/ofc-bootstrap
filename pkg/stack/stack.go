@@ -30,8 +30,9 @@ func Apply(plan types.Plan) error {
 	if plan.TLS {
 		scheme += "s"
 	}
+	defaultPath := "templates/"
 
-	gwConfigErr := generateTemplate("gateway_config", plan, gatewayConfig{
+	gwConfigErr := generateTemplate(defaultPath, "gateway_config", plan, gatewayConfig{
 		Registry:     plan.Registry,
 		RootDomain:   plan.RootDomain,
 		CustomersURL: plan.CustomersURL,
@@ -42,7 +43,7 @@ func Apply(plan types.Plan) error {
 		return gwConfigErr
 	}
 
-	githubConfigErr := generateTemplate("github", plan, types.Github{
+	githubConfigErr := generateTemplate(defaultPath, "github", plan, types.Github{
 		AppID:          plan.Github.AppID,
 		PrivateKeyFile: plan.Github.PrivateKeyFile,
 	})
@@ -50,13 +51,13 @@ func Apply(plan types.Plan) error {
 		return githubConfigErr
 	}
 
-	if slackConfigErr := generateTemplate("slack", plan, types.Slack{
+	if slackConfigErr := generateTemplate(defaultPath, "slack", plan, types.Slack{
 		URL: plan.Slack.URL,
 	}); slackConfigErr != nil {
 		return slackConfigErr
 	}
 
-	dashboardConfigErr := generateTemplate("dashboard_config", plan, gatewayConfig{
+	dashboardConfigErr := generateTemplate(defaultPath, "dashboard_config", plan, gatewayConfig{
 		RootDomain: plan.RootDomain, Scheme: scheme,
 	})
 	if dashboardConfigErr != nil {
@@ -64,7 +65,7 @@ func Apply(plan types.Plan) error {
 	}
 
 	if plan.EnableOAuth {
-		ofAuthDepErr := generateTemplate("of-auth-dep", plan, authConfig{
+		ofAuthDepErr := generateTemplate("templates/k8s/", "of-auth-dep", plan, authConfig{
 			RootDomain:   plan.RootDomain,
 			ClientId:     plan.OAuth.ClientId,
 			CustomersURL: plan.CustomersURL,
@@ -92,9 +93,9 @@ func applyTemplate(templateFileName string, templateType interface{}) ([]byte, e
 	return buffer.Bytes(), executeErr
 }
 
-func generateTemplate(fileName string, plan types.Plan, templateType interface{}) error {
+func generateTemplate(path string, fileName string, plan types.Plan, templateType interface{}) error {
 
-	generatedData, err := applyTemplate("templates/"+fileName+".yml", templateType)
+	generatedData, err := applyTemplate(path+fileName+".yml", templateType)
 	if err != nil {
 		return err
 	}
