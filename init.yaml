@@ -90,7 +90,7 @@ secrets:
 registry: docker.io/ofctest/
 
 ### Your root DNS domain name, this can be a sub-domain i.e. staging.o6s.io / prod.o6s.io
-root_domain: "stag.o6s.io"
+root_domain: "myfaas.club"
 
 ## Populate from GitHub App
 github:
@@ -126,23 +126,26 @@ enable_oauth: false
 ## TLS
 ### When enabled cert-manager will be used to provision wildcard TLS certificates for
 ### your OpenFaaS Cloud.
-tls: false
+tls: true
 tls_config:
 
   email: "email@domain"
 
-  issuer_type: "prod"
-  # issuer_type: "staging"
+  # issuer_type: "prod"
+  issuer_type: "staging"
 
   ## Select DNS web service between Amazon Route 53 (route53) and Google Cloud DNS (clouddns)
   # by uncommenting the required option
 
   ### Google Cloud DNS
-  dns_service: clouddns
-  project_id: "my-openfaas-cloud"
+  # dns_service: clouddns
+  # project_id: "my-openfaas-cloud"
 
   ### AWS Route53
   # dns_service: route53
   # region: us-east-1
   # access_key_id: ASYAKIUJE8AYRQQ7DU3M
 
+  ### DigitalOcean
+  dns_service: digitalocean
+  digitalocean_access_token: ""

@@ -10,30 +10,35 @@ import (
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 )
 
-type TlsTemplate struct {
-	RootDomain  string
-	Email       string
-	DNSService  string
-	ProjectID   string
-	IssuerType  string
-	Region      string
-	AccessKeyID string
+// TLSTemplate TLS configuration
+type TLSTemplate struct {
+	RootDomain              string
+	Email                   string
+	DNSService              string
+	ProjectID               string
+	IssuerType              string
+	Region                  string
+	AccessKeyID             string
+	DigitalOceanAccessToken string
 }
 
 var tlsTemplatesPath = "templates/k8s/tls/"
 
+// Apply executes the plan
 func Apply(plan types.Plan) error {
 
 	tlsTemplatesList, _ := listTLSTemplates()
-	tlsTemplate := TlsTemplate{
-		RootDomain:  plan.RootDomain,
-		Email:       plan.TLSConfig.Email,
-		DNSService:  plan.TLSConfig.DNSService,
-		ProjectID:   plan.TLSConfig.ProjectID,
-		IssuerType:  plan.TLSConfig.IssuerType,
-		Region:      plan.TLSConfig.Region,
-		AccessKeyID: plan.TLSConfig.AccessKeyID,
+	tlsTemplate := TLSTemplate{
+		RootDomain:              plan.RootDomain,
+		Email:                   plan.TLSConfig.Email,
+		DNSService:              plan.TLSConfig.DNSService,
+		ProjectID:               plan.TLSConfig.ProjectID,
+		IssuerType:              plan.TLSConfig.IssuerType,
+		Region:                  plan.TLSConfig.Region,
+		AccessKeyID:             plan.TLSConfig.AccessKeyID,
+		DigitalOceanAccessToken: plan.TLSConfig.DigitalOceanAccessToken,
 	}
+
 	for _, template := range tlsTemplatesList {
 		tempFilePath, tlsTemplateErr := generateTemplate(template, tlsTemplate)
 		if tlsTemplateErr != nil {
@@ -66,7 +71,7 @@ func listTLSTemplates() ([]string, error) {
 	return list, nil
 }
 
-func generateTemplate(fileName string, tlsTemplate TlsTemplate) (string, error) {
+func generateTemplate(fileName string, tlsTemplate TLSTemplate) (string, error) {
 
 	data, err := ioutil.ReadFile(tlsTemplatesPath + fileName)
 	if err != nil {
