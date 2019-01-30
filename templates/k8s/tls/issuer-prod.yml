@@ -25,4 +25,8 @@ spec:
           secretAccessKeySecretRef:
             name: "{{.DNSService}}-credentials-secret"
             key: secret-access-key
+          {{else if eq .DNSService "digitalocean" }}
+            tokenSecretRef:
+              name: digitalocean-dns
+              key: "{{.DigitalOceanAccessToken}}"
           {{ end }}

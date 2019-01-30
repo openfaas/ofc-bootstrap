@@ -134,7 +134,6 @@ func main() {
 
 func process(plan types.Plan) error {
 
-	fmt.Println(plan)
 	if plan.Orchestration == OrchestrationK8s {
 		fmt.Println("Orchestration: Kubernetes")
 	} else if plan.Orchestration == OrchestrationSwarm {
@@ -443,9 +442,8 @@ func createNamespaces() error {
 
 func createSecrets(plan types.Plan) error {
 
-	fmt.Println(plan.Secrets)
-
 	for _, secret := range plan.Secrets {
+		fmt.Printf("Creating secret: %s\n", secret.Name)
 
 		var command execute.ExecTask
 		if plan.Orchestration == OrchestrationK8s {

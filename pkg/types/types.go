@@ -70,10 +70,11 @@ type S3 struct {
 }
 
 type TLSConfig struct {
-	Email       string `yaml:"email"`
-	DNSService  string `yaml:"dns_service"`
-	ProjectID   string `yaml:"project_id"`
-	IssuerType  string `yaml:"issuer_type"`
-	Region      string `yaml:"region"`
-	AccessKeyID string `yaml:"access_key_id"`
+	Email                   string `yaml:"email"`
+	DNSService              string `yaml:"dns_service"`
+	ProjectID               string `yaml:"project_id"`
+	IssuerType              string `yaml:"issuer_type"`
+	Region                  string `yaml:"region"`
+	AccessKeyID             string `yaml:"access_key_id"`
+	DigitalOceanAccessToken string `yaml:"digitalocean_access_token"`
 }
