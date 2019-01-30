@@ -28,5 +28,5 @@ spec:
           {{else if eq .DNSService "digitalocean" }}
             tokenSecretRef:
               name: digitalocean-dns
-              key: "{{.DigitalOceanAccessToken}}"
+              key: access-token
           {{ end }}

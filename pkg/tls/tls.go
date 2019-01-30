@@ -12,31 +12,27 @@ import (
 
 // TLSTemplate TLS configuration
 type TLSTemplate struct {
-	RootDomain              string
-	Email                   string
-	DNSService              string
-	ProjectID               string
-	IssuerType              string
-	Region                  string
-	AccessKeyID             string
-	DigitalOceanAccessToken string
+	RootDomain  string
+	Email       string
+	DNSService  string
+	ProjectID   string
+	IssuerType  string
+	Region      string
+	AccessKeyID string
 }
-
-var tlsTemplatesPath = "templates/k8s/tls/"
 
 // Apply executes the plan
 func Apply(plan types.Plan) error {
 
 	tlsTemplatesList, _ := listTLSTemplates()
 	tlsTemplate := TLSTemplate{
-		RootDomain:              plan.RootDomain,
-		Email:                   plan.TLSConfig.Email,
-		DNSService:              plan.TLSConfig.DNSService,
-		ProjectID:               plan.TLSConfig.ProjectID,
-		IssuerType:              plan.TLSConfig.IssuerType,
-		Region:                  plan.TLSConfig.Region,
-		AccessKeyID:             plan.TLSConfig.AccessKeyID,
-		DigitalOceanAccessToken: plan.TLSConfig.DigitalOceanAccessToken,
+		RootDomain:  plan.RootDomain,
+		Email:       plan.TLSConfig.Email,
+		DNSService:  plan.TLSConfig.DNSService,
+		ProjectID:   plan.TLSConfig.ProjectID,
+		IssuerType:  plan.TLSConfig.IssuerType,
+		Region:      plan.TLSConfig.Region,
+		AccessKeyID: plan.TLSConfig.AccessKeyID,
 	}
 
 	for _, template := range tlsTemplatesList {
@@ -55,23 +51,17 @@ func Apply(plan types.Plan) error {
 }
 
 func listTLSTemplates() ([]string, error) {
-	file, err := os.Open(tlsTemplatesPath)
 
-	if err != nil {
-		log.Fatalf("failed opening directory: %s, %s", tlsTemplatesPath, err)
-		return nil, err
-	}
-	defer file.Close()
-
-	list, _ := file.Readdirnames(0)
-	if err != nil {
-		log.Fatalf("failed reading filenames in directory %s, %s", tlsTemplatesPath, err)
-		return nil, err
-	}
-	return list, nil
+	return []string{
+		"issuer-prod.yml",
+		"issuer-staging.yml",
+		"wildcard-domain-cert.yml",
+		"auth-domain-cert.yml",
+	}, nil
 }
 
 func generateTemplate(fileName string, tlsTemplate TLSTemplate) (string, error) {
+	tlsTemplatesPath := "templates/k8s/tls/"
 
 	data, err := ioutil.ReadFile(tlsTemplatesPath + fileName)
 	if err != nil {
