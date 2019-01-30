@@ -3,9 +3,9 @@
 helm delete --purge cert-manager nginxingress openfaas cloud-minio
 
 kubectl delete certificates --all -n openfaas
+kubectl delete clusterissuer letsencrypt-prod letsencrypt-staging
 
-kubectl delete ns openfaas openfaas-fn
-kubectl delete ns cert-manager
+kubectl delete ns openfaas openfaas-fn cert-manager
 
 kubectl delete crd sealedsecrets.bitnami.com
 kubectl delete \

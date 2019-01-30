@@ -128,7 +128,6 @@ enable_oauth: false
 ### your OpenFaaS Cloud.
 tls: true
 tls_config:
-
   email: "email@domain"
 
   # issuer_type: "prod"
@@ -148,4 +147,3 @@ tls_config:
 
   ### DigitalOcean
   dns_service: digitalocean
-  digitalocean_access_token: ""
