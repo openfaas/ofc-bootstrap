@@ -18,6 +18,8 @@ type IngressTemplate struct {
 	DNSService string
 }
 
+// Apply templates and applies any ingress records required
+// for the OpenFaaS Cloud ingress configuration
 func Apply(plan types.Plan) error {
 
 	err := apply("ingress-wildcard.yml", "ingress-wildcard", IngressTemplate{
@@ -90,7 +92,7 @@ func apply(source string, name string, ingress IngressTemplate) error {
 		return execErr
 	}
 
-	log.Println(execRes.Stdout)
+	log.Println(execRes.ExitCode, execRes.Stdout, execRes.Stderr)
 
 	return nil
 }

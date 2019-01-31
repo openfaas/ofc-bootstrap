@@ -194,6 +194,15 @@ func process(plan types.Plan) error {
 			log.Println(ofErr)
 		}
 
+		for i := 0; i < retries; i++ {
+			log.Printf("Is cert-manager ready? %d/%d\n", i+1, retries)
+			ready := certManagerReady()
+			if ready {
+				break
+			}
+			time.Sleep(time.Second * 2)
+		}
+
 		ingressErr := ingress.Apply(plan)
 		if ingressErr != nil {
 			log.Println(ingressErr)
@@ -334,8 +343,7 @@ func installIngressController() error {
 		return err
 	}
 
-	log.Println(res.Stdout)
-	log.Println(res.Stderr)
+	log.Println(res.ExitCode, res.Stdout, res.Stderr)
 
 	return nil
 }
@@ -374,8 +382,7 @@ func installOpenfaas() error {
 		return err
 	}
 
-	log.Println(res.Stdout)
-	log.Println(res.Stderr)
+	log.Println(res.ExitCode, res.Stdout, res.Stderr)
 
 	return nil
 }
@@ -414,8 +421,7 @@ func installCertmanager() error {
 		return err
 	}
 
-	log.Println(res.Stdout)
-	log.Println(res.Stderr)
+	log.Println(res.ExitCode, res.Stdout, res.Stderr)
 
 	return nil
 }
@@ -434,8 +440,7 @@ func createNamespaces() error {
 		return err
 	}
 
-	log.Println(res.Stdout)
-	log.Println(res.Stderr)
+	log.Println(res.ExitCode, res.Stdout, res.Stderr)
 
 	return nil
 }
@@ -489,6 +494,17 @@ func exportSealedSecretPubCert() string {
 	res, err := task.Execute()
 	fmt.Println("secrets cert", res.ExitCode, res.Stdout, res.Stderr, err)
 	return res.Stdout
+}
+
+func certManagerReady() bool {
+	task := execute.ExecTask{
+		Command: "./scripts/get-cert-manager.sh",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+	fmt.Println("cert-manager", res.ExitCode, res.Stdout, res.Stderr, err)
+	return res.Stdout == "True"
 }
 
 func tillerReady() bool {
