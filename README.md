@@ -122,18 +122,32 @@ In order to enable TLS, edit the following configuration:
 If you need to test in Staging and then go to Production without resetting the cluster:
 * Use `issuer_type: "staging"`
 * Run ofc-bootstrap with the instructions bellow
-* Once you want to switch to Production run
-```
-sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-ingress-ingress-wildcard.yaml
-kubectl apply -f ./tmp/generated-ingress-ingress-wildcard.yaml
-sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-ingress-ingress.yaml
-kubectl apply -f ./tmp/generated-ingress-ingress.yaml
-sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-tls-auth-domain-cert.yml
-kubectl apply -f ./tmp/generated-tls-auth-domain-cert.yml
-sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-tls-wildcard-domain-cert.yml
-kubectl apply -f ./tmp/generated-tls-wildcard-domain-cert.yml
+* Once you want to switch to the Production issuer
 
+Flush out the staging certificates and orders
+
+```sh
 kubectl delete certificates --all  -n openfaas
+kubectl delete secret -n openfaas -l="certmanager.k8s.io/certificate-name"
+kubectl delete order -n openfaas --all
+```
+
+Now update the staging references to "prod":
+
+```sh
+sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-ingress-ingress-wildcard.yaml
+sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-ingress-ingress.yaml
+sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-tls-auth-domain-cert.yml
+sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-tls-wildcard-domain-cert.yml
+```
+
+Now create the new ingress and certificates:
+
+```sh
+kubectl apply -f ./tmp/generated-ingress-ingress-wildcard.yaml
+kubectl apply -f ./tmp/generated-ingress-ingress.yaml
+kubectl apply -f ./tmp/generated-tls-auth-domain-cert.yml
+kubectl apply -f ./tmp/generated-tls-wildcard-domain-cert.yml
 ```
 
 ### Run the Bootstrapper

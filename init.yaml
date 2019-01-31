@@ -135,7 +135,8 @@ enable_oauth: false
 ### your OpenFaaS Cloud.
 tls: true
 tls_config:
-  email: "user@domain"
+#  email: "user@domain"
+
 
   # issuer_type: "prod"
   issuer_type: "staging"

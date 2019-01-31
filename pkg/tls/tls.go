@@ -97,7 +97,7 @@ func applyTemplate(tempFilePath string) error {
 		return execErr
 	}
 
-	log.Println(execRes.Stdout)
+	log.Println(execRes.ExitCode, execRes.Stdout, execRes.Stderr)
 
 	return nil
 }
