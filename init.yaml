@@ -69,6 +69,13 @@ secrets:
         value_from: "~/Downloads/service-account.json"
     namespace: "kube-system"
 
+  ## Use DigitalOcean
+  - name: "digitalocean-dns"
+    files:
+      - name: "access-token"
+        value_from: "~/Downloads/do-access-token"
+    namespace: "cert-manager"
+
   ## or Use Route 53
   # - name: "route53-credentials-secret"
   #   files:
@@ -128,7 +135,7 @@ enable_oauth: false
 ### your OpenFaaS Cloud.
 tls: true
 tls_config:
-  email: "email@domain"
+  email: "user@domain"
 
   # issuer_type: "prod"
   issuer_type: "staging"
