@@ -181,6 +181,29 @@ Now over on GitHub enter the URL for webhooks:
 http://system.domain.com/github-event
 ```
 
+Then you need to enter the Webhook secret that was generated during the bootstrap process. Run the following commands to extract and decode it:
+
+> If you have `jq` installed, this one-liner would be handy: `kubectl -n openfaas-fn get secret github-webhook-secret -o json | jq '.data | map_values(@base64d)'`. Otherwise, continue below.
+
+```
+$ kubectl -n openfaas-fn get secret github-webhook-secret -o yaml
+```
+
+This spits out the Secret object definition, including a field like:
+
+```
+data:
+  github-webhook-secret: <redacted base64-encoded string>
+```
+
+Copy out that string and decode it:
+
+```
+$ echo 'redacted base64-encoded string' | base64 --decode
+```
+
+Enter this value into the webhook secret field in your GitHub App.
+
 ### Smoke-test
 
 We'll now run a smoke-test to check the dashboard shows correctly and that you can trigger a successful build.
