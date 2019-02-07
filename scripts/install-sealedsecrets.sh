@@ -5,7 +5,7 @@ release=$(curl -sI https://github.com/bitnami-labs/sealed-secrets/releases/lates
 
 echo "SealedSecrets release: $release"
 
-helm del --purge ofc-bootstrap
+helm del --purge ofc-sealedsecrets
 kubectl delete customresourcedefinition sealedsecrets.bitnami.com
 
-helm install --namespace kube-system --name ofc-bootstrap stable/sealed-secrets
+helm install --namespace kube-system --name ofc-sealedsecrets stable/sealed-secrets
