@@ -8,4 +8,4 @@ echo "SealedSecrets release: $release"
 helm del --purge ofc-bootstrap
 kubectl delete customresourcedefinition sealedsecrets.bitnami.com
 
-helm install --namespace kube-system --name ofc-bootstrap stable/sealed-secrets
+helm install --namespace kube-system --name ofc-sealedsecrets stable/sealed-secrets

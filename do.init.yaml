@@ -1,6 +1,6 @@
 orchestration: kubernetes
 secrets:
-  ### Generated secrets (do not edit)
+  ### Generated secrets
   - name: s3-secret-key
     namespace: "openfaas-fn"
     literals:
@@ -35,11 +35,7 @@ secrets:
     namespace: "openfaas"
 
   ### User-input
-  ### In this section, you must populate all your secrets or secret file-locations
-  ### and your desired configuration.
-  ### For more information see: https://github.com/openfaas/openfaas-cloud/tree/master/docs
-
-  # Value you entered into the GitHub App UI, or generate random password if left blank
+  # Enter into GitHub UI
   - name: "github-webhook-secret"
     literals:
       - name: "github-webhook-secret"
@@ -51,13 +47,23 @@ secrets:
       - name: "private-key"
         value_from: "~/Downloads/private-key.pem"
     namespace: "openfaas-fn"
-  # Populate your OAuth client_secret
+  # Enter your OAuth client_secret
   - name: "of-client-secret"
     literals:
       - name: of-client-secret
         value: "79163355e553b477957d977b0b8addd3c42ff52d"
     namespace: "openfaas"
   # DNS Service Account secret
+  # - name: "route53-credentials-secret"
+  #   files:
+  #     - name: "secret-access-key"
+  #       value_from: "~/Downloads/secret-access-key"
+  #   namespace: "kube-system"
+  # - name: "clouddns-service-account"
+  #   files:
+  #     - name: "service-account.json"
+  #       value_from: "~/Downloads/service-account.json"
+  #   namespace: "kube-system"
 
   ## Use DigitalOcean
   - name: "digitalocean-dns"
@@ -74,10 +80,10 @@ secrets:
     namespace: "openfaas"
 
 
-#### Acount or registry and user for your cluster's Docker images for functions
+### Where to publish function images
 registry: docker.io/ofctest/
 
-### Your root DNS domain name, this can be a sub-domain i.e. staging.o6s.io / prod.o6s.io
+### Domain name registered with A record pointing to *.domain (wild-card)
 root_domain: "myfaas.club"
 
 ## Populate from GitHub App
@@ -87,17 +93,11 @@ github:
 ## Populate from OAuth App
 oauth:
   client_id: 08b72bd8e9e653084264
-## Slack
-### You can set your own url to get an audit trail in your Slack workspace
-slack:
-  url: http://gateway.openfaas:8080/function/echo
 
 ### Users allowed to access your OpenFaaS Cloud
 customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"
 
-##  S3 configuration
-### Build logs from buildkit are stored in S3
-### Defaults to in-cluster deployment of Minio. AWS S3 is also possible
+## S3 configuration. These default to minio settings
 s3:
   s3_url: cloud-minio.openfaas.svc.cluster.local:9000
   s3_region: us-east-1
@@ -105,16 +105,14 @@ s3:
   s3_bucket: pipeline
 
 ## Enable auth:
-### When enabled users must log in with a valid GitHub account and be present in the
-### customers file to view any dashboard
-enable_oauth: false
+enable_oauth: true
 
 ## TLS
-tls: false
+tls: true
 tls_config:
-  issuer_type: "prod"
+  # issuer_type: "prod"
 
-  # issuer_type: "staging"
+  issuer_type: "staging"
   email: "alexellis2@gmail.com"
 
   ### DigitalOcean
