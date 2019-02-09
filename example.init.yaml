@@ -1,37 +1,59 @@
+features:
+  - "basic-auth"
+  - "scm-github"
+  - "jwt"
+  - "s3"
+  - "internal-trust"
+  - "auth"
+  - "registry"
+  - "do_dns01"
+
 orchestration: kubernetes
 secrets:
   ### Generated secrets (do not edit)
   - name: s3-secret-key
-    namespace: "openfaas-fn"
     literals:
       - name: s3-secret-key
+    filters:
+      - "s3"
+    namespace: "openfaas-fn"
   - name: s3-access-key
     literals:
       - name: s3-access-key
-    namespace:  "openfaas-fn"
+    filters:
+      - "s3"
+    namespace: "openfaas-fn"
   - name: basic-auth
     literals:
       - name: basic-auth-user
         value: admin
       - name: basic-auth-password
         value: ""
-    namespace:  "openfaas"
+    filters:
+      - "basic-auth"
+    namespace: "openfaas"
   - name: "payload-secret"
     literals:
       - name: payload-secret
         value: ""
+    filters:
+      - "internal-trust"
     namespace: "openfaas"
   - name: "jwt-private-key"
     files:
       - name: "key"
         value_from: "./tmp/key"
         value_command: "openssl ecparam -genkey -name prime256v1 -noout -out ./tmp/key"
+    filters:
+      - "jwt"
     namespace: "openfaas"
   - name: "jwt-public-key"
     files:
       - name: "key.pub"
         value_from: "./tmp/key.pub"
         value_command: "openssl ec -in ./tmp/key -pubout -out ./tmp/key.pub"
+    filters:
+      - "jwt"
     namespace: "openfaas"
 
   ### User-input
@@ -43,19 +65,25 @@ secrets:
   - name: "github-webhook-secret"
     literals:
       - name: "github-webhook-secret"
-        value: ""
+        value: "secret"
+    filters:
+      - "scm-github"
     namespace: "openfaas-fn"
   # Download from GitHub App on GitHub UI
   - name: "private-key"
     files:
       - name: "private-key"
         value_from: "~/Downloads/private-key.pem"
+    filters:
+      - "scm-github"
     namespace: "openfaas-fn"
   # Populate your OAuth client_secret
   - name: "of-client-secret"
     literals:
       - name: of-client-secret
         value: "79163355e553b477957d977b0b8addd3c42ff52d"
+    filters:
+      - "auth"
     namespace: "openfaas"
   # DNS Service Account secret
 
@@ -64,20 +92,22 @@ secrets:
     files:
       - name: "access-token"
         value_from: "~/Downloads/do-access-token"
+    filters:
+      - "do_dns01"
     namespace: "cert-manager"
 
-  ## Use Google Cloud DNS	
-  # - name: "clouddns-service-account"	
-  #   files:	
-  #     - name: "service-account.json"	
-  #       value_from: "~/Downloads/service-account.json"	
-  #   namespace: "cert-manager"	
+  ## Use Google Cloud DNS
+  # - name: "clouddns-service-account"
+  #   files:
+  #     - name: "service-account.json"
+  #       value_from: "~/Downloads/service-account.json"
+  #   namespace: "cert-manager"
 
   ## Use Route 53
-  # - name: "route53-credentials-secret"	
-  #   files:	
-  #     - name: "secret-access-key"	
-  #       value_from: "~/Downloads/route53-secret-access-key"	
+  # - name: "route53-credentials-secret"
+  #   files:
+  #     - name: "secret-access-key"
+  #       value_from: "~/Downloads/route53-secret-access-key"
   #   namespace: "cert-manager"
 
   # Used by Buildkit to push images to your registry
@@ -85,6 +115,8 @@ secrets:
     files:
       - name: "config.json"
         value_from: "~/.docker/config.json"
+    filters:
+      - "registry"
     namespace: "openfaas"
   # Used to pull functions / images to nodes by Kubernetes
   - name: "registry-pull-secret"
@@ -94,9 +126,8 @@ secrets:
     namespace: "openfaas-fn"
     type: "kubernetes.io/dockerconfigjson"
 
-
-### Docker registry	
-#### This can be any cluster accessible by your cluster. To populate the file	
+### Docker registry
+#### This can be any cluster accessible by your cluster. To populate the file
 #### run `docker login` with "store in keychain" turned off in Docker Desktop.
 registry: docker.io/ofctest/
 
@@ -108,7 +139,6 @@ root_domain: "myfaas.club"
 
 ## Keep active if using a cluster with a LoadBalancer available.
 ingress: loadbalancer
-
 
 ## Populate from GitHub App
 github:
@@ -123,7 +153,7 @@ slack:
   url: http://gateway.openfaas:8080/function/echo
 
 ### Users allowed to access your OpenFaaS Cloud
-#### ACL for your users, it must be a raw text file or GitHub RAW URL	
+#### ACL for your users, it must be a raw text file or GitHub RAW URL
 customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"
 
 ##  S3 configuration
@@ -148,20 +178,15 @@ tls_config:
   issuer_type: "staging"
   email: "your@email.com"
 
-
-  ## Select DNS web service between Amazon Route 53 (route53) and Google Cloud DNS (clouddns)	
-  # by uncommenting the required option	
+  ## Select DNS web service between Amazon Route 53 (route53) and Google Cloud DNS (clouddns)
+  # by uncommenting the required option
 
   ### DigitalOcean
   dns_service: digitalocean
-
-
-  ### Google Cloud DNS	
-  # dns_service: clouddns	
+  ### Google Cloud DNS
+  # dns_service: clouddns
   # project_id: "my-openfaas-cloud"
-
   ### AWS Route53
   # dns_service: route53
   # region: us-east-1
   # access_key_id: ASYAKIUJE8AYRQQ7DU3M
-
