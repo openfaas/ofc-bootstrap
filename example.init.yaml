@@ -1,13 +1,27 @@
+features:
+  - "basic-auth"
+  - "scm-github"
+  - "jwt"
+  - "s3"
+  - "internal-trust"
+  - "auth"
+  - "registry"
+  - "do_dns01"
+
 orchestration: kubernetes
 secrets:
   ### Generated secrets (do not edit)
   - name: s3-secret-key
-    namespace: "openfaas-fn"
     literals:
       - name: s3-secret-key
+    filters:
+      - "s3"
+    namespace: "openfaas-fn"
   - name: s3-access-key
     literals:
       - name: s3-access-key
+    filters:
+      - "s3"
     namespace:  "openfaas-fn"
   - name: basic-auth
     literals:
@@ -15,23 +29,31 @@ secrets:
         value: admin
       - name: basic-auth-password
         value: ""
+    filters:
+      - "basic-auth"
     namespace:  "openfaas"
   - name: "payload-secret"
     literals:
       - name: payload-secret
         value: ""
+    filters:
+      - "internal-trust"
     namespace: "openfaas"
   - name: "jwt-private-key"
     files:
       - name: "key"
         value_from: "./tmp/key"
         value_command: "openssl ecparam -genkey -name prime256v1 -noout -out ./tmp/key"
+    filters:
+      - "jwt"
     namespace: "openfaas"
   - name: "jwt-public-key"
     files:
       - name: "key.pub"
         value_from: "./tmp/key.pub"
         value_command: "openssl ec -in ./tmp/key -pubout -out ./tmp/key.pub"
+    filters:
+      - "jwt"
     namespace: "openfaas"
 
   ### User-input
@@ -44,18 +66,24 @@ secrets:
     literals:
       - name: "github-webhook-secret"
         value: "secret"
+    filters:
+      - "scm-github"
     namespace: "openfaas-fn"
   # Download from GitHub App on GitHub UI
   - name: "private-key"
     files:
       - name: "private-key"
         value_from: "~/Downloads/private-key.pem"
+    filters:
+      - "scm-github"
     namespace: "openfaas-fn"
   # Populate your OAuth client_secret
   - name: "of-client-secret"
     literals:
       - name: of-client-secret
         value: "79163355e553b477957d977b0b8addd3c42ff52d"
+    filters:
+      - "auth"
     namespace: "openfaas"
   # DNS Service Account secret
 
@@ -64,6 +92,8 @@ secrets:
     files:
       - name: "access-token"
         value_from: "~/Downloads/do-access-token"
+    filters:
+      - "do_dns01"
     namespace: "cert-manager"
 
   ## Use Google Cloud DNS	
@@ -84,6 +114,8 @@ secrets:
     files:
       - name: "config.json"
         value_from: "~/.docker/config.json"
+    filters:
+      - "registry"
     namespace: "openfaas"
 
 

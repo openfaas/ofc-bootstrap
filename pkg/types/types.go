@@ -6,6 +6,7 @@ import (
 )
 
 type Plan struct {
+	Features      []string                 `yaml:"features"`
 	Orchestration string                   `yaml:"orchestration"`
 	Secrets       []KeyValueNamespaceTuple `yaml:"secrets"`
 	RootDomain    string                   `yaml:"root_domain"`
@@ -48,6 +49,7 @@ type KeyValueNamespaceTuple struct {
 	Literals  []KeyValueTuple `yaml:"literals"`
 	Namespace string          `yaml:"namespace"`
 	Files     []FileSecret    `yaml:"files"`
+	Filters   []string        `yaml:"filters"`
 }
 
 type Github struct {

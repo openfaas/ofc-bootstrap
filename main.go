@@ -141,7 +141,6 @@ func process(plan types.Plan) error {
 	}
 
 	if plan.Orchestration == OrchestrationK8s {
-
 		nsErr := createNamespaces()
 		if nsErr != nil {
 			log.Println(nsErr)
@@ -455,25 +454,27 @@ func createNamespaces() error {
 func createSecrets(plan types.Plan) error {
 
 	for _, secret := range plan.Secrets {
-		fmt.Printf("Creating secret: %s\n", secret.Name)
+		if featureEnabled(plan.Features, secret.Filters) {
+			fmt.Printf("Creating secret: %s\n", secret.Name)
 
-		var command execute.ExecTask
-		if plan.Orchestration == OrchestrationK8s {
-			command = execute.ExecTask{
-				Command: types.CreateK8sSecret(secret),
-				Shell:   false,
+			var command execute.ExecTask
+			if plan.Orchestration == OrchestrationK8s {
+				command = execute.ExecTask{
+					Command: types.CreateK8sSecret(secret),
+					Shell:   false,
+				}
+			} else if plan.Orchestration == OrchestrationSwarm {
+				command = execute.ExecTask{Command: types.CreateDockerSecret(secret)}
 			}
-		} else if plan.Orchestration == OrchestrationSwarm {
-			command = execute.ExecTask{Command: types.CreateDockerSecret(secret)}
+
+			res, err := command.Execute()
+
+			if err != nil {
+				log.Println(err)
+			}
+
+			fmt.Println(res)
 		}
-
-		res, err := command.Execute()
-
-		if err != nil {
-			log.Println(err)
-		}
-
-		fmt.Println(res)
 	}
 
 	return nil
@@ -562,4 +563,14 @@ func deployCloudComponents(plan types.Plan) error {
 	fmt.Println(res)
 
 	return nil
+}
+func featureEnabled(features []string, secretFeatures []string) bool {
+	for feature := range features {
+		for secretFeature := range secretFeatures {
+			if feature == secretFeature {
+				return true
+			}
+		}
+	}
+	return false
 }
