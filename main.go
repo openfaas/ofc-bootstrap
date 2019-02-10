@@ -101,6 +101,8 @@ func main() {
 	var tools []string
 	if plan.Orchestration == OrchestrationK8s {
 		tools = []string{"kubectl version --client", "openssl version", "helm version -c", "faas-cli version"}
+	} else if plan.Orchestration == OrchestrationSwarm {
+		tools = []string{"docker node ls", "openssl version", "faas-cli version"}
 	}
 
 	validateToolsErr := validateTools(tools)
@@ -172,7 +174,7 @@ func process(plan types.Plan) error {
 			log.Println(installIngressErr.Error())
 		}
 
-		createSecrets(plan)
+		createK8sSecrets(plan)
 
 		minioErr := installMinio()
 		if minioErr != nil {
@@ -251,6 +253,9 @@ func process(plan types.Plan) error {
 		if (deployErr) != nil {
 			return deployErr
 		}
+	} else if plan.Orchestration == OrchestrationSwarm {
+
+		createSwarmSecrets(plan)
 	}
 
 	return nil
@@ -445,30 +450,39 @@ func createNamespaces() error {
 	return nil
 }
 
-func createSecrets(plan types.Plan) error {
-
+func createK8sSecrets(plan types.Plan) error {
 	for _, secret := range plan.Secrets {
 		fmt.Printf("Creating secret: %s\n", secret.Name)
-
-		var command execute.ExecTask
-		if plan.Orchestration == OrchestrationK8s {
-			command = execute.ExecTask{
-				Command: types.CreateK8sSecret(secret),
-				Shell:   false,
-			}
-		} else if plan.Orchestration == OrchestrationSwarm {
-			command = execute.ExecTask{Command: types.CreateDockerSecret(secret)}
+		command := execute.ExecTask{
+			Command: types.CreateK8sSecret(secret),
+			Shell:   false,
 		}
-
 		res, err := command.Execute()
-
 		if err != nil {
 			log.Println(err)
 		}
 
 		fmt.Println(res)
 	}
+	return nil
+}
 
+func createSwarmSecrets(plan types.Plan) error {
+	for _, secret := range plan.SwarmSecret {
+		fmt.Printf("Creating secret: %s\n", secret.Name)
+		cmd, inp := types.CreateDockerSecret(secret)
+		command := execute.ExecTask{
+			Command: cmd,
+			Shell:   false,
+			Input:   inp,
+		}
+		res, err := command.Execute()
+		if err != nil {
+			log.Println(err)
+		}
+
+		fmt.Println(res)
+	}
 	return nil
 }
 

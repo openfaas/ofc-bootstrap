@@ -8,6 +8,7 @@ import (
 type Plan struct {
 	Orchestration string                   `yaml:"orchestration"`
 	Secrets       []KeyValueNamespaceTuple `yaml:"secrets"`
+	SwarmSecret   []DockerSecret           `yaml:"swarm-secrets"`
 	RootDomain    string                   `yaml:"root_domain"`
 	Registry      string                   `yaml:"registry"`
 	CustomersURL  string                   `yaml:"customers_url"`
@@ -76,4 +77,10 @@ type TLSConfig struct {
 	IssuerType  string `yaml:"issuer_type"`
 	Region      string `yaml:"region"`
 	AccessKeyID string `yaml:"access_key_id"`
+}
+
+type DockerSecret struct {
+	Name  string     `yaml:"name"`
+	Value string     `yaml:"value"`
+	File  FileSecret `yaml:"file"`
 }

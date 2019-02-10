@@ -9,14 +9,35 @@ import (
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/execute"
 )
 
-func CreateDockerSecret(kvn KeyValueNamespaceTuple) string {
+func CreateDockerSecret(sec DockerSecret) (string, string) {
+	secretCmd := "docker secret create %s %s"
+
+	if len(sec.File.ValueCommand) > 0 {
+		task := execute.ExecTask{
+			Command: sec.File.ValueCommand,
+		}
+		_, err := task.Execute()
+
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	if len(sec.File.ValueFrom) > 0 {
+		return fmt.Sprintf(secretCmd, sec.Name, sec.File.ExpandValueFrom()), ""
+	}
+
+	if len(sec.Value) > 0 {
+		return fmt.Sprintf(secretCmd, sec.Name, "-"), sec.Value
+	}
+
 	val, err := generateSecret()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	return fmt.Sprintf("echo %s | docker secret create %s", val, kvn.Name)
+	return fmt.Sprintf(secretCmd, sec.Name, "-"), val
 }
 
 func CreateK8sSecret(kvn KeyValueNamespaceTuple) string {

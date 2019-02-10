@@ -12,6 +12,7 @@ type ExecTask struct {
 	Command string
 	Shell   bool
 	Env     []string
+	Input   string
 }
 
 type ExecResult struct {
@@ -32,7 +33,6 @@ func (et ExecTask) Execute() (ExecResult, error) {
 			args = append(args, part)
 		}
 		args = append(args)
-
 		cmd = exec.Command("/bin/bash", args...)
 	} else {
 		if strings.Index(et.Command, " ") > 0 {
@@ -61,6 +61,15 @@ func (et ExecTask) Execute() (ExecResult, error) {
 	stderrPipe, stderrPipeErr := cmd.StderrPipe()
 	if stderrPipeErr != nil {
 		return ExecResult{}, stderrPipeErr
+	}
+
+	if et.Input != "" {
+		stdin, stdinPipeErr := cmd.StdinPipe()
+		if stdinPipeErr != nil {
+			return ExecResult{}, stdinPipeErr
+		}
+		stdin.Write([]byte(et.Input))
+		stdin.Close()
 	}
 
 	startErr := cmd.Start()
