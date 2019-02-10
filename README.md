@@ -44,6 +44,9 @@ ofc-bootstrap
 
 ## Pre-reqs
 
+This tool automates the installation of OpenFaaS Cloud on Kubernetes. It should be set up on a public cloud provider with a managed Kubernetes offering, where a `LoadBalancer` is available.
+If you are deploying to a cloud or Kubernetes cluster where the type `LoadBalancer` is unavailable then you will need to change `ingress: loadbalancer` to `ingress: host` in `init.yaml`. This will provision Nginx as a `DaemonSet` exposed on port `80` and `443`.
+
 * Kubernetes - [development options](https://blog.alexellis.io/be-kind-to-yourself/)
     * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-using-curl)
 * Linux or Mac. Windows if `bash` is available

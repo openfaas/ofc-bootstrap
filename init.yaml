@@ -80,6 +80,13 @@ registry: docker.io/ofctest/
 ### Your root DNS domain name, this can be a sub-domain i.e. staging.o6s.io / prod.o6s.io
 root_domain: "myfaas.club"
 
+## Uncomment if using a host without a loadbalancer
+# ingress: host
+
+## Keep active if using a cluster with a LoadBalancer available.
+ingress: loadbalancer
+
+
 ## Populate from GitHub App
 github:
   app_id: "24304"

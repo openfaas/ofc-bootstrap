@@ -18,6 +18,7 @@ type Plan struct {
 	EnableOAuth   bool                     `yaml:"enable_oauth"`
 	TLSConfig     TLSConfig                `yaml:"tls_config"`
 	Slack         Slack                    `yaml:"slack"`
+	Ingress       string                   `yaml:"ingress"`
 }
 
 type KeyValueTuple struct {

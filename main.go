@@ -167,7 +167,7 @@ func process(plan types.Plan) error {
 			log.Println(err.Error())
 		}
 
-		installIngressErr := installIngressController()
+		installIngressErr := installIngressController(plan.Ingress)
 		if installIngressErr != nil {
 			log.Println(installIngressErr.Error())
 		}
@@ -329,12 +329,19 @@ func createFunctionsAuth() error {
 	return nil
 }
 
-func installIngressController() error {
+func installIngressController(ingress string) error {
 	log.Println("Creating Ingress Controller")
+
+	env := os.Environ()
+
+	if ingress == "host" {
+		env = append(os.Environ(), "ADDITIONAL_SET=,controller.hostNetwork=true,controller.daemonset.useHostPort=true,dnsPolicy=ClusterFirstWithHostNet,controller.kind=DaemonSet")
+	}
 
 	task := execute.ExecTask{
 		Command: "scripts/install-nginx.sh",
 		Shell:   true,
+		Env:     env,
 	}
 
 	res, err := task.Execute()
