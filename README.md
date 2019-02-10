@@ -1,8 +1,16 @@
 ofc-bootstrap
 
-"one-click" CLI to install OpenFaaS Cloud on Kubernetes
+### What is this and who is it for?
 
-## Goals for initial release
+> "one-click" CLI to install OpenFaaS Cloud on Kubernetes
+
+You can use this tool to configure a Kubernetes cluster with OpenFaaS Cloud. You just need to complete all the pre-requisites and fill out your init.yaml file then run the tool. It automates several pages of manual steps into a few scripts and Golang templates.
+
+This tool is for anyone who has an intermediate to advanced knowledge of and experience with Kubernetes.
+
+## Roadmap
+
+### Goals for initial release
 
 * Install OpenFaaS and Install OpenFaaS Cloud with a single command
 * Mirror features and config of OpenFaaS Cloud Community Cluster
@@ -14,25 +22,25 @@ ofc-bootstrap
 * Build a config file for the current OpenFaaS Cloud Community Cluster
 * Light-weight unit-testing
 
-## Goals for 1.0
+### Goals for 1.0
 
 * Publish a static binary on GitHub Releases for `ofc-bootstrap` tool
 * Use GitLab for as SCM (the source for git)
 * Implement a back-end for Swarm in addition to the Kubernetes support.
 * Allow namespaces to be overriden from `openfaas`/`openfaas-fn` to something else
 
-## Goals for 2.0
+### Goals for 2.0
 
 * Build a suitable dev environment for local work (without Ingress, TLS)
 * Add version number to YAML file i.e `1.0` to enable versioning/migration of configs
 * Move code into official CLI via `faas-cli system install openfaas-cloud`
 * Separate out the OpenFaaS installation for the official CLI `faas-cli system install --kubernetes/--swarm`
 
-## Stretch goals
+### Stretch goals
 
 * Automatic configuration of DNS Zones in GKE / AWS Route 53
 
-## Non-goals
+### Non-goals
 
 * Deep / extensive / complicated unit-tests
 * Create a Docker image / run in Docker
@@ -42,7 +50,11 @@ ofc-bootstrap
 * Re-run without clean-up (i.e. no updates to config)
 * go modules (`dep` is fine, let's add features instead)
 
-## Pre-reqs
+## Get started
+
+To run a production-quality OpenFaaS Cloud then execute `ofc-bootstrap` with a kubeconfig pointing to a remote Kubernetes service. For development and testing you can use the instructions below with `kind`. The `kind` distribution of Kubernetes does not require anything on your host other than Docker.
+
+### Pre-reqs
 
 This tool automates the installation of OpenFaaS Cloud on Kubernetes. It should be set up on a public cloud provider with a managed Kubernetes offering, where a `LoadBalancer` is available.
 If you are deploying to a cloud or Kubernetes cluster where the type `LoadBalancer` is unavailable then you will need to change `ingress: loadbalancer` to `ingress: host` in `init.yaml`. This will provision Nginx as a `DaemonSet` exposed on port `80` and `443`.
@@ -63,11 +75,6 @@ kubectl create clusterrolebinding "cluster-admin-$(whoami)" \
     --clusterrole=cluster-admin \
     --user="$(gcloud config get-value core/account)"
 ```
-
-## Getting started
-
-You can run ofc-bootsrap against a remote Kubernetes cluster. The instructions below use `kind` or Kubernetes in Docker to test out the instructions on your local Docker daemon.
-
 
 ### Get the code:
 
