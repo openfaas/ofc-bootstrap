@@ -256,6 +256,21 @@ func process(plan types.Plan) error {
 	} else if plan.Orchestration == OrchestrationSwarm {
 
 		createSwarmSecrets(plan)
+
+		faasCloneErr := cloneFaas()
+		if faasCloneErr != nil {
+			return faasCloneErr
+		}
+
+		ofErr := installOpenfaasSwarm()
+		if ofErr != nil {
+			log.Println(ofErr)
+		}
+
+		minioErr := installMinioSwarm()
+		if minioErr != nil {
+			log.Println(minioErr)
+		}
 	}
 
 	return nil
@@ -392,11 +407,50 @@ func installOpenfaas() error {
 	return nil
 }
 
+func installOpenfaasSwarm() error {
+	log.Println("Creating Openfaas")
+
+	task := execute.ExecTask{
+		Command: "scripts/swarm/install-openfaas.sh",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+
+	if err != nil {
+		return err
+	}
+
+	log.Println(res.ExitCode, res.Stdout, res.Stderr)
+
+	return nil
+}
+
 func installMinio() error {
 	log.Println("Creating Minio")
 
 	task := execute.ExecTask{
 		Command: "scripts/install-minio.sh",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+
+	if err != nil {
+		return err
+	}
+
+	log.Println(res.Stdout)
+	log.Println(res.Stderr)
+
+	return nil
+}
+
+func installMinioSwarm() error {
+	log.Println("Creating Minio")
+
+	task := execute.ExecTask{
+		Command: "scripts/swarm/install-minio.sh",
 		Shell:   true,
 	}
 
@@ -536,6 +590,22 @@ func tillerReady() bool {
 func cloneCloudComponents() error {
 	task := execute.ExecTask{
 		Command: "./scripts/clone-cloud-components.sh",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(res)
+
+	return nil
+}
+
+func cloneFaas() error {
+	task := execute.ExecTask{
+		Command: "./scripts/swarm/clone-openfaas-faas.sh",
 		Shell:   true,
 	}
 
