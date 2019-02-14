@@ -1,9 +1,9 @@
 environment:
   validate_hmac: "1"
 # URLs
-  gateway_url:  http://gateway.openfaas:8080/
+  gateway_url:  http://gateway{{.URLSuffix}}:8080/
   gateway_public_url: {{.Scheme}}://cloud.{{.RootDomain}}/
-  audit_url: http://gateway.openfaas:8080/function/audit-event
+  audit_url: http://gateway{{.URLSuffix}}:8080/function/audit-event
   # Remove gateway_pretty_url if not using pretty URL
   gateway_pretty_url: {{.Scheme}}://user.{{.RootDomain}}/function
   # Add your custom templates by adding a coma separated URL, i.e. extend the current value with:
@@ -18,7 +18,7 @@ environment:
 # Container builder
   repository_url: {{.Registry}}
   push_repository_url: {{.Registry}}
-  builder_url: http://of-builder.openfaas:8080/
+  builder_url: http://of-builder{{.URLSuffix}}:8080/
 
 # Logging
   s3_url: {{.S3.Url}}
@@ -30,6 +30,6 @@ environment:
   readonly_root_filesystem: true
   scaling_min_limit: 1
   scaling_max_limit: 4
-  prometheus_host: prometheus.openfaas
+  prometheus_host: prometheus{{.URLSuffix}}
   prometheus_port: 9090
   metrics_window: 60m

@@ -1,7 +1,7 @@
 environment:
   write_debug: true
   # gateway_url: http://gateway:8080/ # when using Swarm
-  gateway_url: http://gateway.openfaas:8080/
+  gateway_url: http://gateway{{.URLSuffix}}:8080/
   # base_href: `/function/system-dashboard/` # if not using router
   base_href: '/dashboard/'
   # public_url: http://laptop-ip:8080/ # use IP of laptop or remote machine, do not use localhost/127.0.0.1

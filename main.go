@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/openfaas-incubator/ofc-bootstrap/pkg/constants"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/execute"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/ingress"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/stack"
@@ -24,10 +25,10 @@ type Vars struct {
 
 const (
 	// OrchestrationK8s uses Kubernetes
-	OrchestrationK8s = "kubernetes"
+	OrchestrationK8s = constants.OrchestrationK8s
 
 	// OrchestrationSwarm uses Docker Swarm
-	OrchestrationSwarm = "swarm"
+	OrchestrationSwarm = constants.OrchestrationSwarm
 )
 
 func taskGivesStdout(tool string) error {
@@ -138,12 +139,6 @@ func process(plan types.Plan) error {
 
 	if plan.Orchestration == OrchestrationK8s {
 		fmt.Println("Orchestration: Kubernetes")
-	} else if plan.Orchestration == OrchestrationSwarm {
-		fmt.Println("Orchestration: Swarm")
-	}
-
-	if plan.Orchestration == OrchestrationK8s {
-
 		nsErr := createNamespaces()
 		if nsErr != nil {
 			log.Println(nsErr)
@@ -253,8 +248,11 @@ func process(plan types.Plan) error {
 		if (deployErr) != nil {
 			return deployErr
 		}
-	} else if plan.Orchestration == OrchestrationSwarm {
+	}
 
+	if plan.Orchestration == OrchestrationSwarm {
+
+		fmt.Println("Orchestration: Swarm")
 		createSwarmSecrets(plan)
 
 		faasCloneErr := cloneFaas()
@@ -270,6 +268,11 @@ func process(plan types.Plan) error {
 		minioErr := installMinioSwarm()
 		if minioErr != nil {
 			log.Println(minioErr)
+		}
+
+		planErr := stack.Apply(plan)
+		if planErr != nil {
+			log.Println(planErr)
 		}
 	}
 

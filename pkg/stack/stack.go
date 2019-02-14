@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/openfaas-incubator/ofc-bootstrap/pkg/constants"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 )
 
@@ -15,6 +16,7 @@ type gatewayConfig struct {
 	CustomersURL string
 	Scheme       string
 	S3           types.S3
+	URLSuffix    string
 }
 
 type authConfig struct {
@@ -26,6 +28,11 @@ type authConfig struct {
 
 // Apply creates `templates/gateway_config.yml` to be referenced by stack.yml
 func Apply(plan types.Plan) error {
+	URLSuffix := ".openfaas"
+	if plan.Orchestration == constants.OrchestrationSwarm {
+		URLSuffix = ""
+	}
+
 	scheme := "http"
 	if plan.TLS {
 		scheme += "s"
@@ -37,6 +44,7 @@ func Apply(plan types.Plan) error {
 		CustomersURL: plan.CustomersURL,
 		Scheme:       scheme,
 		S3:           plan.S3,
+		URLSuffix:    URLSuffix,
 	})
 	if gwConfigErr != nil {
 		return gwConfigErr
@@ -57,7 +65,9 @@ func Apply(plan types.Plan) error {
 	}
 
 	dashboardConfigErr := generateTemplate("dashboard_config", plan, gatewayConfig{
-		RootDomain: plan.RootDomain, Scheme: scheme,
+		RootDomain: plan.RootDomain,
+		Scheme:     scheme,
+		URLSuffix:  URLSuffix,
 	})
 	if dashboardConfigErr != nil {
 		return dashboardConfigErr
