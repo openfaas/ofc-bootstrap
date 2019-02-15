@@ -1,7 +1,7 @@
 #!/bin/bash
 ./scripts/reset-kind.sh
 export KUBECONFIG="$(kind get kubeconfig-path --name="1")"
-go buiild
+go build
 
 # Fake the secrets from init.yaml
 
