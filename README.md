@@ -95,6 +95,8 @@ export KUBECONFIG=$(kind get kubeconfig-path --name 1)
 
 ### Update `init.yaml`
 
+First run `cp example.init.yaml init.yaml` to get your own example `init.yaml` file.
+
 * Open the Docker for Mac/Windows settings and uncheck "store my password securely" / "in a keychain"
 * Run `docker login` to populate `~/.docker/config.json` - this will be used to configure your Docker registry or Docker Hub account for functions.
 * Create a GitHub App and download the private key file

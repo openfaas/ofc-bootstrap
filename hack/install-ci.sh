@@ -20,4 +20,3 @@ sudo apt-get install -y kubectl
 curl -sLSf https://raw.githubusercontent.com/helm/helm/master/scripts/get | sudo bash
 
 go get sigs.k8s.io/kind
-
