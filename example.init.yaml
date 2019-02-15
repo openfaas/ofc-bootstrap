@@ -66,7 +66,20 @@ secrets:
         value_from: "~/Downloads/do-access-token"
     namespace: "cert-manager"
 
-### User input
+  ## Use Google Cloud DNS	
+  # - name: "clouddns-service-account"	
+  #   files:	
+  #     - name: "service-account.json"	
+  #       value_from: "~/Downloads/service-account.json"	
+  #   namespace: "cert-manager"	
+
+  ## Use Route 53
+  # - name: "route53-credentials-secret"	
+  #   files:	
+  #     - name: "secret-access-key"	
+  #       value_from: "~/Downloads/route53-secret-access-key"	
+  #   namespace: "cert-manager"
+
   - name: "registry-secret"
     files:
       - name: "config.json"
@@ -74,7 +87,9 @@ secrets:
     namespace: "openfaas"
 
 
-#### Acount or registry and user for your cluster's Docker images for functions
+### Docker registry	
+#### This can be any cluster accessible by your cluster. To populate the file	
+#### run `docker login` with "store in keychain" turned off in Docker Desktop.
 registry: docker.io/ofctest/
 
 ### Your root DNS domain name, this can be a sub-domain i.e. staging.o6s.io / prod.o6s.io
@@ -100,6 +115,7 @@ slack:
   url: http://gateway.openfaas:8080/function/echo
 
 ### Users allowed to access your OpenFaaS Cloud
+#### ACL for your users, it must be a raw text file or GitHub RAW URL	
 customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master/CUSTOMERS"
 
 ##  S3 configuration
@@ -119,10 +135,25 @@ enable_oauth: false
 ## TLS
 tls: false
 tls_config:
-  issuer_type: "prod"
+  # issuer_type: "prod"
 
-  # issuer_type: "staging"
-  email: "alexellis2@gmail.com"
+  issuer_type: "staging"
+  email: "your@email.com"
+
+
+  ## Select DNS web service between Amazon Route 53 (route53) and Google Cloud DNS (clouddns)	
+  # by uncommenting the required option	
 
   ### DigitalOcean
   dns_service: digitalocean
+
+
+  ### Google Cloud DNS	
+  # dns_service: clouddns	
+  # project_id: "my-openfaas-cloud"
+
+  ### AWS Route53
+  # dns_service: route53
+  # region: us-east-1
+  # access_key_id: ASYAKIUJE8AYRQQ7DU3M
+
