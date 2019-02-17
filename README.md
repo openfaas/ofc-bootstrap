@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/openfaas-incubator/ofc-bootstrap.svg?branch=master)](https://travis-ci.org/openfaas-incubator/ofc-bootstrap)
 ofc-bootstrap
 
 ### What is this and who is it for?
