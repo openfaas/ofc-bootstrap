@@ -22,6 +22,7 @@ if [ "$ENABLE_OAUTH" = "true" ] ; then
     -e public_key_path=/run/secrets/jwt-public-key \
     -e private_key_path=/run/secrets/jwt-private-key \
     -e oauth_provider="github" \
+    --network func_functions \
     --secret jwt-private-key \
     --secret jwt-public-key \
     --secret of-client-secret \
