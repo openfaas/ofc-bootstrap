@@ -274,6 +274,16 @@ func process(plan types.Plan) error {
 		if planErr != nil {
 			log.Println(planErr)
 		}
+
+		cloneErr := cloneCloudComponents()
+		if cloneErr != nil {
+			return cloneErr
+		}
+
+		deployErr := deployCloudComponentsSwarm(plan)
+		if deployErr != nil {
+			return deployErr
+		}
 	}
 
 	return nil
@@ -632,6 +642,28 @@ func deployCloudComponents(plan types.Plan) error {
 		Command: "./scripts/deploy-cloud-components.sh",
 		Shell:   true,
 		Env:     []string{env},
+	}
+
+	res, err := task.Execute()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(res)
+
+	return nil
+}
+
+func deployCloudComponentsSwarm(plan types.Plan) error {
+	env := make([]string, 0)
+	if plan.EnableOAuth {
+		env = append(env, "ENABLE_OAUTH=true", "CLIENT_ID="+plan.OAuth.ClientId, "DOMAIN="+plan.RootDomain)
+	}
+
+	task := execute.ExecTask{
+		Command: "./scripts/swarm/deploy-cloud-components.sh",
+		Shell:   true,
+		Env:     env,
 	}
 
 	res, err := task.Execute()
