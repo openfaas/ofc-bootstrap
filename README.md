@@ -100,6 +100,7 @@ First run `cp example.init.yaml init.yaml` to get your own example `init.yaml` f
 * Open the Docker for Mac/Windows settings and uncheck "store my password securely" / "in a keychain"
 * Run `docker login` to populate `~/.docker/config.json` - this will be used to configure your Docker registry or Docker Hub account for functions.
 * Create a GitHub App and download the private key file
+  * Read the docs for how to [configure your GitHub App](https://docs.openfaas.com/openfaas-cloud/self-hosted/github/)
 * If your username is not part of the default CUSTOMERS file for OpenFaaS then you should point to your own plaintext file - make sure you use the GitHub Raw CDN URL for this
 * Update `init.yaml` where you see the `### User-input` section including your GitHub App's ID and the path to its private key
 
