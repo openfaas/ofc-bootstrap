@@ -44,15 +44,6 @@ swarm-secrets:
   - name: of-client-secret
     value: "79163355e553b477957d977b0b8addd3c42ff52d"
 
-  # DNS Service Account secret
-
-  # ## Use DigitalOcean
-  # - name: "digitalocean-dns"
-  #   files:
-  #     - name: "access-token"
-  #       value_from: "~/Downloads/do-access-token"
-  #   namespace: "cert-manager"
-
 ### User input
   - name: "registry-secret"
     file:
@@ -84,7 +75,7 @@ customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master
 ### Build logs from buildkit are stored in S3
 ### Defaults to in-cluster deployment of Minio. AWS S3 is also possible
 s3:
-  s3_url: cloud-minio.openfaas.svc.cluster.local:9000
+  s3_url: minio:9000
   s3_region: us-east-1
   s3_tls: false
   s3_bucket: pipeline
@@ -92,7 +83,7 @@ s3:
 ## Enable auth:
 ### When enabled users must log in with a valid GitHub account and be present in the
 ### customers file to view any dashboard
-enable_oauth: false
+enable_oauth: true
 
 ## TLS
 # tls: false
