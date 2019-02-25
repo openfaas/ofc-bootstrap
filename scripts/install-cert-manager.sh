@@ -6,5 +6,5 @@ kubectl apply \
 helm install \
     --name cert-manager \
     --namespace cert-manager \
-    --version v0.6.0 \
+    --version v0.6.6 \
     stable/cert-manager
