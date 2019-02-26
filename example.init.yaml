@@ -43,7 +43,7 @@ secrets:
   - name: "github-webhook-secret"
     literals:
       - name: "github-webhook-secret"
-        value: "secret"
+        value: ""
     namespace: "openfaas-fn"
   # Download from GitHub App on GitHub UI
   - name: "private-key"
