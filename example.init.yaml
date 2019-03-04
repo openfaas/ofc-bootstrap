@@ -5,13 +5,13 @@ secrets:
     literals:
       - name: s3-secret-key
     filters:
-      - "s3"
+      - "default"
     namespace: "openfaas-fn"
   - name: s3-access-key
     literals:
       - name: s3-access-key
     filters:
-      - "s3"
+      - "default"
     namespace: "openfaas-fn"
   - name: basic-auth
     literals:
@@ -27,7 +27,7 @@ secrets:
       - name: payload-secret
         value: ""
     filters:
-      - "internal_trust"
+      - "default"
     namespace: "openfaas"
   - name: "jwt-private-key"
     files:
@@ -75,7 +75,9 @@ secrets:
     filters:
       - "auth"
     namespace: "openfaas"
+  # DNS Service Account secret
 
+  ## Use DigitalOcean
   - name: "digitalocean-dns"
     files:
       - name: "access-token"
@@ -84,6 +86,7 @@ secrets:
       - "do_dns01"
     namespace: "cert-manager"
 
+  ## Use Google Cloud DNS
   - name: "clouddns-service-account"
     files:
       - name: "service-account.json"
@@ -92,6 +95,7 @@ secrets:
       - "gcp_dns01"
     namespace: "cert-manager"
 
+  ## Use Route 53
   - name: "route53-credentials-secret"
     files:
       - name: "secret-access-key"
@@ -119,7 +123,7 @@ secrets:
 ### Docker registry
 #### This can be any cluster accessible by your cluster. To populate the file
 #### run `docker login` with "store in keychain" turned off in Docker Desktop.
-#registry: docker.io/ofctest/
+registry: docker.io/ofctest/
 
 ### Your root DNS domain name, this can be a sub-domain i.e. staging.o6s.io / prod.o6s.io
 root_domain: "myfaas.club"
@@ -149,11 +153,11 @@ customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master
 ##  S3 configuration
 ### Build logs from buildkit are stored in S3
 ### Defaults to in-cluster deployment of Minio. AWS S3 is also possible
-#s3:
-#  s3_url: cloud-minio.openfaas.svc.cluster.local:9000
-#  s3_region: us-east-1
-#  s3_tls: false
-#  s3_bucket: pipeline
+s3:
+  s3_url: cloud-minio.openfaas.svc.cluster.local:9000
+  s3_region: us-east-1
+  s3_tls: false
+  s3_bucket: pipeline
 
 ## Enable auth:
 ### When enabled users must log in with a valid GitHub account and be present in the
@@ -183,10 +187,4 @@ tls_config:
 
 ##  Gateway configuration
 ### Basic authentication is turned on by default so if you did not explicitly disabled it
-### keep this as is
 basic_auth: true
-
-##  Internal trust
-### This is security feature which is enabled by default for OFC to ensure that only functions
-### inside your OFC instance can call eachother
-internal_trust: true
