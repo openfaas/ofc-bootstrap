@@ -85,6 +85,12 @@ secrets:
       - name: "config.json"
         value_from: "~/.docker/config.json"
     namespace: "openfaas"
+  - name: "registry-secret"
+    files:
+      - name: ".dockerconfigjson"
+        value_from: "~/.docker/config.json"
+    namespace: "openfaas-fn"
+    type: "kubernetes.io/dockerconfigjson"
 
 
 ### Docker registry	

@@ -174,6 +174,11 @@ func process(plan types.Plan) error {
 
 		createSecrets(plan)
 
+		saErr := patchFnServiceaccount()
+		if saErr != nil {
+			log.Println(saErr)
+		}
+
 		minioErr := installMinio()
 		if minioErr != nil {
 			log.Println(minioErr)
@@ -399,6 +404,26 @@ func installMinio() error {
 
 	task := execute.ExecTask{
 		Command: "scripts/install-minio.sh",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+
+	if err != nil {
+		return err
+	}
+
+	log.Println(res.Stdout)
+	log.Println(res.Stderr)
+
+	return nil
+}
+
+func patchFnServiceaccount() error {
+	log.Println("Patching openfaas-fn serviceaccount for pull secrets")
+
+	task := execute.ExecTask{
+		Command: "scripts/patch-fn-serviceaccount.sh",
 		Shell:   true,
 	}
 
