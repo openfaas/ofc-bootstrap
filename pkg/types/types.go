@@ -48,6 +48,7 @@ type KeyValueNamespaceTuple struct {
 	Literals  []KeyValueTuple `yaml:"literals"`
 	Namespace string          `yaml:"namespace"`
 	Files     []FileSecret    `yaml:"files"`
+	Type      string          `yaml:"type"`
 }
 
 type Github struct {

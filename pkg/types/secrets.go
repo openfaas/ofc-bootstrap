@@ -22,6 +22,10 @@ func CreateDockerSecret(kvn KeyValueNamespaceTuple) string {
 func CreateK8sSecret(kvn KeyValueNamespaceTuple) string {
 	secretCmd := fmt.Sprintf("kubectl create secret generic -n %s %s", kvn.Namespace, kvn.Name)
 
+	if len(kvn.Type) != 0 {
+		secretCmd = fmt.Sprintf("%s --type=%s", secretCmd, kvn.Type)
+	}
+
 	for _, key := range kvn.Literals {
 		secretValue := key.Value
 		if len(secretValue) == 0 {
@@ -34,6 +38,7 @@ func CreateK8sSecret(kvn KeyValueNamespaceTuple) string {
 		}
 
 		secretCmd = fmt.Sprintf(`%s --from-literal=%s=%s`, secretCmd, key.Name, secretValue)
+
 	}
 
 	for _, file := range kvn.Files {
