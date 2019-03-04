@@ -57,11 +57,17 @@ func validateTools(tools []string) error {
 
 func validatePlan(plan types.Plan) error {
 	for _, secret := range plan.Secrets {
-		if len(secret.Files) > 0 {
-			for _, file := range secret.Files {
-				if len(file.ValueCommand) == 0 {
-					if _, err := os.Stat(file.ExpandValueFrom()); err != nil {
-						return err
+		if featureEnabled(plan.Features, secret.Filters) {
+			for _, feature := range secret.Filters {
+				fmt.Printf("Filter: %s\n", feature)
+			}
+			fmt.Println()
+			if len(secret.Files) > 0 {
+				for _, file := range secret.Files {
+					if len(file.ValueCommand) == 0 {
+						if _, err := os.Stat(file.ExpandValueFrom()); err != nil {
+							return err
+						}
 					}
 				}
 			}
@@ -95,6 +101,8 @@ func main() {
 		fmt.Fprintf(os.Stderr, "-yaml file gave error: %s\n", unmarshalErr.Error())
 		os.Exit(1)
 	}
+
+	plan = filterFeatures(plan)
 
 	log.Println("Validating tools available in PATH")
 
@@ -589,13 +597,57 @@ func deployCloudComponents(plan types.Plan) error {
 
 	return nil
 }
+
 func featureEnabled(features []string, secretFeatures []string) bool {
-	for feature := range features {
-		for secretFeature := range secretFeatures {
+	for _, feature := range features {
+		for _, secretFeature := range secretFeatures {
 			if feature == secretFeature {
 				return true
 			}
 		}
 	}
 	return false
+}
+
+func filterFeatures(plan types.Plan) types.Plan {
+	if (plan.S3 != types.S3{}) {
+		plan.Features = append(plan.Features, types.S3Bucket)
+	}
+
+	if (plan.Github != types.Github{}) {
+		plan.Features = append(plan.Features, types.GitHub)
+	}
+
+	if plan.TLS == true {
+		plan = filterDNSFeature(plan)
+	}
+
+	if plan.EnableOAuth == true {
+		plan.Features = append(plan.Features, types.Auth)
+	}
+
+	if plan.InternalTrust == true {
+		plan.Features = append(plan.Features, types.InternalTrust)
+	}
+	if plan.BasicAuth == true {
+		plan.Features = append(plan.Features, types.BasicAuth)
+	}
+
+	if plan.Registry != "" {
+		plan.Features = append(plan.Features, types.Registry)
+	}
+	return plan
+}
+
+func filterDNSFeature(plan types.Plan) types.Plan {
+	if plan.TLSConfig.DNSService == types.DigitalOcean {
+		plan.Features = append(plan.Features, types.DODNS)
+	}
+	if plan.TLSConfig.DNSService == types.CloudDns {
+		plan.Features = append(plan.Features, types.GCPDNS)
+	}
+	if plan.TLSConfig.DNSService == types.Route53 {
+		plan.Features = append(plan.Features, types.Route53DNS)
+	}
+	return plan
 }

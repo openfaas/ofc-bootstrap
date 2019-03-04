@@ -1,13 +1,3 @@
-features:
-  - "basic-auth"
-  - "scm-github"
-  - "jwt"
-  - "s3"
-  - "internal-trust"
-  - "auth"
-  - "registry"
-  - "do_dns01"
-
 orchestration: kubernetes
 secrets:
   ### Generated secrets (do not edit)
@@ -30,14 +20,14 @@ secrets:
       - name: basic-auth-password
         value: ""
     filters:
-      - "basic-auth"
+      - "basic_auth"
     namespace: "openfaas"
   - name: "payload-secret"
     literals:
       - name: payload-secret
         value: ""
     filters:
-      - "internal-trust"
+      - "internal_trust"
     namespace: "openfaas"
   - name: "jwt-private-key"
     files:
@@ -45,7 +35,7 @@ secrets:
         value_from: "./tmp/key"
         value_command: "openssl ecparam -genkey -name prime256v1 -noout -out ./tmp/key"
     filters:
-      - "jwt"
+      - "auth"
     namespace: "openfaas"
   - name: "jwt-public-key"
     files:
@@ -53,7 +43,7 @@ secrets:
         value_from: "./tmp/key.pub"
         value_command: "openssl ec -in ./tmp/key -pubout -out ./tmp/key.pub"
     filters:
-      - "jwt"
+      - "auth"
     namespace: "openfaas"
 
   ### User-input
@@ -85,9 +75,7 @@ secrets:
     filters:
       - "auth"
     namespace: "openfaas"
-  # DNS Service Account secret
 
-  ## Use DigitalOcean
   - name: "digitalocean-dns"
     files:
       - name: "access-token"
@@ -96,19 +84,21 @@ secrets:
       - "do_dns01"
     namespace: "cert-manager"
 
-  ## Use Google Cloud DNS
-  # - name: "clouddns-service-account"
-  #   files:
-  #     - name: "service-account.json"
-  #       value_from: "~/Downloads/service-account.json"
-  #   namespace: "cert-manager"
+  - name: "clouddns-service-account"
+    files:
+      - name: "service-account.json"
+        value_from: "~/Downloads/service-account.json"
+    filters:
+      - "gcp_dns01"
+    namespace: "cert-manager"
 
-  ## Use Route 53
-  # - name: "route53-credentials-secret"
-  #   files:
-  #     - name: "secret-access-key"
-  #       value_from: "~/Downloads/route53-secret-access-key"
-  #   namespace: "cert-manager"
+  - name: "route53-credentials-secret"
+    files:
+      - name: "secret-access-key"
+        value_from: "~/Downloads/route53-secret-access-key"
+    filters:
+      - "route53_dns01"
+    namespace: "cert-manager"
 
   # Used by Buildkit to push images to your registry
   - name: "registry-secret"
@@ -129,7 +119,7 @@ secrets:
 ### Docker registry
 #### This can be any cluster accessible by your cluster. To populate the file
 #### run `docker login` with "store in keychain" turned off in Docker Desktop.
-registry: docker.io/ofctest/
+#registry: docker.io/ofctest/
 
 ### Your root DNS domain name, this can be a sub-domain i.e. staging.o6s.io / prod.o6s.io
 root_domain: "myfaas.club"
@@ -159,11 +149,11 @@ customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master
 ##  S3 configuration
 ### Build logs from buildkit are stored in S3
 ### Defaults to in-cluster deployment of Minio. AWS S3 is also possible
-s3:
-  s3_url: cloud-minio.openfaas.svc.cluster.local:9000
-  s3_region: us-east-1
-  s3_tls: false
-  s3_bucket: pipeline
+#s3:
+#  s3_url: cloud-minio.openfaas.svc.cluster.local:9000
+#  s3_region: us-east-1
+#  s3_tls: false
+#  s3_bucket: pipeline
 
 ## Enable auth:
 ### When enabled users must log in with a valid GitHub account and be present in the
@@ -190,3 +180,13 @@ tls_config:
   # dns_service: route53
   # region: us-east-1
   # access_key_id: ASYAKIUJE8AYRQQ7DU3M
+
+##  Gateway configuration
+### Basic authentication is turned on by default so if you did not explicitly disabled it
+### keep this as is
+basic_auth: true
+
+##  Internal trust
+### This is security feature which is enabled by default for OFC to ensure that only functions
+### inside your OFC instance can call eachother
+internal_trust: true
