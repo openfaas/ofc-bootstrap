@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	// InternalTrust filter enables creation of payload secret
-	InternalTrust = "internal_trust"
+	// DefaultFeature filter is for the features which are mandatory
+	DefaultFeature = "default"
 	// BasicAuth enables creation of basic-auth secret for OF gateway
 	BasicAuth = "basic_auth"
 	// GitHub filter enables secrets created with the scm_github filter
@@ -51,7 +51,6 @@ type Plan struct {
 	Slack         Slack                    `yaml:"slack"`
 	Ingress       string                   `yaml:"ingress"`
 	BasicAuth     bool                     `yaml:"basic_auth"`
-	InternalTrust bool                     `yaml:"internal_trust"`
 }
 
 type KeyValueTuple struct {

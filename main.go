@@ -58,10 +58,6 @@ func validateTools(tools []string) error {
 func validatePlan(plan types.Plan) error {
 	for _, secret := range plan.Secrets {
 		if featureEnabled(plan.Features, secret.Filters) {
-			for _, feature := range secret.Filters {
-				fmt.Printf("Filter: %s\n", feature)
-			}
-			fmt.Println()
 			if len(secret.Files) > 0 {
 				for _, file := range secret.Files {
 					if len(file.ValueCommand) == 0 {
@@ -610,6 +606,8 @@ func featureEnabled(features []string, secretFeatures []string) bool {
 }
 
 func filterFeatures(plan types.Plan) types.Plan {
+	plan.Features = append(plan.Features, types.DefaultFeature)
+
 	if (plan.S3 != types.S3{}) {
 		plan.Features = append(plan.Features, types.S3Bucket)
 	}
@@ -626,9 +624,6 @@ func filterFeatures(plan types.Plan) types.Plan {
 		plan.Features = append(plan.Features, types.Auth)
 	}
 
-	if plan.InternalTrust == true {
-		plan.Features = append(plan.Features, types.InternalTrust)
-	}
 	if plan.BasicAuth == true {
 		plan.Features = append(plan.Features, types.BasicAuth)
 	}
