@@ -24,7 +24,7 @@ The `ofc-bootstrap` will install the following components:
 
 View a video demo by Alex Ellis running `ofc-bootstrap` in around 100 seconds on DigitalOcean.
 
-![[View video](https://www.youtube.com/watch?v=Sa1VBSfVpK0&t=7s)](https://img.youtube.com/vi/Sa1VBSfVpK0/0.jpg)
+[![View demo](https://img.youtube.com/vi/Sa1VBSfVpK0/0.jpg)](https://www.youtube.com/watch?v=Sa1VBSfVpK0)
 
 ## Roadmap
 
