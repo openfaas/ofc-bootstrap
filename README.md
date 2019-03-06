@@ -5,9 +5,20 @@ ofc-bootstrap
 
 > "one-click" CLI to install OpenFaaS Cloud on Kubernetes
 
-You can use this tool to configure a Kubernetes cluster with OpenFaaS Cloud. You just need to complete all the pre-requisites and fill out your `init.yaml` file then run the tool. It automates several pages of manual steps into a few scripts and Golang templates.
+You can use this tool to configure a Kubernetes cluster with OpenFaaS Cloud. You just need to complete all the pre-requisites and fill out your `init.yaml` file then run the tool. It automates several pages of manual steps using Golang templates and bash scripts so that you can get your own OpenFaaS Cloud in around 1.5 minutes.
 
-This tool is for anyone who has an intermediate to advanced knowledge of and experience with Kubernetes.
+Experience level: intermediate Kubernetes/cloud.
+
+The `ofc-bootstrap` will install the following components:
+
+* OpenFaaS installed with helm
+* Nginx as your IngressController - with rate-limits configured
+* SealedSecrets from Bitnami - store secrets for functions in git
+* cert-manager - provision HTTPS certificates with LetsEncrypt
+* Docker’s buildkit - to building immutable Docker images for each function
+* Authentication/authorization - through OAuth2 delegating to GitHub/GitLab
+* Deep integration into GitHub/GitLab - for updates and commit statuses
+* A personalized dashboard for each user
 
 ## Roadmap
 
@@ -15,7 +26,7 @@ See the [ROADMAP.md](./ROADMAP.md) for features, development status and backlogs
 
 ## Get started
 
-To run a production-quality OpenFaaS Cloud then execute `ofc-bootstrap` with a kubeconfig pointing to a remote Kubernetes service. For development and testing you can use the instructions below with `kind`. The `kind` distribution of Kubernetes does not require anything on your host other than Docker.
+To run a production-quality OpenFaaS Cloud then execute `ofc-bootstrap` with a `kubeconfig` file pointing to a remote Kubernetes service. For development and testing you can use the instructions below with `kind`. The `kind` distribution of Kubernetes does not require anything on your host other than Docker.
 
 ### Pre-reqs
 
