@@ -1,21 +1,22 @@
-[![Build Status](https://travis-ci.org/openfaas-incubator/ofc-bootstrap.svg?branch=master)](https://travis-ci.org/openfaas-incubator/ofc-bootstrap)
-ofc-bootstrap
-
-### What is this and who is it for?
+## ofc-bootstrap
 
 > "one-click" CLI to install OpenFaaS Cloud on Kubernetes
 
-You can use this tool to configure a Kubernetes cluster with OpenFaaS Cloud. You just need to complete all the pre-requisites and fill out your `init.yaml` file then run the tool. It automates several pages of manual steps using Golang templates and bash scripts so that you can get your own OpenFaaS Cloud in around 1.5 minutes.
+[![Build Status](https://travis-ci.org/openfaas-incubator/ofc-bootstrap.svg?branch=master)](https://travis-ci.org/openfaas-incubator/ofc-bootstrap)
 
-Experience level: intermediate Kubernetes/cloud.
+### What is this and who is it for?
+
+You can use this tool to configure a Kubernetes cluster with [OpenFaaS Cloud](https://github.com/openfaas/openfaas-cloud). You just need to complete all the pre-requisites and fill out your `init.yaml` file then run the tool. It automates several pages of manual steps using Golang templates and bash scripts so that you can get your own [OpenFaaS Cloud](https://github.com/openfaas/openfaas-cloud) in around 1.5 minutes.
+
+Experience level: intermediate Kubernetes & cloud.
 
 The `ofc-bootstrap` will install the following components:
 
-* OpenFaaS installed with helm
-* Nginx as your IngressController - with rate-limits configured
-* SealedSecrets from Bitnami - store secrets for functions in git
-* cert-manager - provision HTTPS certificates with LetsEncrypt
-* Docker’s buildkit - to building immutable Docker images for each function
+* [OpenFaaS](https://github.com/openfaas/faas) installed with helm
+* [Nginx as your IngressController](https://github.com/kubernetes/ingress-nginx) - with rate-limits configured
+* [SealedSecrets](https://github.com/bitnami-labs/sealed-secrets) from Bitnami - store secrets for functions in git
+* [cert-manager](https://github.com/jetstack/cert-manager) - provision HTTPS certificates with LetsEncrypt
+* [buildkit from Docker](https://github.com/moby/buildkit) - to building immutable Docker images for each function
 * Authentication/authorization - through OAuth2 delegating to GitHub/GitLab
 * Deep integration into GitHub/GitLab - for updates and commit statuses
 * A personalized dashboard for each user
