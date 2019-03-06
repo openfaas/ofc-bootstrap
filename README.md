@@ -20,22 +20,29 @@ The `ofc-bootstrap` will install the following components:
 * Deep integration into GitHub/GitLab - for updates and commit statuses
 * A personalized dashboard for each user
 
+### Video demo
+
+View a video demo by Alex Ellis running `ofc-bootstrap` in around 100 seconds on DigitalOcean.
+
+![[View video](https://www.youtube.com/watch?v=Sa1VBSfVpK0&t=7s)](https://img.youtube.com/vi/Sa1VBSfVpK0/0.jpg)
+
 ## Roadmap
 
 See the [ROADMAP.md](./ROADMAP.md) for features, development status and backlogs. 
 
-## Get started
+## Installation
 
 To run a production-quality OpenFaaS Cloud then execute `ofc-bootstrap` with a `kubeconfig` file pointing to a remote Kubernetes service. For development and testing you can use the instructions below with `kind`. The `kind` distribution of Kubernetes does not require anything on your host other than Docker.
 
 ### Pre-reqs
 
-This tool automates the installation of OpenFaaS Cloud on Kubernetes. It can be set up on a public cloud provider with a managed Kubernetes offering, where a `LoadBalancer` is available. If you are deploying to a cloud or Kubernetes cluster where the type `LoadBalancer` is unavailable then you will need to change `ingress: loadbalancer` to `ingress: host` in `init.yaml`. This will provision Nginx as a `DaemonSet` exposed on port `80` and `443`.
+This tool automates the installation of OpenFaaS Cloud on Kubernetes. We will now install some required tools and then create either a local or remote cluster.
+
+#### Tools
 
 * Kubernetes - [development options](https://blog.alexellis.io/be-kind-to-yourself/)
     * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-using-curl)
 * Linux or Mac. Windows if `bash` is available
-* [Go 1.10 or newer](https://golang.org/dl/)
 * [dep](https://github.com/golang/dep)
 * [helm](https://docs.helm.sh/using_helm/#installing-helm)
 * [faas-cli](https://github.com/openfaas/faas-cli) `curl -sL https://cli.openfaas.com | sudo sh`
@@ -49,15 +56,19 @@ kubectl create clusterrolebinding "cluster-admin-$(whoami)" \
     --user="$(gcloud config get-value core/account)"
 ```
 
-### Get the code:
+#### Create a cluster
 
-```bash
-git clone https://github.com/alexellis/ofc-bootstrap
-mkdir -p $GOPATH/src/github.com/openfaas-incubator
-mv ofc-bootstrap $GOPATH/src/github.com/openfaas-incubator/
-```
+* Create a production cluster
 
-* Create a temporary cluster with `kind` or similar
+You can create a managed or self-hosted Kubernetes cluster using a Kubernetes engine such as GKE, AWS, DigitalOcean or by using `kubeadm`. Once set up make sure you have set your `KUBECONFIG` and / or `kubectl` tool to point at a the new cluster.
+
+* Create a local cluster for testing
+
+For testing you can create a local cluster using `kind`, `minikube` or Docker Desktop. This is how you can install `kind` to setup a local cluster in a Docker container.
+
+First install [Go 1.10 or newer](https://golang.org/dl/)
+
+Now use `go get` to install `kind` and point your `KUBECONFIG` variable at the new cluster.
 
 ```bash
 go get sigs.k8s.io/kind
@@ -66,16 +77,45 @@ kind create cluster --name 1
 export KUBECONFIG=$(kind get kubeconfig-path --name 1)
 ```
 
-### Update `init.yaml`
+### Get `ofc-bootstrap`
 
-First run `cp example.init.yaml init.yaml` to get your own example `init.yaml` file.
+* Clone the GitHub repo
+
+```bash
+mkdir -p $GOPATH/src/github.com/openfaas-incubator
+cd $GOPATH/src/github.com/openfaas-incubator/
+git clone https://github.com/openfaas-incubator/ofc-bootstrap
+```
+
+* Download the latest binary release from GitHub
+
+Download [ofc-boostrap](https://github.com/openfaas-incubator/ofc-bootstrap/releases) from the GitHub releases page and move it to `/usr/local/bin/`. You may also need to run `chmod +x /usr/local/bin/ofc-bootstrap`.
+
+### Create your own `init.yaml`
+
+First run `cp example.init.yaml init.yaml` to get your own `init.yaml` file.
+
+Log into your Docker registry or the Docker Hub:
 
 * Open the Docker for Mac/Windows settings and uncheck "store my password securely" / "in a keychain"
 * Run `docker login` to populate `~/.docker/config.json` - this will be used to configure your Docker registry or Docker Hub account for functions.
+
+Setup the GitHub App and OAuth App
+
 * Create a GitHub App and download the private key file
   * Read the docs for how to [configure your GitHub App](https://docs.openfaas.com/openfaas-cloud/self-hosted/github/)
-* If your username is not part of the default CUSTOMERS file for OpenFaaS then you should point to your own plaintext file - make sure you use the GitHub Raw CDN URL for this
-* Update `init.yaml` where you see the `### User-input` section including your GitHub App's ID and the path to its private key
+* Create your GitHub OAuth App which is used for logging in to the dashboard
+  * Update `init.yaml` where you see the `### User-input` section including your GitHub App's ID and the path to its private key
+
+Create your own GitHub repo with a CUSTOMERS ACL file
+
+* Create a new public GitHub repo
+* Add a file named `CUSTOMERS` and place each username or GitHub org you will use on a separate line
+* Add the GitHub RAW CDN URL into the init.yaml file
+
+#### Decide if you're using a LoadBalancer
+
+It can be set up on a public cloud provider with a managed Kubernetes offering, where a `LoadBalancer` is available. If you are deploying to a cloud or Kubernetes cluster where the type `LoadBalancer` is unavailable then you will need to change `ingress: loadbalancer` to `ingress: host` in `init.yaml`. This will provision Nginx as a `DaemonSet` exposed on port `80` and `443`.
 
 #### Use authz (optional)
 
@@ -87,15 +127,17 @@ Enable `auth` and fill out the required fields such as `client_secret` and `clie
 
 We can automatically provision TLS certificates for your OpenFaaS Cloud cluster using the DNS01 challenge.
 
-Pick between the following two providers for the DNS01 challenge:
+Pick between the following providers for the DNS01 challenge:
 
 * Google Cloud DNS
 * AWS Route53
 * DigitalOcean DNS via cert-manager 0.6.0
 
+> Note: At time of writing DigitalOcean are offering free management of DNS.
+
 Configure or comment out as required in the relevant section.
 
-You should also set up the corresponding DNS A records.
+You should also set up the corresponding DNS A records in your DNS management dashboard after finishing all the steps in this guide.
 
 In order to enable TLS, edit the following configuration:
 
@@ -137,17 +179,17 @@ kubectl apply -f ./tmp/generated-tls-auth-domain-cert.yml
 kubectl apply -f ./tmp/generated-tls-wildcard-domain-cert.yml
 ```
 
-### Run the Bootstrapper
+### Run the `ofc-bootstrap`
 
 ```bash
-cd $GOPATH/src/github.com/openfaas-incubator/
-
-go build
+cd $GOPATH/src/github.com/openfaas-incubator/ofc-bootstrap
 
 ./ofc-bootstrap -yaml=init.yaml
 ```
 
 ### Finish the configuration
+
+If you get anything wrong, don't worry you can use the `./scripts/reset.sh` file to remove all the components. Then edit `init.yaml` and start over. Be careful running this script and make 100% sure that you are pointing at the correct cluster. 
 
 #### Configure DNS
 
@@ -169,30 +211,13 @@ http://system.domain.com/github-event
 
 Then you need to enter the Webhook secret that was generated during the bootstrap process. Run the following commands to extract and decode it:
 
-> If you have `jq` installed, this one-liner would be handy: `kubectl -n openfaas-fn get secret github-webhook-secret -o json | jq '.data | map_values(@base64d)'`. Otherwise, continue below.
+```echo $(kubectl get secret -n openfaas-fn github-webhook-secret -o jsonpath="{.data.github-webhook-secret}" | base64 --decode; echo)```
 
-```
-$ kubectl -n openfaas-fn get secret github-webhook-secret -o yaml
-```
-
-This spits out the Secret object definition, including a field like:
-
-```
-data:
-  github-webhook-secret: <redacted base64-encoded string>
-```
-
-Copy out that string and decode it:
-
-```
-$ echo 'redacted base64-encoded string' | base64 --decode
-```
-
-Enter this value into the webhook secret field in your GitHub App.
+Open the Github App UI and paste in the value into the "Webhook Secret" field.
 
 ### Smoke-test
 
-We'll now run a smoke-test to check the dashboard shows correctly and that you can trigger a successful build.
+Now run a smoke-test to check the dashboard shows correctly and that you can trigger a successful build.
 
 #### View your dashboard
 
@@ -208,19 +233,21 @@ Just replace `<username>` with your GitHub account.
 
 Now you can install your GitHub app on a repo, run `faas-cli new` and then rename the YAML file to `stack.yml` and do a `git push`. Your OpenFaaS Cloud cluster will build and deploy the functions found in that GitHub repo.
 
-### Rinse & repeat
+#### Something went wrong?
 
-You can now edit the code or settings - do a reset of the kind or remote cluster and try again.
+If you think that everything is set up correctly but want to troubleshoot then head over to the GitHub App webpage and click "Advanced" - here you can find each request/response from the GitHub push events. You can resend them or view any errors.
 
-* Reset via kind
+#### Invite your team
 
-```
-./scripts/reset-kind.sh
-```
-
-* Reset a remote cluster
+For each user or org you want to enroll into your OpenFaaS Cloud edit the CUSTOMERS ACL file and add their username on a new line. For example if I wanted the user `alexellis` and the org `openfaas` to host git repos containing functions:
 
 ```
-./scripts/reset.sh
+openfaas
+alexellis
 ```
 
+### Join us on Slack
+
+Got questions, comments or suggestions?
+
+Join the team and community over on [Slack](https://docs.openfaas.com/community)
