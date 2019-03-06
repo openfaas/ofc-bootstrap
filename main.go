@@ -58,18 +58,25 @@ func validateTools(tools []string) error {
 func validatePlan(plan types.Plan) error {
 	for _, secret := range plan.Secrets {
 		if featureEnabled(plan.Features, secret.Filters) {
-			if len(secret.Files) > 0 {
-				for _, file := range secret.Files {
-					if len(file.ValueCommand) == 0 {
-						if _, err := os.Stat(file.ExpandValueFrom()); err != nil {
-							return err
-						}
-					}
+			err := filesExists(secret.Files)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func filesExists(files []types.FileSecret) error {
+	if len(files) > 0 {
+		for _, file := range files {
+			if len(file.ValueCommand) == 0 {
+				if _, err := os.Stat(file.ExpandValueFrom()); err != nil {
+					return err
 				}
 			}
 		}
 	}
-
 	return nil
 }
 
