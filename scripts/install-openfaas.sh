@@ -13,7 +13,7 @@ helm upgrade openfaas --install openfaas/openfaas \
     --set gateway.writeTimeout=15m \
     --set gateway.upstreamTimeout=14m55s \
     --set queueWorker.ackWait=15m \
-    --set faasnetesd.readTimeout=5m \
-    --set faasnetesd.writeTimeout=5m \
+    --set faasnetes.readTimeout=5m \
+    --set faasnetes.writeTimeout=5m \
     --set gateway.replicas=2 \
     --set queueWorker.replicas=2
