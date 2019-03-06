@@ -8,8 +8,6 @@ import (
 const (
 	// DefaultFeature filter is for the features which are mandatory
 	DefaultFeature = "default"
-	// BasicAuth enables creation of basic-auth secret for OF gateway
-	BasicAuth = "basic_auth"
 	// GitHub filter enables secrets created with the scm_github filter
 	GitHub = "scm_github"
 	// GitLab filter is the feature
@@ -22,13 +20,9 @@ const (
 	DODNS = "do_dns01"
 	// DODNS filter enables the creation of secrets for Amazon Route53 DNS when TLS is enabled
 	Route53DNS = "route53_dns01"
-	// S3Bucket enables creation of secrets for S3 buckets or minio case you would like to see logs
-	S3Bucket = "s3"
-	// Registry filter enables creation of registry secret
-	Registry = "registry"
 
-	// CloudDns is the dns_service field in yaml file for Google Cloud Platform
-	CloudDns = "clouddns"
+	// CloudDNS is the dns_service field in yaml file for Google Cloud Platform
+	CloudDNS = "clouddns"
 	// CloudDns is the dns_service field in yaml file for Digital Ocean
 	DigitalOcean = "digitalocean"
 	// Route53 is the dns_service field in yaml file for Amazon
@@ -50,7 +44,6 @@ type Plan struct {
 	TLSConfig     TLSConfig                `yaml:"tls_config"`
 	Slack         Slack                    `yaml:"slack"`
 	Ingress       string                   `yaml:"ingress"`
-	BasicAuth     bool                     `yaml:"basic_auth"`
 }
 
 type KeyValueTuple struct {

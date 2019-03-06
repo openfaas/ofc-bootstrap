@@ -98,7 +98,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	plan = filterFeatures(plan)
+	var featuersErr error
+	plan, featuersErr = filterFeatures(plan)
+	if featuersErr != nil {
+		fmt.Fprintf(os.Stderr, "error while retreiving features: %s\n", featuersErr.Error())
+		os.Exit(1)
+	}
 
 	log.Println("Validating tools available in PATH")
 
@@ -605,44 +610,38 @@ func featureEnabled(features []string, secretFeatures []string) bool {
 	return false
 }
 
-func filterFeatures(plan types.Plan) types.Plan {
-	plan.Features = append(plan.Features, types.DefaultFeature)
+func filterFeatures(plan types.Plan) (types.Plan, error) {
+	var err error
 
-	if (plan.S3 != types.S3{}) {
-		plan.Features = append(plan.Features, types.S3Bucket)
-	}
+	plan.Features = append(plan.Features, types.DefaultFeature)
 
 	if (plan.Github != types.Github{}) {
 		plan.Features = append(plan.Features, types.GitHub)
 	}
 
 	if plan.TLS == true {
-		plan = filterDNSFeature(plan)
+		plan, err = filterDNSFeature(plan)
+		if err != nil {
+			return plan, err
+		}
 	}
 
 	if plan.EnableOAuth == true {
 		plan.Features = append(plan.Features, types.Auth)
 	}
 
-	if plan.BasicAuth == true {
-		plan.Features = append(plan.Features, types.BasicAuth)
-	}
-
-	if plan.Registry != "" {
-		plan.Features = append(plan.Features, types.Registry)
-	}
-	return plan
+	return plan, err
 }
 
-func filterDNSFeature(plan types.Plan) types.Plan {
+func filterDNSFeature(plan types.Plan) (types.Plan, error) {
 	if plan.TLSConfig.DNSService == types.DigitalOcean {
 		plan.Features = append(plan.Features, types.DODNS)
-	}
-	if plan.TLSConfig.DNSService == types.CloudDns {
+	} else if plan.TLSConfig.DNSService == types.CloudDNS {
 		plan.Features = append(plan.Features, types.GCPDNS)
-	}
-	if plan.TLSConfig.DNSService == types.Route53 {
+	} else if plan.TLSConfig.DNSService == types.Route53 {
 		plan.Features = append(plan.Features, types.Route53DNS)
+	} else {
+		return plan, fmt.Errorf("Error unavailable DNS service provider: %s", plan.TLSConfig.DNSService)
 	}
-	return plan
+	return plan, nil
 }

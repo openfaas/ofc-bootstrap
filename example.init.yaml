@@ -110,7 +110,7 @@ secrets:
       - name: "config.json"
         value_from: "~/.docker/config.json"
     filters:
-      - "registry"
+      - "default"
     namespace: "openfaas"
   # Used to pull functions / images to nodes by Kubernetes
   - name: "registry-pull-secret"
@@ -184,7 +184,3 @@ tls_config:
   # dns_service: route53
   # region: us-east-1
   # access_key_id: ASYAKIUJE8AYRQQ7DU3M
-
-##  Gateway configuration
-### Basic authentication is turned on by default so if you did not explicitly disabled it
-basic_auth: true
