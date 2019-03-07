@@ -80,12 +80,14 @@ secrets:
   #       value_from: "~/Downloads/route53-secret-access-key"	
   #   namespace: "cert-manager"
 
+  # Used by Buildkit to push images to your registry
   - name: "registry-secret"
     files:
       - name: "config.json"
         value_from: "~/.docker/config.json"
     namespace: "openfaas"
-  - name: "registry-secret"
+  # Used to pull functions / images to nodes by Kubernetes
+  - name: "registry-pull-secret"
     files:
       - name: ".dockerconfigjson"
         value_from: "~/.docker/config.json"
