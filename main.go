@@ -105,10 +105,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	var featuersErr error
-	plan, featuersErr = filterFeatures(plan)
-	if featuersErr != nil {
-		fmt.Fprintf(os.Stderr, "error while retreiving features: %s\n", featuersErr.Error())
+	var featuresErr error
+	plan, featuresErr = filterFeatures(plan)
+	if featuresErr != nil {
+		fmt.Fprintf(os.Stderr, "error while retreiving features: %s\n", featuresErr.Error())
 		os.Exit(1)
 	}
 
@@ -631,14 +631,15 @@ func filterFeatures(plan types.Plan) (types.Plan, error) {
 
 	plan.Features = append(plan.Features, types.DefaultFeature)
 
-	if (plan.Github != types.Github{}) {
-		plan.Features = append(plan.Features, types.GitHub)
+	plan, err = filterGitRepositoryManager(plan)
+	if err != nil {
+		return plan, fmt.Errorf("Error while filtering features: %s", err.Error())
 	}
 
 	if plan.TLS == true {
 		plan, err = filterDNSFeature(plan)
 		if err != nil {
-			return plan, err
+			return plan, fmt.Errorf("Error while filtering features: %s", err.Error())
 		}
 	}
 
@@ -658,6 +659,17 @@ func filterDNSFeature(plan types.Plan) (types.Plan, error) {
 		plan.Features = append(plan.Features, types.Route53DNS)
 	} else {
 		return plan, fmt.Errorf("Error unavailable DNS service provider: %s", plan.TLSConfig.DNSService)
+	}
+	return plan, nil
+}
+
+func filterGitRepositoryManager(plan types.Plan) (types.Plan, error) {
+	if plan.SCM == types.GitLabManager {
+		plan.Features = append(plan.Features, types.GitLabSCM)
+	} else if plan.SCM == types.GitHubManager {
+		plan.Features = append(plan.Features, types.GitHubSCM)
+	} else {
+		return plan, fmt.Errorf("Error unsupported Git repository manager: %s", plan.SCM)
 	}
 	return plan, nil
 }
