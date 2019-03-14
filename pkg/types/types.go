@@ -8,10 +8,10 @@ import (
 const (
 	// DefaultFeature filter is for the features which are mandatory
 	DefaultFeature = "default"
-	// GitHubSCM filter enables secrets created with the scm_github filter
-	GitHubSCM = "scm_github"
-	// GitLabSCM filter is the feature which enables secret creation for GitLab
-	GitLabSCM = "scm_gitlab"
+	// GitHubFeature filter enables secrets created with the scm_github filter
+	GitHubFeature = "scm_github"
+	// GitLabFeature filter is the feature which enables secret creation for GitLab
+	GitLabFeature = "scm_gitlab"
 	// Auth filter enables OAuth secret creation
 	Auth = "auth"
 	// GCPDNS filter enables the creation of secrets for Google Cloud Platform DNS when TLS is enabled
@@ -28,9 +28,9 @@ const (
 	// Route53 is the dns_service field in yaml file for Amazon
 	Route53 = "route53"
 	// GitLabManager repository manager name as displayed in the init.yaml file
-	GitLabManager = "gitlab"
+	GitLabSCM = "gitlab"
 	// GitHubManager repository manager name as displayed in the init.yaml file
-	GitHubManager = "github"
+	GitHubSCM = "github"
 )
 
 type Plan struct {
