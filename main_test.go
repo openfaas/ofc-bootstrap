@@ -74,27 +74,27 @@ func Test_filterFeatures(t *testing.T) {
 		{
 			title: "Every field which defines populated feature is populated for github",
 			planConfig: types.Plan{
-				SCM: types.GitHubManager,
+				SCM: types.GitHubSCM,
 				TLS: true,
 				TLSConfig: types.TLSConfig{
 					DNSService: types.Route53,
 				},
 				EnableOAuth: true,
 			},
-			expectedFeatures: []string{types.DefaultFeature, types.GitHubSCM, types.Auth, types.Route53DNS},
+			expectedFeatures: []string{types.DefaultFeature, types.GitHubFeature, types.Auth, types.Route53DNS},
 			expectedError:    nil,
 		},
 		{
 			title: "Every field which defines populated feature is populated for gitlab",
 			planConfig: types.Plan{
-				SCM: types.GitLabManager,
+				SCM: types.GitLabSCM,
 				TLS: true,
 				TLSConfig: types.TLSConfig{
 					DNSService: types.Route53,
 				},
 				EnableOAuth: true,
 			},
-			expectedFeatures: []string{types.DefaultFeature, types.GitLabSCM, types.Auth, types.Route53DNS},
+			expectedFeatures: []string{types.DefaultFeature, types.GitLabFeature, types.Auth, types.Route53DNS},
 			expectedError:    nil,
 		},
 		{
@@ -117,7 +117,7 @@ func Test_filterFeatures(t *testing.T) {
 					DNSService: types.Route53,
 				},
 				EnableOAuth: true,
-				SCM:         types.GitHubManager,
+				SCM:         types.GitHubSCM,
 			},
 			expectedFeatures: []string{types.DefaultFeature, types.Auth, types.Route53DNS},
 			expectedError:    nil,
@@ -160,17 +160,17 @@ func Test_filterGitRepositoryManager(t *testing.T) {
 		{
 			title: "SCM field is populated for gitlab",
 			planConfig: types.Plan{
-				SCM: types.GitLabManager,
+				SCM: types.GitLabSCM,
 			},
-			expectedFeature: []string{types.GitLabSCM},
+			expectedFeature: []string{types.GitLabFeature},
 			expectedError:   nil,
 		},
 		{
 			title: "SCM field is populated for github",
 			planConfig: types.Plan{
-				SCM: types.GitHubManager,
+				SCM: types.GitHubSCM,
 			},
-			expectedFeature: []string{types.GitHubSCM},
+			expectedFeature: []string{types.GitHubFeature},
 			expectedError:   nil,
 		},
 		{

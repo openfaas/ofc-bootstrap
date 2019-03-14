@@ -157,6 +157,7 @@ func process(plan types.Plan) error {
 	}
 
 	if plan.Orchestration == OrchestrationK8s {
+
 		nsErr := createNamespaces()
 		if nsErr != nil {
 			log.Println(nsErr)
@@ -664,10 +665,10 @@ func filterDNSFeature(plan types.Plan) (types.Plan, error) {
 }
 
 func filterGitRepositoryManager(plan types.Plan) (types.Plan, error) {
-	if plan.SCM == types.GitLabManager {
-		plan.Features = append(plan.Features, types.GitLabSCM)
-	} else if plan.SCM == types.GitHubManager {
-		plan.Features = append(plan.Features, types.GitHubSCM)
+	if plan.SCM == types.GitLabSCM {
+		plan.Features = append(plan.Features, types.GitLabFeature)
+	} else if plan.SCM == types.GitHubSCM {
+		plan.Features = append(plan.Features, types.GitHubFeature)
 	} else {
 		return plan, fmt.Errorf("Error unsupported Git repository manager: %s", plan.SCM)
 	}
