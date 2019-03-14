@@ -65,7 +65,7 @@ if [ "$GITLAB" = "true" ] ; then
 fi
 
 cd ./dashboard
-faas-cli template pull https://github.com/openfaas-incubator/node8-express-template
+faas-cli template store pull node10-express
 faas-cli deploy
 
 kill %1
