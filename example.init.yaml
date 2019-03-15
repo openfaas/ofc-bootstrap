@@ -57,7 +57,7 @@ secrets:
       - name: "github-webhook-secret"
         value: "secret"
     filters:
-      - "scm-github"
+      - "scm_github"
     namespace: "openfaas-fn"
   # Download from GitHub App on GitHub UI
   - name: "private-key"
@@ -65,7 +65,7 @@ secrets:
       - name: "private-key"
         value_from: "~/Downloads/private-key.pem"
     filters:
-      - "scm-github"
+      - "scm_github"
     namespace: "openfaas-fn"
   # Populate your OAuth client_secret
   - name: "of-client-secret"
