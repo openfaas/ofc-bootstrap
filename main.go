@@ -199,9 +199,11 @@ func process(plan types.Plan) error {
 			log.Println(minioErr)
 		}
 
-		cmErr := installCertmanager()
-		if cmErr != nil {
-			log.Println(cmErr)
+		if plan.TLS {
+			cmErr := installCertmanager()
+			if cmErr != nil {
+				log.Println(cmErr)
+			}
 		}
 
 		functionAuthErr := createFunctionsAuth()
@@ -214,13 +216,15 @@ func process(plan types.Plan) error {
 			log.Println(ofErr)
 		}
 
-		for i := 0; i < retries; i++ {
-			log.Printf("Is cert-manager ready? %d/%d\n", i+1, retries)
-			ready := certManagerReady()
-			if ready {
-				break
+		if plan.TLS {
+			for i := 0; i < retries; i++ {
+				log.Printf("Is cert-manager ready? %d/%d\n", i+1, retries)
+				ready := certManagerReady()
+				if ready {
+					break
+				}
+				time.Sleep(time.Second * 2)
 			}
-			time.Sleep(time.Second * 2)
 		}
 
 		ingressErr := ingress.Apply(plan)
