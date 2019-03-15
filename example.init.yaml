@@ -20,7 +20,7 @@ secrets:
       - name: basic-auth-password
         value: ""
     filters:
-      - "basic_auth"
+      - "default"
     namespace: "openfaas"
   - name: "payload-secret"
     literals:
