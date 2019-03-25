@@ -16,9 +16,10 @@ deploy:
   provider: releases
   api_key:
     secure: VO374zvpFjLQwN8U1YtaK+NSL9/6YinqOoGCiwbf7qwySqJY0rbgr3idkrrKDMoT131zapDML44/YcijCi6OVcl0/Bcftl/yBaTPq1IOgCAdYbQ239zlAQ/pkCu9NaDggjFNWW6JQC21EPXDs/er0jDTvWTYRQDe7zYaSEVlfEyH4nyld5LQP8x/2K7s7M86X7PHlIuL+ByybLeEnro1XvHVNZtxTX+wkc0jgriOif+wA4tchJAyfDhUWJ3gyXiTEvZrdDGkMe6zcwpGB1HNh8NC2Ts+nQvxTv5o72OR/1HfULYUMGLaBC5vwRsloFwNHWpBHxFJMsEXqN1VX2Z7pA0C/GRQ8nDysxEtJ/qx1LVc7P6mck40+r0Amk3y/7as0Sz8sEUq953wPreJtnwVFX5fYoYQS0HYK+Kzltf3Bx9DbkQ8QLKUcvoqrZmlhjKKJdN8ueVGqNWuPiS7PKTvMs7MqCrgllALFreEkPI14jW7bOYBjS7pvv6KdRQAhD5Wwa4JsdHl/fsd5rFvwJDC6QIQw2KOtz4y3J13N2Q9wGm4N9T6pTvSR9vHquBDJ8fsIOMQLLXI5ssonxgUJyRo3EdEUOA3Fp1BGh0rIODlkYq3F6dlirzH0sA2W1cKE43Fig1YXMZQZnWR5AM3/JEhWfy4wEQtQbqfXCdmLBSOQMU=
-  file: bin/ofc-bootstrap
-  file: bin/ofc-bootstrap-darwin
-  file: bin/ofc-bootstrap.exe
+  file:
+   - ./bin/ofc-bootstrap
+   - ./bin/ofc-bootstrap-darwin
+   - ./bin/ofc-bootstrap.exe
   skip_cleanup: true
   on:
     tags: true
