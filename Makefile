@@ -2,7 +2,7 @@
 GO_FILES?=$$(find . -name '*.go' |grep -v vendor)
 TAG?=latest
 
-.PHONY: ci
+.PHONY: build
 
 install-ci:
 	./hack/install-ci.sh

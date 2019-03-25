@@ -12,3 +12,4 @@ ofc-bootstrap.exe
 init.yaml
 main
 bin/
+go*
