@@ -7,8 +7,9 @@ if [ $1 ] ; then
 fi
 
 echo Building openfaas/ofc-bootstrap:$eTAG
+mkdir -p bin
 
 docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy -t openfaas/ofc-bootstrap:$eTAG . && \
  docker create --name ofc-bootstrap openfaas/ofc-bootstrap:$eTAG && \
- docker cp ofc-bootstrap:/usr/bin/ofc-bootstrap . && \
+ docker cp ofc-bootstrap:/usr/bin/ofc-bootstrap bin/. && \
  docker rm -f ofc-bootstrap
