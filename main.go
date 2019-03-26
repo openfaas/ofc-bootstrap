@@ -169,15 +169,8 @@ func process(plan types.Plan) error {
 			log.Println(tillerErr)
 		}
 
-		retries := 260
-		for i := 0; i < retries; i++ {
-			log.Printf("Is tiller ready? %d/%d\n", i+1, retries)
-			ready := tillerReady()
-			if ready {
-				break
-			}
-			time.Sleep(time.Second * 2)
-		}
+		log.Printf("Is tiller rolled out?\n")
+		tillerReady()
 
 		if err := helmRepoUpdate(); err != nil {
 			log.Println(err.Error())
@@ -218,14 +211,9 @@ func process(plan types.Plan) error {
 		}
 
 		if plan.TLS {
-			for i := 0; i < retries; i++ {
-				log.Printf("Is cert-manager ready? %d/%d\n", i+1, retries)
-				ready := certManagerReady()
-				if ready {
-					break
-				}
-				time.Sleep(time.Second * 2)
-			}
+			log.Printf("Is cert-manager rolled out?\n")
+			certManagerReady()
+
 		}
 
 		ingressErr := ingress.Apply(plan)
@@ -252,14 +240,8 @@ func process(plan types.Plan) error {
 			log.Println(sealedSecretsErr)
 		}
 
-		for i := 0; i < retries; i++ {
-			log.Printf("Are SealedSecrets ready? %d/%d\n", i+1, retries)
-			ready := sealedSecretsReady()
-			if ready {
-				break
-			}
-			time.Sleep(time.Second * 2)
-		}
+		log.Printf("Are SealedSecrets rolled out?\n")
+		sealedSecretsReady()
 
 		pubCert := exportSealedSecretPubCert()
 		writeErr := ioutil.WriteFile("tmp/pubcert.pem", []byte(pubCert), 0700)
@@ -526,7 +508,7 @@ func createSecrets(plan types.Plan) error {
 	return nil
 }
 
-func sealedSecretsReady() bool {
+func sealedSecretsReady() {
 
 	task := execute.ExecTask{
 		Command: "./scripts/get-sealedsecretscontroller.sh",
@@ -535,7 +517,7 @@ func sealedSecretsReady() bool {
 
 	res, err := task.Execute()
 	fmt.Println("sealedsecretscontroller", res.ExitCode, res.Stdout, res.Stderr, err)
-	return res.Stdout == "1"
+
 }
 
 func exportSealedSecretPubCert() string {
@@ -550,7 +532,7 @@ func exportSealedSecretPubCert() string {
 	return res.Stdout
 }
 
-func certManagerReady() bool {
+func certManagerReady() {
 	task := execute.ExecTask{
 		Command: "./scripts/get-cert-manager.sh",
 		Shell:   true,
@@ -558,10 +540,9 @@ func certManagerReady() bool {
 
 	res, err := task.Execute()
 	fmt.Println("cert-manager", res.ExitCode, res.Stdout, res.Stderr, err)
-	return res.Stdout == "True"
 }
 
-func tillerReady() bool {
+func tillerReady() {
 
 	task := execute.ExecTask{
 		Command: "./scripts/get-tiller.sh",
@@ -570,7 +551,6 @@ func tillerReady() bool {
 
 	res, err := task.Execute()
 	fmt.Println("tiller", res.ExitCode, res.Stdout, res.Stderr, err)
-	return res.Stdout == "1"
 }
 
 func cloneCloudComponents() error {

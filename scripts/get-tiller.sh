@@ -1,3 +1,3 @@
 #!/bin/bash
 
-kubectl get deploy/tiller-deploy -n kube-system --output="jsonpath={.status.availableReplicas}"
+kubectl rollout status deployment/tiller-deploy -n kube-system
