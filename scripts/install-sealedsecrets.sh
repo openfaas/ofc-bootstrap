@@ -5,4 +5,4 @@ release=$(curl -sI https://github.com/bitnami-labs/sealed-secrets/releases/lates
 
 echo "SealedSecrets release: $release"
 
-helm install --namespace kube-system --name ofc-sealedsecrets stable/sealed-secrets
+helm install --namespace kube-system --name ofc-sealedsecrets stable/sealed-secrets --wait

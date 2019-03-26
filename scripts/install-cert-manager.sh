@@ -7,4 +7,5 @@ helm install \
     --name cert-manager \
     --namespace cert-manager \
     --version v0.6.6 \
+    --wait \
     stable/cert-manager

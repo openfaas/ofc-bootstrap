@@ -169,16 +169,6 @@ func process(plan types.Plan) error {
 			log.Println(tillerErr)
 		}
 
-		retries := 260
-		for i := 0; i < retries; i++ {
-			log.Printf("Is tiller ready? %d/%d\n", i+1, retries)
-			ready := tillerReady()
-			if ready {
-				break
-			}
-			time.Sleep(time.Second * 2)
-		}
-
 		if err := helmRepoUpdate(); err != nil {
 			log.Println(err.Error())
 		}
@@ -217,17 +207,6 @@ func process(plan types.Plan) error {
 			log.Println(ofErr)
 		}
 
-		if plan.TLS {
-			for i := 0; i < retries; i++ {
-				log.Printf("Is cert-manager ready? %d/%d\n", i+1, retries)
-				ready := certManagerReady()
-				if ready {
-					break
-				}
-				time.Sleep(time.Second * 2)
-			}
-		}
-
 		ingressErr := ingress.Apply(plan)
 		if ingressErr != nil {
 			log.Println(ingressErr)
@@ -250,15 +229,6 @@ func process(plan types.Plan) error {
 		sealedSecretsErr := installSealedSecrets()
 		if sealedSecretsErr != nil {
 			log.Println(sealedSecretsErr)
-		}
-
-		for i := 0; i < retries; i++ {
-			log.Printf("Are SealedSecrets ready? %d/%d\n", i+1, retries)
-			ready := sealedSecretsReady()
-			if ready {
-				break
-			}
-			time.Sleep(time.Second * 2)
 		}
 
 		pubCert := exportSealedSecretPubCert()

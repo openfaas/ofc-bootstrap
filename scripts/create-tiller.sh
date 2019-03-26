@@ -1,3 +1,3 @@
 #!/bin/bash
 
-helm init --skip-refresh --upgrade --service-account tiller
+helm init --skip-refresh --upgrade --service-account tiller --wait
