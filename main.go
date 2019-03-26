@@ -267,7 +267,7 @@ func process(plan types.Plan) error {
 
 func openfaasGatewayReady() {
 	task := execute.ExecTask{
-		Command: "/scripts/get-openfaas-gateway.sh",
+		Command: "scripts/get-openfaas-gateway.sh",
 		Shell:   true,
 	}
 
