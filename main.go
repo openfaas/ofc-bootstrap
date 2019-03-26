@@ -267,7 +267,7 @@ func process(plan types.Plan) error {
 
 func openfaasGatewayReady() {
 	task := execute.ExecTask{
-		Command: "kubectl rollout status deploy/gateway -n openfaas",
+		Command: "/scripts/get-openfaas-gateway.sh",
 		Shell:   true,
 	}
 
