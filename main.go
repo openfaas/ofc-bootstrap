@@ -254,6 +254,8 @@ func process(plan types.Plan) error {
 			return cloneErr
 		}
 
+		openfaasGatewayReady()
+
 		deployErr := deployCloudComponents(plan)
 		if (deployErr) != nil {
 			return deployErr
@@ -261,6 +263,16 @@ func process(plan types.Plan) error {
 	}
 
 	return nil
+}
+
+func openfaasGatewayReady() {
+	task := execute.ExecTask{
+		Command: "kubectl rollout status deploy/gateway -n openfaas",
+		Shell:   true,
+	}
+
+	res, err := task.Execute()
+	fmt.Println("cert-manager", res.ExitCode, res.Stdout, res.Stderr, err)
 }
 
 func helmRepoUpdate() error {
