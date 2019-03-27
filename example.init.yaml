@@ -80,7 +80,7 @@ secrets:
   - name: "gitlab-webhook-secret"
     literals:
       - name: "gitlab-webhook-secret"
-        value: "secret"
+        value: ""
     filters:
       - "scm_gitlab"
     namespace: "openfaas-fn"
