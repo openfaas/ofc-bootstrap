@@ -24,7 +24,7 @@ spec:
             secretName: of-client-secret
       containers:
       - name: of-auth
-        image: openfaas/cloud-auth:0.5.0
+        image: openfaas/cloud-auth:0.5.2
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
