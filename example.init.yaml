@@ -170,7 +170,8 @@ oauth:
 
   # Uncomment required option
   oauth_provider_base_url: ""
-  ## For GitLab put yout OAuth provider base URL
+
+  ## For GitLab put your OAuth provider base URL
   # oauth_provider_base_url: "https://gitlab.o6s.io"
 
 ## Slack

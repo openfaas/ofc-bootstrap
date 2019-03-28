@@ -56,6 +56,16 @@ done
 export OPENFAAS_URL=http://127.0.0.1:31111
 echo -n $ADMIN_PASSWORD | faas-cli login --username admin --password-stdin
 
+if [ "$GITLAB" = "true" ] ; then
+
+# Suppress errors by removing secrets for GitHub
+
+    sed -i '' s/\-\ private-key/#\-\ private-key/g stack.yml
+    sed -i '' s/\#\-\ gitlab-api-token/\-\ gitlab-api-token/g stack.yml
+    sed -i '' s/\-\ github-webhook-secret/#\-\ github-webhook-secret/g stack.yml
+
+fi
+
 faas-cli deploy
 
 if [ "$GITLAB" = "true" ] ; then
