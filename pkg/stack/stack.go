@@ -65,7 +65,6 @@ func Apply(plan types.Plan) error {
 		if gitlabConfigErr != nil {
 			return gitlabConfigErr
 		}
-
 	}
 
 	dashboardConfigErr := generateTemplate("dashboard_config", plan, gatewayConfig{
@@ -89,7 +88,21 @@ func Apply(plan types.Plan) error {
 		}
 	}
 
+	isGitHub := plan.SCM == "github"
+
+	stackErr := generateTemplate("stack", plan, stackConfig{
+		GitHub: isGitHub,
+	})
+
+	if stackErr != nil {
+		return stackErr
+	}
+
 	return nil
+}
+
+type stackConfig struct {
+	GitHub bool
 }
 
 func applyTemplate(templateFileName string, templateType interface{}) ([]byte, error) {

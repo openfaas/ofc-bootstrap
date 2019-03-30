@@ -74,5 +74,4 @@ functions:
       - github.yml
     secrets:
       - payload-secret
-      - private-key
       - gitlab-api-token
