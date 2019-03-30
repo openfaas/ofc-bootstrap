@@ -268,12 +268,12 @@ func process(plan types.Plan) error {
 		}
 
 		cloneErr := cloneCloudComponents()
-		if (cloneErr) != nil {
+		if cloneErr != nil {
 			return cloneErr
 		}
 
 		deployErr := deployCloudComponents(plan)
-		if (deployErr) != nil {
+		if deployErr != nil {
 			return deployErr
 		}
 	}
