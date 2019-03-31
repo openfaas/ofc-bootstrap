@@ -50,6 +50,23 @@ type Plan struct {
 	TLSConfig     TLSConfig                `yaml:"tls_config"`
 	Slack         Slack                    `yaml:"slack"`
 	Ingress       string                   `yaml:"ingress"`
+	Deployment    Deployment               `yaml:"deployment"`
+}
+
+// Deployment is the deployment section of YAML concerning
+// functions as deployed
+type Deployment struct {
+	CustomTemplate []string `yaml:"custom_templates"`
+}
+
+// FormatCustomTemplates are formatted in a CSV format with a space after each comma
+func (d Deployment) FormatCustomTemplates() string {
+	val := ""
+	for _, templateURL := range d.CustomTemplate {
+		val = val + templateURL + ", "
+	}
+
+	return strings.TrimRight(val, " ,")
 }
 
 type KeyValueTuple struct {

@@ -10,11 +10,12 @@ import (
 )
 
 type gatewayConfig struct {
-	Registry     string
-	RootDomain   string
-	CustomersURL string
-	Scheme       string
-	S3           types.S3
+	Registry        string
+	RootDomain      string
+	CustomersURL    string
+	Scheme          string
+	S3              types.S3
+	CustomTemplates string
 }
 
 type authConfig struct {
@@ -34,12 +35,14 @@ func Apply(plan types.Plan) error {
 	}
 
 	gwConfigErr := generateTemplate("gateway_config", plan, gatewayConfig{
-		Registry:     plan.Registry,
-		RootDomain:   plan.RootDomain,
-		CustomersURL: plan.CustomersURL,
-		Scheme:       scheme,
-		S3:           plan.S3,
+		Registry:        plan.Registry,
+		RootDomain:      plan.RootDomain,
+		CustomersURL:    plan.CustomersURL,
+		Scheme:          scheme,
+		S3:              plan.S3,
+		CustomTemplates: plan.Deployment.FormatCustomTemplates(),
 	})
+
 	if gwConfigErr != nil {
 		return gwConfigErr
 	}

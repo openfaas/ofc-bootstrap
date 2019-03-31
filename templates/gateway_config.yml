@@ -8,7 +8,7 @@ environment:
   gateway_pretty_url: {{.Scheme}}://user.{{.RootDomain}}/function
   # Add your custom templates by adding a coma separated URL, i.e. extend the current value with:
   # ", https://github.com/custom/template.git, https://github.com/custom/template2.git"
-  custom_templates: "https://github.com/openfaas-incubator/node8-express-template.git, https://github.com/openfaas-incubator/golang-http-template.git, https://github.com/openfaas-incubator/node10-express-template.git"
+  custom_templates: {{ .CustomTemplates }}
 
 # Security
   customers_url: "{{.CustomersURL}}"

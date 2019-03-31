@@ -153,6 +153,12 @@ root_domain: "myfaas.club"
 ## Keep active if using a cluster with a LoadBalancer available.
 ingress: loadbalancer
 
+deployment:
+  custom_templates:
+    - "https://github.com/openfaas-incubator/node8-express-template.git"
+    - "https://github.com/openfaas-incubator/golang-http-template.git"
+    - "https://github.com/openfaas-incubator/node10-express-template.git"
+
 scm: github
 # scm: gitlab
 
