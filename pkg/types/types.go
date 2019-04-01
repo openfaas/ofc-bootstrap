@@ -34,23 +34,24 @@ const (
 )
 
 type Plan struct {
-	Features      []string                 `yaml:"features"`
-	Orchestration string                   `yaml:"orchestration"`
-	Secrets       []KeyValueNamespaceTuple `yaml:"secrets"`
-	RootDomain    string                   `yaml:"root_domain"`
-	Registry      string                   `yaml:"registry"`
-	CustomersURL  string                   `yaml:"customers_url"`
-	SCM           string                   `yaml:"scm"`
-	Github        Github                   `yaml:"github"`
-	Gitlab        Gitlab                   `yaml:"gitlab"`
-	TLS           bool                     `yaml:"tls"`
-	OAuth         OAuth                    `yaml:"oauth"`
-	S3            S3                       `yaml:"s3"`
-	EnableOAuth   bool                     `yaml:"enable_oauth"`
-	TLSConfig     TLSConfig                `yaml:"tls_config"`
-	Slack         Slack                    `yaml:"slack"`
-	Ingress       string                   `yaml:"ingress"`
-	Deployment    Deployment               `yaml:"deployment"`
+	Features             []string                 `yaml:"features"`
+	Orchestration        string                   `yaml:"orchestration"`
+	Secrets              []KeyValueNamespaceTuple `yaml:"secrets"`
+	RootDomain           string                   `yaml:"root_domain"`
+	Registry             string                   `yaml:"registry"`
+	CustomersURL         string                   `yaml:"customers_url"`
+	SCM                  string                   `yaml:"scm"`
+	Github               Github                   `yaml:"github"`
+	Gitlab               Gitlab                   `yaml:"gitlab"`
+	TLS                  bool                     `yaml:"tls"`
+	OAuth                OAuth                    `yaml:"oauth"`
+	S3                   S3                       `yaml:"s3"`
+	EnableOAuth          bool                     `yaml:"enable_oauth"`
+	TLSConfig            TLSConfig                `yaml:"tls_config"`
+	Slack                Slack                    `yaml:"slack"`
+	Ingress              string                   `yaml:"ingress"`
+	Deployment           Deployment               `yaml:"deployment"`
+	EnableDockerfileLang bool                     `yaml:"enable_dockerfile_lang"`
 }
 
 // Deployment is the deployment section of YAML concerning

@@ -233,3 +233,6 @@ tls_config:
   # dns_service: route53
   # region: us-east-1
   # access_key_id: ASYAKIUJE8AYRQQ7DU3M
+
+# Dockerfile language support
+enable_dockerfile_lang: false

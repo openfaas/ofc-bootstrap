@@ -33,3 +33,6 @@ environment:
   prometheus_host: prometheus.openfaas
   prometheus_port: 9090
   metrics_window: 60m
+
+# Dockerfile language support
+  enable_dockerfile_lang: {{.EnableDockerfileLang}}
