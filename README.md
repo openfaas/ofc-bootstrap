@@ -186,6 +186,9 @@ kubectl apply -f ./tmp/generated-tls-auth-domain-cert.yml
 kubectl apply -f ./tmp/generated-tls-wildcard-domain-cert.yml
 ```
 
+#### Enable dockerfile language support (optional)
+If you are planning on building functions using the `dockerfile` template you need to set `enable_dockerfile_lang: true`.
+
 ### Run the `ofc-bootstrap`
 
 ```bash
