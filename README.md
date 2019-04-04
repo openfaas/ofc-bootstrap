@@ -21,6 +21,14 @@ The `ofc-bootstrap` will install the following components:
 * Deep integration into GitHub/GitLab - for updates and commit statuses
 * A personalized dashboard for each user
 
+### Conceptual design
+
+The ofc-bootstrap tool is used to install OpenFaaS Cloud in a single click. You will need to configure it with all the necessary secrets and configuration beforehand using a YAML file.
+
+![](./docs/ofc-bootstrap.png)
+
+> ofc-bootstrap packages a number of primitives such as an IngressController, a way to obtain certificates from LetsEncrypt, the OpenFaaS Cloud components, OpenFaaS itself and Minio for build log storage. Each component is interchangeable.
+
 ### Video demo
 
 View a video demo by Alex Ellis running `ofc-bootstrap` in around 100 seconds on DigitalOcean.
