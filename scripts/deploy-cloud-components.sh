@@ -41,7 +41,7 @@ sleep 2
 
 echo "Checking if OpenFaaS GW is up."
 
-kubectl rollout status deploy/gateway -n openfaas
+kubectl rollout status deploy/gateway -n openfaas --timeout=10m
 
 
 export OPENFAAS_URL=http://127.0.0.1:31111
