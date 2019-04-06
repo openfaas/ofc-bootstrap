@@ -43,6 +43,7 @@ echo "Checking if OpenFaaS GW is up."
 
 kubectl rollout status deploy/gateway -n openfaas --timeout=10m
 
+sleep 2
 
 export OPENFAAS_URL=http://127.0.0.1:31111
 echo -n $ADMIN_PASSWORD | faas-cli login --username admin --password-stdin
