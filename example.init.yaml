@@ -143,6 +143,8 @@ secrets:
 #### This can be any cluster accessible by your cluster. To populate the file
 #### run `docker login` with "store in keychain" turned off in Docker Desktop.
 #### This can also be your private registry
+#### Format: registry/username/ - i.e. replace ofctest with your login
+
 registry: docker.io/ofctest/
 
 ### Your root DNS domain name, this can be a sub-domain i.e. staging.o6s.io / prod.o6s.io
