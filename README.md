@@ -88,6 +88,12 @@ export KUBECONFIG=$(kind get kubeconfig-path --name 1)
 
 ### Get `ofc-bootstrap`
 
+* Set your `GOPATH` if you don't already have one
+
+```bash
+export GOPATH=$HOME/go
+```
+
 * Clone the GitHub repo
 
 ```bash
