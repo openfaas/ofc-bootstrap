@@ -8,7 +8,7 @@ cp ./tmp/generated-dashboard_config.yml ./tmp/openfaas-cloud/dashboard/dashboard
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-dep.yml
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-svc.yml
 
-kubectl apply -f ./tmp/openfaas-cloud/yaml/core/import-secrets-role.yml
+kubectl apply -f ./tmp/openfaas-cloud/yaml/core/rbac-import-secrets.yml
 
 if [ "$ENABLE_OAUTH" = "true" ] ; then
     cp ./tmp/generated-of-auth-dep.yml ./tmp/openfaas-cloud/yaml/core/of-auth-dep.yml
