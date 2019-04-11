@@ -70,4 +70,11 @@ cd ./dashboard
 faas-cli template store pull node10-express
 faas-cli deploy
 
+sleep 2
+
+# This `ServiceAccount` needs to be patched in place so that the function can perform create / get and update on the SealedSecret CRD:
+
+kubectl patch -n openfaas-fn deploy import-secrets -p '{"spec":{"template":{"spec":{"serviceAccountName":"sealedsecrets-importer-rw"}}}}'
+
+# Close the kubectl port-forward
 kill %1
