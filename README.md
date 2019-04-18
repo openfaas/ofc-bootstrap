@@ -221,9 +221,9 @@ If you are running against a remote Kubernetes cluster you can now update your D
 
 When ofc-bootstrap has completed and you know the IP of your LoadBalancer:
 
-* `system.domain`
-* `auth.system.domain`
-* `*.domain`
+* `system.example.com`
+* `auth.system.example.com`
+* `*.example.com`
 
 #### Configure the GitHub / GitLab App Webhook
 
@@ -231,11 +231,11 @@ Now over on GitHub / GitLab enter the URL for webhooks:
 
 GitHub:
 ```
-http://system.domain.com/github-event
+http://system.example.com/github-event
 ```
 GitLab:
 ```
-http://system.domain.com/gitlab-event
+http://system.example.com/gitlab-event
 ```
 
 For more details see the [GitLab instructions](https://github.com/openfaas/openfaas-cloud/blob/master/docs/GITLAB.md) in OpenFaaS Cloud.
@@ -255,7 +255,7 @@ Now run a smoke-test to check the dashboard shows correctly and that you can tri
 Now view your dashboard over at:
 
 ```
-http://system.domain.com/dashboard/<username>
+http://system.example.com/dashboard/<username>
 ```
 
 Just replace `<username>` with your GitHub account. 
