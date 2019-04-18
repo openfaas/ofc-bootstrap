@@ -41,7 +41,7 @@ See the [ROADMAP.md](./ROADMAP.md) for features, development status and backlogs
 
 ## Installation
 
-To run a production-quality OpenFaaS Cloud then execute `ofc-bootstrap` with a `kubeconfig` file pointing to a remote Kubernetes service. For development and testing you can use the instructions below with `kind`. The `kind` distribution of Kubernetes does not require anything on your host other than Docker.
+You will need admin access to a Kubernetes cluster, some CLI tooling and a GitHub.com account or admin access to a self-hosted GitLab instance.
 
 ### Pre-reqs
 

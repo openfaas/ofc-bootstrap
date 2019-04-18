@@ -16,4 +16,6 @@ helm upgrade openfaas --install openfaas/openfaas \
     --set faasnetes.readTimeout=5m \
     --set faasnetes.writeTimeout=5m \
     --set gateway.replicas=2 \
-    --set queueWorker.replicas=2
+    --set queueWorker.replicas=2 \
+    --set faasIdler.dryRun=true \
+    --set faasnetes.httpProbe=false
