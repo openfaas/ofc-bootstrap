@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/execute"
@@ -212,7 +213,7 @@ func process(plan types.Plan) error {
 			log.Println(functionAuthErr.Error())
 		}
 
-		ofErr := installOpenfaas()
+		ofErr := installOpenfaas(plan.ScaleToZero)
 		if ofErr != nil {
 			log.Println(ofErr)
 		}
@@ -400,12 +401,13 @@ func installSealedSecrets() error {
 	return nil
 }
 
-func installOpenfaas() error {
+func installOpenfaas(scaleToZero bool) error {
 	log.Println("Creating OpenFaaS")
 
 	task := execute.ExecTask{
 		Command: "scripts/install-openfaas.sh",
 		Shell:   true,
+		Env:     []string{fmt.Sprintf("FAAS_IDLER_DRY_RUN=%v", strconv.FormatBool(!scaleToZero))},
 	}
 
 	res, err := task.Execute()

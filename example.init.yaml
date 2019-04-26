@@ -238,3 +238,6 @@ tls_config:
 
 # Dockerfile language support
 enable_dockerfile_lang: false
+
+# Set to true to enable scaling to zero
+scale_to_zero: false

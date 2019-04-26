@@ -52,6 +52,7 @@ type Plan struct {
 	Ingress              string                   `yaml:"ingress"`
 	Deployment           Deployment               `yaml:"deployment"`
 	EnableDockerfileLang bool                     `yaml:"enable_dockerfile_lang"`
+	ScaleToZero          bool                     `yaml:"scale_to_zero"`
 }
 
 // Deployment is the deployment section of YAML concerning
