@@ -203,6 +203,9 @@ kubectl apply -f ./tmp/generated-tls-wildcard-domain-cert.yml
 #### Enable dockerfile language support (optional)
 If you are planning on building functions using the `dockerfile` template you need to set `enable_dockerfile_lang: true`.
 
+#### Enable scaling to zero
+If you want your functions to scale to zero then you need to set `scale_to_zero: true`.
+
 ### Run the `ofc-bootstrap`
 
 ```bash
