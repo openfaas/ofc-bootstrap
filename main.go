@@ -584,7 +584,7 @@ func cloneCloudComponents(tag string) error {
 	task := execute.ExecTask{
 		Command: "./scripts/clone-cloud-components.sh",
 		Shell:   true,
-		Env:     append(os.Environ(), "TAG="+tag),
+		Env:     []string{fmt.Sprintf("TAG=%v", tag)},
 	}
 
 	res, err := task.Execute()
