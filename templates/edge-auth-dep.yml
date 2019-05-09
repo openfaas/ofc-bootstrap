@@ -45,7 +45,7 @@ spec:
 # Update for your configuration:
           - name: client_secret # this can also be provided via a secret named of-client-secret
             value: ""
-         - name: client_id
+          - name: client_id
             value: "{{.ClientId}}"
           - name: oauth_provider_base_url
             value: "{{.OAuthProviderBaseURL}}"
