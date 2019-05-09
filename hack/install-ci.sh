@@ -19,4 +19,6 @@ sudo apt-get install -y kubectl
 
 curl -sLSf https://raw.githubusercontent.com/helm/helm/master/scripts/get | sudo bash
 
+export GO111MODULE="on"
+
 go get sigs.k8s.io/kind
