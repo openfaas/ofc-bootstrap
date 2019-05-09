@@ -80,7 +80,7 @@ func Apply(plan types.Plan) error {
 	}
 
 	if plan.EnableOAuth {
-		ofAuthDepErr := generateTemplate("of-auth-dep", plan, authConfig{
+		ofAuthDepErr := generateTemplate("edge-auth-dep", plan, authConfig{
 			RootDomain:           plan.RootDomain,
 			ClientId:             plan.OAuth.ClientId,
 			CustomersURL:         plan.CustomersURL,

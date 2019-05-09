@@ -1,7 +1,7 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: of-auth
+  name: edge-auth
   namespace: openfaas
 spec:
   replicas: 1
@@ -10,7 +10,7 @@ spec:
       annotations:
         prometheus.io.scrape: "false"
       labels:
-        app: of-auth
+        app: edge-auth
     spec:
       volumes:
         - name: jwt-private-key
@@ -23,8 +23,8 @@ spec:
           secret:
             secretName: of-client-secret
       containers:
-      - name: of-auth
-        image: openfaas/cloud-auth:0.5.2
+      - name: edge-auth
+        image: openfaas/edge-auth:0.5.2
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
@@ -45,7 +45,7 @@ spec:
 # Update for your configuration:
           - name: client_secret # this can also be provided via a secret named of-client-secret
             value: ""
-          - name: client_id
+         - name: client_id
             value: "{{.ClientId}}"
           - name: oauth_provider_base_url
             value: "{{.OAuthProviderBaseURL}}"

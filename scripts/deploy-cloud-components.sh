@@ -11,17 +11,17 @@ kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-svc.yml
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/rbac-import-secrets.yml
 
 if [ "$ENABLE_OAUTH" = "true" ] ; then
-    cp ./tmp/generated-of-auth-dep.yml ./tmp/openfaas-cloud/yaml/core/of-auth-dep.yml
-    kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-auth-dep.yml
-    kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-auth-svc.yml
-    kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-router-dep.yml
+    cp ./tmp/generated-edge-auth-dep.yml ./tmp/openfaas-cloud/yaml/core/edge-auth-dep.yml
+    kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-auth-dep.yml
+    kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-auth-svc.yml
+    kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-router-dep.yml
 else
     #  Disable auth service by pointing the router at the echo function:
-    sed s/auth.openfaas/echo.openfaas-fn/g ./tmp/openfaas-cloud/yaml/core/of-router-dep.yml | kubectl apply -f -
+    sed s/auth.openfaas/echo.openfaas-fn/g ./tmp/openfaas-cloud/yaml/core/edge-router-dep.yml | kubectl apply -f -
 fi
-kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-router-svc.yml
+kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-router-svc.yml
 
-kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-auth-svc.yml
+kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-auth-svc.yml
 
 
 cd ./tmp/openfaas-cloud
