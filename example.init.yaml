@@ -241,3 +241,4 @@ enable_dockerfile_lang: false
 
 # Set to true to enable scaling to zero
 scale_to_zero: false
+openfaas_cloud_version: 0.8.11

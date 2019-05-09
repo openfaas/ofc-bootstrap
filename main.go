@@ -151,6 +151,11 @@ func main() {
 
 func process(plan types.Plan) error {
 
+	if plan.OpenFaaSCloudVersion == "" {
+		plan.OpenFaaSCloudVersion = "master"
+		fmt.Println("No openfaas_cloud_version set in init.yaml, using: master.")
+	}
+
 	if plan.Orchestration == OrchestrationK8s {
 		fmt.Println("Orchestration: Kubernetes")
 	} else if plan.Orchestration == OrchestrationSwarm {
@@ -268,7 +273,7 @@ func process(plan types.Plan) error {
 			log.Println(writeErr)
 		}
 
-		cloneErr := cloneCloudComponents()
+		cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion)
 		if cloneErr != nil {
 			return cloneErr
 		}
@@ -575,10 +580,11 @@ func tillerReady() bool {
 	return res.Stdout == "1"
 }
 
-func cloneCloudComponents() error {
+func cloneCloudComponents(tag string) error {
 	task := execute.ExecTask{
 		Command: "./scripts/clone-cloud-components.sh",
 		Shell:   true,
+		Env:     append(os.Environ(), "TAG="+tag),
 	}
 
 	res, err := task.Execute()

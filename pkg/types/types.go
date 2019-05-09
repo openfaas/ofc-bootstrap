@@ -53,6 +53,7 @@ type Plan struct {
 	Deployment           Deployment               `yaml:"deployment"`
 	EnableDockerfileLang bool                     `yaml:"enable_dockerfile_lang"`
 	ScaleToZero          bool                     `yaml:"scale_to_zero"`
+	OpenFaaSCloudVersion string                   `yaml:"openfaas_cloud_version"`
 }
 
 // Deployment is the deployment section of YAML concerning
