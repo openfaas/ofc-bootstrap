@@ -29,5 +29,5 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: of-router
+          serviceName: edge-router
           servicePort: 8080

@@ -18,7 +18,7 @@ func Test_applyTemplateWithAuth(t *testing.T) {
 		Scheme:       "http",
 	}
 
-	templateFileName := "../../templates/of-auth-dep.yml"
+	templateFileName := "../../templates/edge-auth-dep.yml"
 
 	generatedValue, err := applyTemplate(templateFileName, templateValues)
 
