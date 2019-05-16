@@ -23,6 +23,9 @@ kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-router-svc.yml
 
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-auth-svc.yml
 
+if [ "$ENABLE_NETWORK_POLICIES" = "true" ] ; then
+    kubectl apply -f ./tmp/openfaas-cloud/yaml/network-policy/
+fi
 
 cd ./tmp/openfaas-cloud
 

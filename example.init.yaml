@@ -242,3 +242,6 @@ enable_dockerfile_lang: false
 # Set to true to enable scaling to zero
 scale_to_zero: false
 openfaas_cloud_version: 0.9.4
+
+# Enable network policies
+network_policies: true
