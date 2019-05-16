@@ -206,6 +206,12 @@ If you are planning on building functions using the `dockerfile` template you ne
 #### Enable scaling to zero
 If you want your functions to scale to zero then you need to set `scale_to_zero: true`.
 
+#### Toggle network policies
+
+Network policies restriction for the openfaas and openfaas-fn namespaces are applied by default. If you would like to remove that restriction set `network_policies: false`.
+
+When deployed, network policies restrict communication so that functions cannot talk to the core OpenFaaS components in the `openfaas` namespace. They also prevent functions from invoking each other directly. It is recommended to enable this feature.
+
 ### Run the `ofc-bootstrap`
 
 ```bash

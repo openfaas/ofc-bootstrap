@@ -607,11 +607,15 @@ func deployCloudComponents(plan types.Plan) error {
 	if plan.SCM == "gitlab" {
 		gitlabEnv = "GITLAB=true"
 	}
+	networkPoliciesEnv := ""
+	if plan.NetworkPolicies {
+		networkPoliciesEnv = "ENABLE_NETWORK_POLICIES=true"
+	}
 
 	task := execute.ExecTask{
 		Command: "./scripts/deploy-cloud-components.sh",
 		Shell:   true,
-		Env:     []string{authEnv, gitlabEnv},
+		Env:     []string{authEnv, gitlabEnv, networkPoliciesEnv},
 	}
 
 	res, err := task.Execute()
