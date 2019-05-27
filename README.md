@@ -271,6 +271,10 @@ Now you can install your GitHub app on a repo, run `faas-cli new` and then renam
 
 If you think that everything is set up correctly but want to troubleshoot then head over to the GitHub App webpage and click "Advanced" - here you can find each request/response from the GitHub push events. You can resend them or view any errors.
 
+#### Still not working? 
+
+The team has compiled a [Troubleshooting Guide](https://docs.openfaas.com/openfaas-cloud/self-hosted/troubleshoot/#still-not-working) which does come in handy. 
+
 #### Invite your team
 
 For each user or org you want to enroll into your OpenFaaS Cloud edit the CUSTOMERS ACL file and add their username on a new line. For example if I wanted the user `alexellis` and the org `openfaas` to host git repos containing functions:
