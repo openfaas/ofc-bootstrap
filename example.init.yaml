@@ -165,6 +165,8 @@ deployment:
     - "https://github.com/openfaas-incubator/node8-express-template.git"
     - "https://github.com/openfaas-incubator/golang-http-template.git"
     - "https://github.com/openfaas-incubator/node10-express-template.git"
+    - "https://github.com/openfaas-incubator/python-flask-template.git"
+    - "https://github.com/openfaas-incubator/ruby-http"
 
 ## Source Control Management
 ### Pick either github or gitlab
