@@ -110,12 +110,24 @@ Download [ofc-boostrap](https://github.com/openfaas-incubator/ofc-bootstrap/rele
 
 First run `cp example.init.yaml init.yaml` to get your own `init.yaml` file.
 
+#### Set the `root_domain`
+
+Edit `root_domain` and add your own domain i.e. `example.com` or `ofc.example.com`
+
+See the appendix for how to set up DNS A records for this, or edit your hosts file later.
+
+#### Prepare your Docker registry
+
 Log into your Docker registry or the Docker Hub:
 
 * Open the Docker for Mac/Windows settings and uncheck "store my password securely" / "in a keychain"
 * Run `docker login` to populate `~/.docker/config.json` - this will be used to configure your Docker registry or Docker Hub account for functions.
 
+#### Pick your SCM
+
 Choose SCM between GitHub and GitLab, by setting `scm: github` or `scm: gitlab`
+
+#### Setup your GitHub or GitLab integration
 
 Setup the GitHub / GitLab App and OAuth App
 
@@ -127,6 +139,8 @@ Setup the GitHub / GitLab App and OAuth App
 * Create your GitHub / GitLab OAuth App which is used for logging in to the dashboard
 * For GitLab update `init.yaml` with your `gitlab_instance`
 
+#### Setup your access control
+
 Create your own GitHub repo with a CUSTOMERS ACL file
 
 * Create a new public GitHub repo
@@ -136,6 +150,9 @@ Create your own GitHub repo with a CUSTOMERS ACL file
 #### Decide if you're using a LoadBalancer
 
 It can be set up on a public cloud provider with a managed Kubernetes offering, where a `LoadBalancer` is available. If you are deploying to a cloud or Kubernetes cluster where the type `LoadBalancer` is unavailable then you will need to change `ingress: loadbalancer` to `ingress: host` in `init.yaml`. This will provision Nginx as a `DaemonSet` exposed on port `80` and `443`.
+
+> Note: it is a common error for new users to try to access the dashboard using the IP address of the load-balancer.
+> You must use the DNS name for the dashboard: i.e. `system.example.com/dashboard/username`
 
 #### Use authz (optional)
 
@@ -273,15 +290,15 @@ Just replace `<username>` with your GitHub account.
 
 Now you can install your GitHub app on a repo, run `faas-cli new` and then rename the YAML file to `stack.yml` and do a `git push`. Your OpenFaaS Cloud cluster will build and deploy the functions found in that GitHub repo.
 
-#### Something went wrong?
+### Something went wrong?
 
 If you think that everything is set up correctly but want to troubleshoot then head over to the GitHub App webpage and click "Advanced" - here you can find each request/response from the GitHub push events. You can resend them or view any errors.
 
 #### Still not working? 
 
-The team has compiled a [Troubleshooting Guide](https://docs.openfaas.com/openfaas-cloud/self-hosted/troubleshoot/#still-not-working) which does come in handy. 
+Follow the detailed [Troubleshooting Guide](https://docs.openfaas.com/openfaas-cloud/self-hosted/troubleshoot/#still-not-working) in the OpenFaaS docs. If you are still stuck after that please chat with us in #openfas-cloud on Slack.
 
-#### Invite your team
+### Invite your team
 
 For each user or org you want to enroll into your OpenFaaS Cloud edit the CUSTOMERS ACL file and add their username on a new line. For example if I wanted the user `alexellis` and the org `openfaas` to host git repos containing functions:
 
