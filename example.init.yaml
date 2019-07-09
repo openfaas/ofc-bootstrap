@@ -238,12 +238,20 @@ tls_config:
   # region: us-east-1
   # access_key_id: ASYAKIUJE8AYRQQ7DU3M
 
-# Dockerfile language support
+## Dockerfile language support
+### Use with caution, it allows any workload to be built and run
 enable_dockerfile_lang: false
 
-# Set to true to enable scaling to zero
+## Set to true to enable scaling to zero
+### When enabled, all functions are included by default, to turn off add a label
+### of com.openfaas.scale.zero: "false"
 scale_to_zero: false
-openfaas_cloud_version: 0.9.4
 
-# Enable network policies
+## Version of OpenFaaS Cloud from https://github.com/openfaas/openfaas-cloud/releases/
+openfaas_cloud_version: 0.9.5
+
+## Enable network policies
+### Prevents functions from talking to the openfaas namespace, and to each other.
+### Use the ingress address for the gateway or the external IP instead.
 network_policies: true
+
