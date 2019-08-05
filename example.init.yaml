@@ -51,14 +51,17 @@ secrets:
   ### and your desired configuration.
   ### For more information see: https://github.com/openfaas/openfaas-cloud/tree/master/docs
 
-  # Value you entered into the GitHub App UI, or generate random password if left blank
+  ## This value is used by Github to talk to system-github-event, the password will be
+  ## generated if left blank. Alternatively, you can enter a password here of your own.
+  ## Enter it into the GitHub App's UI.
   - name: "github-webhook-secret"
     literals:
       - name: "github-webhook-secret"
-        value: "secret"
+        value: ""
     filters:
       - "scm_github"
     namespace: "openfaas-fn"
+
   # Download from GitHub App on GitHub UI
   - name: "private-key"
     files:
