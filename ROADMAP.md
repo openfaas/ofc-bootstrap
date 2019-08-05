@@ -40,8 +40,6 @@
 * Re-run without clean-up (i.e. no updates to config)
 * go modules (`dep` is fine, let's add features instead)
 
-
-
 ## Status
 
 Help is wanted - the code is in a private repo for OpenFaaS maintainers to contribute to. Sign-off/DCO is required and standard OpenFaaS contributing procedures apply.
