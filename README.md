@@ -234,6 +234,9 @@ When deployed, network policies restrict communication so that functions cannot 
 ```bash
 cd $GOPATH/src/github.com/openfaas-incubator/ofc-bootstrap
 
+# compile main.go, only needs to be run once
+go build
+
 ./ofc-bootstrap -yaml=init.yaml
 ```
 
