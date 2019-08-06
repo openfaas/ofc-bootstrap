@@ -45,7 +45,13 @@ You will need admin access to a Kubernetes cluster, some CLI tooling and a GitHu
 
 ### Pre-reqs
 
-This tool automates the installation of OpenFaaS Cloud on Kubernetes. We will now install some required tools and then create either a local or remote cluster.
+This tool automates the installation of OpenFaaS Cloud on Kubernetes. Before starting you will need to install some tools and then create either a local or remote cluster.
+
+For your cluster the following specifications are recommended:
+
+* 2-3 nodes with 1-2 vCPU and 2-4GB RAM each
+
+These are guidelines and not a hard requirement, you may well be able to run with fewer resources, such as with a single 2vCPU node with 2GB RAM.
 
 #### Tools
 
