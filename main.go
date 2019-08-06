@@ -82,11 +82,25 @@ func filesExists(files []types.FileSecret) error {
 }
 
 func main() {
-
+	var printVersion bool
 	vars := Vars{}
 	flag.StringVar(&vars.YamlFile, "yaml", "init.yaml", "YAML file for bootstrap")
 	flag.BoolVar(&vars.Verbose, "verbose", false, "control verbosity")
+	flag.BoolVar(&printVersion, "version", false, "print the version and exit")
+
 	flag.Parse()
+
+	if printVersion {
+		fmt.Printf(
+			`ofc-bootstrap
+  Bootstrap your own OpenFaaS Cloud within 100 seconds
+
+  Usage:
+	ofc-bootstrap -help
+
+`)
+		os.Exit(0)
+	}
 
 	if len(vars.YamlFile) == 0 {
 		fmt.Fprintf(os.Stderr, "No -yaml flag given\n")
