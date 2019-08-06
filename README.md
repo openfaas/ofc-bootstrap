@@ -387,6 +387,25 @@ echo -n $PASSWORD | faas-cli login --username admin --password-stdin
 
 At this point you can also view your UI dashboard at: http://127.0.0.1:31112
 
+#### Re-deploy the OpenFaaS Cloud functions (advanced)
+
+If you run the step above `Access your OpenFaaS UI or API`, then you can edit settings for OpenFaaS Cloud and redeploy your functions. This is an advanced step.
+
+```
+cd tmp/openfaas-cloud/
+
+# Edit stack.yml
+# Edit github.yml or gitlab.yml
+# Edit gateway_config.yml
+# Edit buildshiprun_limits.yml
+
+# Update all functions
+faas-cli deploy -f stack.yml
+
+# Update a single function, such as "buildshiprun"
+faas-cli deploy -f stack.yml --filter=buildshiprun
+```
+
 ### Invite your team
 
 For each user or org you want to enroll into your OpenFaaS Cloud edit the CUSTOMERS ACL file and add their username on a new line. For example if I wanted the user `alexellis` and the org `openfaas` to host git repos containing functions:
