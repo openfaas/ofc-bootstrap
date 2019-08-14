@@ -95,9 +95,10 @@ secrets:
       - "scm_gitlab"
     namespace: "openfaas-fn"
 
-  # DNS Service Account secret for DNS01 (wildcard) challenge
+ # DNS Service Account secret for DNS01 (wildcard) challenge
 
   ## Use DigitalOcean
+  ### Create a Personal Access Token and save it into a file, with no new-lines
   - name: "digitalocean-dns"
     files:
       - name: "access-token"
@@ -107,6 +108,7 @@ secrets:
     namespace: "cert-manager"
 
   ## Use Google Cloud DNS
+  ### Create a service account for DNS management and export it
   - name: "clouddns-service-account"
     files:
       - name: "service-account.json"
@@ -116,6 +118,7 @@ secrets:
     namespace: "cert-manager"
 
   ## Use Route 53
+  ### Create role and download its secret access key
   - name: "route53-credentials-secret"
     files:
       - name: "secret-access-key"
@@ -123,6 +126,7 @@ secrets:
     filters:
       - "route53_dns01"
     namespace: "cert-manager"
+
 
   # Used by Buildkit to push images to your registry
   - name: "registry-secret"

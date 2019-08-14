@@ -63,6 +63,7 @@ OpenFaaS Cloud installs, manages, and bundles software which spans source-contro
 * Admin-level access to a GitHub.com account or a self-hosted GitLab installation.
 * A valid email address for use with LetsEncrypt.
 * Admin access to a Kubernetes cluster.
+* The ability to create one or more git repositories - one will be for your customers ACL and the other will be your test repository to check that everything worked.
 
 #### Tools
 
@@ -202,9 +203,32 @@ Log into your own private Docker registry, or the [Docker Hub](https://hub.docke
 * Open the Docker for Mac/Windows settings and uncheck "store my password securely" / "in a keychain"
 * Run `docker login` to populate `~/.docker/config.json` - this will be used to configure your Docker registry or Docker Hub account for functions.
 
+Find the section of the YAML `registry: docker.io/ofctest/`
+
+You need to replace the value for your registry, note the final `/` which is required.
+
+* Valid: `registry: docker.io/my-org/`
+* Invalid: `registry: docker.io/my-org`
+
+* Valid: `registry: my-corp.jfrog.io/ofc-prod/`
+* Invalid: `registry: my-corp.jfrog.io/ofc-prod`
+* Invalid: `registry: my-corp.jfrog.io/`
+
 #### Pick your Source Control Management (SCM)
 
-Choose SCM between GitHub.com or GitLab self-hosted, by setting `scm: github` or `scm: gitlab`
+Choose SCM between GitHub.com or GitLab self-hosted.
+
+For GitHub set:
+
+```yaml
+scm: github
+```
+
+For GitLab set:
+
+```yaml
+scm: gitlab
+```
 
 #### Setup your GitHub or GitLab integration
 
@@ -214,8 +238,12 @@ Your SCM will need to send webhooks to OpenFaaS Cloud's github-event or gitlab-e
 
 * For GitHub create a GitHub App and download the private key file
   * Read the docs for how to [configure your GitHub App](https://docs.openfaas.com/openfaas-cloud/self-hosted/github/)
-  * Leave the `value:` for `github-webhook-secret` blank, or set your own password
-  * Update `init.yaml` where you see the `### User-input` section including your GitHub App's ID, Webhook secret and the path to its private key
+  * Leave the `value:` for `github-webhook-secret` blank for an auto-generated password, or set your own password in the GitHub App UI and in this section of the YAML.
+  * Update `init.yaml` where you see the `### User-input` section
+  * Set `app_id:` under the section named `github` with GitHub App's ID
+  * If not using a generated value, set the `github-webhook-secret` literal value with your *Webhook secret* for the GitHub App's
+  * Click *Generate a private key*, this will be downloaded to your local computer (if you ever need a new one, generate a new one and delete the old key)
+  * Update the `private-key` `value_from` to the path of the GitHub App's private key
 
 * For GitLab create a System Hook
   * Leave the `value:` for `gitlab-webhook-secret` blank, or set your own password
@@ -225,13 +253,16 @@ Your SCM will need to send webhooks to OpenFaaS Cloud's github-event or gitlab-e
 
 #### Setup your access control
 
-Access control to your OFC is controlled by a text file containing a list of valid usernames.
+Access control to your OFC is controlled by a text file containing a list of valid usernames or organisations. This list only needs to contain organisation names, or the names of the users who are hosting repositories that OFC will manage.
 
-Create a new GitHub repository with a CUSTOMERS ACL file. This repository should not contain any code or functions.
+Create a new GitHub repository with a CUSTOMERS ACL file.
+
+> Note: This repository should not contain any code or functions.
 
 * Create a new public GitHub repo
 * Add a file named `CUSTOMERS` and place each username or GitHub org you will use on a separate line
-* Add the GitHub RAW CDN URL into the `init.yaml` file
+* Find the GitHub "raw" URL (CDN)
+* Copy and paste the raw URL into th `init.yaml` file in `customers_url: `
 
 #### Decide if you're using a LoadBalancer
 
@@ -244,41 +275,53 @@ If you are deploying to a cloud or Kubernetes cluster where the type `LoadBalanc
 
 #### Use authz (recommended)
 
-> This feature is optional, but highly recommended
+If you'd like to restrict who can log in to just those who use a GitHub account then create a GitHub OAuth App or the equivalent in GitLab.
 
-If you'd like to restrict who can log in to just those who use a GitHub account then create a GitHub OAuth App.
+* Set `enable_oauth: ` to `true`
+
+> This feature is optional, but highly recommended
 
 Enable `auth` and fill out the OAuth App `client_id`. Configure `of-client-secret` with the OAuth App Client Secret.
 For GitLab set your `oauth_provider_base_url`.
 
+* Set `client_id: ` in the `oauth: ` section with the value of your OAuth `client_id`
+* Set `of-client-secret` in the secrets section at the top of the file using the value from your OAuth `client_secret`
+
+#### Customise s3 (not recommended)
+
+By default OpenFaaS Cloud will deploy Minio to keep track of your build logs. This can be customised to point at any compatible object storage service such as AWS S3 or DigitalOcean Spaces.
+
+Set `s3_url`, `s3_region` `s3_tls` and `s3_bucket` with appropriate values.
+
 #### Use TLS (recommended)
+
+OpenFaaS Cloud can use cert-manager to automatically provision TLS certificates for your OpenFaaS Cloud cluster using the DNS01 challenge.
 
 > This feature is optional, but highly recommended
 
-We can automatically provision TLS certificates for your OpenFaaS Cloud cluster using the DNS01 challenge.
-
 Pick between the following providers for the DNS01 challenge:
 
-* DigitalOcean DNS
+* DigitalOcean DNS (free at time of writing)
 * Google Cloud DNS
 * AWS Route53
 
-> Note: At time of writing DigitalOcean are offering management of DNS records for free.
+> See also: [cert-manager docs for ACME/DNS01](https://docs.cert-manager.io/en/latest/tasks/issuers/setup-acme/index.html)
 
-Configure or comment out as required in the relevant section.
+> Note: Comment out the relevant sections and configure as necessary
 
-You should also set up the corresponding DNS A records in your DNS management dashboard after finishing all the steps in this guide.
+You will set up the corresponding DNS A records in your DNS management dashboard after `ofc-bootstrap` has completed in the final step of the guide.
 
 In order to enable TLS, edit the following configuration:
 
 * Set `tls: true`
 * Choose between `issuer_type: "prod"` or `issuer_type: "staging"`
-* Choose between DNS Service `route53`, `clouddns` or `digitalocean` and then update init.yaml
-* Go to `# DNS Service Account secret` and choose and uncomment the section you need
+* Choose between DNS Service `route53`, `clouddns` or `digitalocean` and then update `init.yaml`
+* If you are using an API credential for DigitalOcean, AWS or GCP, then download that file from your cloud provider and set the appropriate path.
+* Go to `# DNS Service Account secret` in `init.yaml` and choose and uncomment the section you need.
 
 You can start out by using the Staging issuer, then switch to the production issuer.
 
-* Set `issuer_type: "production"` (recommended) or `issuer_type: "staging"` (for testing)
+* Set `issuer_type: "prod"` (recommended) or `issuer_type: "staging"` (for testing)
 
 > Note if you want to switch from the staging TLS certificates to production certificates, see the appendix.
 
@@ -286,19 +329,23 @@ You can start out by using the Staging issuer, then switch to the production iss
 
 If you are planning on building functions using the `dockerfile` template you need to set `enable_dockerfile_lang: true`.
 
-When this value is set to false, your users can only use your recommended set of templates.
+When this value is set to `false`, your users can only use your recommended set of templates.
 
 #### Enable scaling to zero
 
 If you want your functions to scale to zero then you need to set `scale_to_zero: true`.
 
-#### Toggle network policies
+#### Set the OpenFaaS Cloud version (optional)
+
+This value should normally be left as per the number in the master branch, however you can edit `openfaas_cloud_version` if required.
+
+#### Toggle network policies (recommended)
 
 Network policies restriction for the `openfaas` and `openfaas-fn` namespaces are applied by default.
 
 When deployed, network policies restrict communication so that functions cannot talk to the core OpenFaaS components in the `openfaas` namespace. They also prevent functions from invoking each other directly. It is recommended to enable this feature.
 
-If you would like to remove that restriction set `network_policies: false`.
+The default behaviour is to enable policies. If you would like to remove the restrictions, then set `network_policies: false`.
 
 ### Run `ofc-bootstrap`
 
@@ -435,7 +482,7 @@ faas-cli deploy -f stack.yml --filter=buildshiprun
 
 ### Invite your team
 
-For each user or org you want to enroll into your OpenFaaS Cloud edit the CUSTOMERS ACL file and add their username on a new line. For example if I wanted the user `alexellis` and the org `openfaas` to host git repos containing functions:
+For each user or org you want to enroll into your OpenFaaS Cloud edit the `CUSTOMERS` ACL file and add their username on a new line.
 
 ```
 openfaas
