@@ -162,9 +162,9 @@ For Linux use the binary with no suffix, for MacOS, use the binary with the `-da
 
 ### Create your own `init.yaml`
 
-You will need to read the whole `init.yaml` file carefully including all the comments. Each setting is described with a comment to help you decide what value to set.
-
 First run `cp example.init.yaml init.yaml` to get your own `init.yaml` file.
+
+You will need to read the whole `init.yaml` file carefully including all the comments. Each setting is described with a comment to help you decide what value to set.
 
 #### Set the `root_domain`
 
