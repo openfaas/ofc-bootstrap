@@ -53,6 +53,17 @@ For your cluster the following specifications are recommended:
 
 These are guidelines and not a hard requirement, you may well be able to run with fewer resources, such as with a single 2vCPU node with 2GB RAM.
 
+#### Credentials and dependent systems
+
+OpenFaaS Cloud installs, manages, and bundles software which spans source-control, TLS, DNS, and Docker image registries. You must have the following prepared before you start your installation.
+
+* You'll need to register a domain-name and set it up for management in Google Cloud DNS, DigitalOcean or AWS Route 53.
+* Set up a registry - the simplest option is to use your Docker Hub account. You can also use your own private registry or a cloud-hosted registry. You will need the credentials.
+* `docker` installed locally so that you can provide the `config.json` file with credentials.
+* Admin-level to a GitHub.com account or a self-hosted GitLab installation.
+* A valid email address for use with LetsEncrypt.
+* Admin access to a Kubernetes cluster.
+
 #### Tools
 
 * Kubernetes - [development options](https://blog.alexellis.io/be-kind-to-yourself/)
@@ -168,7 +179,9 @@ Create your own `init.yaml` file from the example:
 cp example.init.yaml init.yaml
 ```
 
-You will need to read the whole `init.yaml` file carefully including all the comments. Each setting is described with a comment to help you decide what value to set.
+In the following steps you will make a series of edits to the `init.yaml` file to customize it for your OpenFaaS Cloud installation.
+
+Each setting is described with a comment to help you decide what value to set.
 
 #### Set the `root_domain`
 
