@@ -58,9 +58,9 @@ These are guidelines and not a hard requirement, you may well be able to run wit
 OpenFaaS Cloud installs, manages, and bundles software which spans source-control, TLS, DNS, and Docker image registries. You must have the following prepared before you start your installation.
 
 * You'll need to register a domain-name and set it up for management in Google Cloud DNS, DigitalOcean or AWS Route 53.
-* Set up a registry - the simplest option is to use your Docker Hub account. You can also use your own private registry or a cloud-hosted registry. You will need the credentials.
+* Set up a registry - the simplest option is to use your [Docker Hub](https://hub.docker.com) account. You can also use your own private registry or a cloud-hosted registry. You will need the credentials.
 * `docker` installed locally so that you can provide the `config.json` file with credentials.
-* Admin-level to a GitHub.com account or a self-hosted GitLab installation.
+* Admin-level access to a GitHub.com account or a self-hosted GitLab installation.
 * A valid email address for use with LetsEncrypt.
 * Admin access to a Kubernetes cluster.
 
