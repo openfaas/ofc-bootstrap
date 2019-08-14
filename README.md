@@ -447,7 +447,6 @@ You may still want access to your OpenFaaS cluster, in which case run the follow
 # Fetch your generated admin password:
 
 export PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
-echo -n $PASSWORD | faas-cli login --username admin --password-stdin
 
 # Open a tunnel to the gateway using `kubectl`:
 kubectl port-forward -n openfaas deploy/gateway 31112:8080 &
