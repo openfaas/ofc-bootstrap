@@ -73,9 +73,11 @@ kubectl create clusterrolebinding "cluster-admin-$(whoami)" \
 
 ### Create a Kubernetes cluster
 
-You may already have a Kubernetes cluster, if not, then follow the instructions below picking either 1) or 2).
+You may already have a Kubernetes cluster, if not, then follow the instructions below.
 
-#### 1)  Create a production cluster
+Pick either A or B.
+
+#### A)  Create a production cluster
 
 You can create a managed or self-hosted Kubernetes cluster using a Kubernetes engine from a cloud provider, or by running either `kubeadm` or `k3s`.
 
@@ -99,7 +101,9 @@ Check this with:
 kubectl config get-contexts
 ```
 
-#### 2) Create a local cluster for development / testing
+Do not follow the instructions for B).
+
+#### B) Create a local cluster for development / testing
 
 For testing you can create a local cluster using `kind`, `minikube` or Docker Desktop. This is how you can install `kind` to setup a local cluster in a Docker container.
 
