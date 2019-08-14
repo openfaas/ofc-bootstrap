@@ -71,7 +71,7 @@ getPackage() {
     url=https://github.com/alexellis/ofc-bootstrap/releases/download/$version/ofc-bootstrap$suffix
     echo "Downloading package $url as $targetFile"
 
-    curl -sSL $url --output $targetFile
+    curl -sSLf $url --output $targetFile
 
     if [ "$?" = "0" ]; then
 
