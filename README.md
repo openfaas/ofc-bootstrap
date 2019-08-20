@@ -361,9 +361,11 @@ Pay attention to the output from the tool and watch out for any errors that may 
 
 ### Finish the configuration
 
-If you get anything wrong, don't worry you can use the `./scripts/reset.sh` file to remove all the components. Then edit `init.yaml` and start over.
+If you get anything wrong, there are some instructions in the appendix on how to make edits. It is usually easier to edit `init.yaml` and re-run the tool.
 
-> Note: Be careful running this script and make 100% sure that you are pointing at the correct cluster.
+If you want to completely remove all the components that `ofc-bootstrap` installed to start-over then you can use: `./scripts/reset.sh`. Caution: read the contents of the script carefully before running it.
+
+> Note: Be careful if you run `reset.sh` and make 100% sure that you are pointing at the correct cluster by checking `kubectl config get-context`.
 
 #### Configure DNS
 
