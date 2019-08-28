@@ -1,5 +1,7 @@
 # Build stage
-FROM golang:1.10 as builder
+FROM golang:1.11 as builder
+
+ENV CGO_ENABLED=0
 
 WORKDIR /usr/bin/
 RUN curl -sLSf https://raw.githubusercontent.com/alexellis/license-check/master/get.sh | sh
@@ -20,7 +22,7 @@ RUN go test $(go list ./... | grep -v /vendor/ | grep -v /template/|grep -v /bui
     -a -installsuffix cgo -o ofc-bootstrap
 
 # Release stage
-FROM alpine:3.8
+FROM alpine:3.10
 
 RUN apk --no-cache add ca-certificates git
 
