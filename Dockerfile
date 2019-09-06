@@ -14,9 +14,9 @@ RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*"))"
 
 RUN /usr/bin/license-check -path ./ --verbose=false "Alex Ellis" "OpenFaaS Author(s)"
 RUN go test $(go list ./... | grep -v /vendor/ | grep -v /template/|grep -v /build/) -cover \
- && VERSION=$(git describe --all --exact-match `git rev-parse HEAD` | grep tags | sed 's/tags\///') \
- && GIT_COMMIT=$(git rev-list -1 HEAD) \
- && CGO_ENABLED=0 GOOS=linux go build --ldflags "-s -w \
+    && VERSION=$(git describe --all --exact-match `git rev-parse HEAD` | grep tags | sed 's/tags\///') \
+    && GIT_COMMIT=$(git rev-list -1 HEAD) \
+    && CGO_ENABLED=0 GOOS=linux go build --ldflags "-s -w \
     -X github.com/openfaas-incubator/ofc-bootstrap/version.GitCommit=${GIT_COMMIT} \
     -X github.com/openfaas-incubator/ofc-bootstrap/version.Version=${VERSION}" \
     -a -installsuffix cgo -o ofc-bootstrap
