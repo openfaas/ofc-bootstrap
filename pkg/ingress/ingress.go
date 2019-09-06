@@ -15,7 +15,6 @@ type IngressTemplate struct {
 	RootDomain string
 	TLS        bool
 	IssuerType string
-	DNSService string
 }
 
 // Apply templates and applies any ingress records required
@@ -26,18 +25,16 @@ func Apply(plan types.Plan) error {
 		RootDomain: plan.RootDomain,
 		TLS:        plan.TLS,
 		IssuerType: plan.TLSConfig.IssuerType,
-		DNSService: plan.TLSConfig.DNSService,
 	})
 
 	if err != nil {
 		return err
 	}
 
-	err1 := apply("ingress.yml", "ingress", IngressTemplate{
+	err1 := apply("ingress-auth.yml", "ingress-auth", IngressTemplate{
 		RootDomain: plan.RootDomain,
 		TLS:        plan.TLS,
 		IssuerType: plan.TLSConfig.IssuerType,
-		DNSService: plan.TLSConfig.DNSService,
 	})
 
 	if err1 != nil {

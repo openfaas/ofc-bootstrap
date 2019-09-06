@@ -5,19 +5,18 @@ metadata:
   namespace: openfaas
 spec:
   acme:
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
     email: "{{.Email}}"
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: letsencrypt-staging
-    dns01:
-      providers:
-      - name: {{.DNSService}}
+    solvers:
+    - dns01:
         {{.DNSService}}:
           {{ if eq .DNSService "clouddns" }}
+          project: "{{.ProjectID}}"
           serviceAccountSecretRef:
             name: "{{.DNSService}}-service-account"
             key: service-account.json
-          project: "{{.ProjectID}}"
           {{else if eq .DNSService "route53" }}
           region: {{.Region}}
           # optional if ambient credentials are available; see ambient credentials documentation
