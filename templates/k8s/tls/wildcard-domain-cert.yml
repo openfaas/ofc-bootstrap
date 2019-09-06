@@ -12,10 +12,3 @@ spec:
   commonName: '*.{{.RootDomain}}'
   dnsNames:
   - '*.{{.RootDomain}}'
-  acme:
-    config:
-    - dns01:
-        ingressClass: nginx
-        provider: {{.DNSService}}
-      domains:
-      - "*.{{.RootDomain}}"
