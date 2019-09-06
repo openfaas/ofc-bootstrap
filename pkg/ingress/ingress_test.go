@@ -11,7 +11,7 @@ func Test_applyTemplateWithTLS(t *testing.T) {
 		TLS:        true,
 	}
 
-	templateFileName := "../../templates/k8s/ingress.yml"
+	templateFileName := "../../templates/k8s/ingress-auth.yml"
 
 	generatedValue, err := applyTemplate(templateFileName, templateValues)
 	want := "tls"
