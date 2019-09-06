@@ -12,10 +12,3 @@ spec:
   commonName: 'auth.system.{{.RootDomain}}'
   dnsNames:
   - 'auth.system.{{.RootDomain}}'
-  acme:
-    config:
-    - dns01:
-        ingressClass: nginx
-        provider: {{.DNSService}}
-      domains:
-      - auth.system.{{.RootDomain}}
