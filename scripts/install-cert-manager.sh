@@ -1,6 +1,3 @@
-# Install the CustomResourceDefinition resources separately
-kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.10/deploy/manifests/00-crds.yaml
-
 # Add the Jetstack Helm repository
 helm repo add jetstack https://charts.jetstack.io
 
