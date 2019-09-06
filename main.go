@@ -14,6 +14,7 @@ import (
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/stack"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/tls"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
+	"github.com/openfaas-incubator/ofc-bootstrap/version"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -86,7 +87,7 @@ func main() {
 	vars := Vars{}
 	flag.StringVar(&vars.YamlFile, "yaml", "init.yaml", "YAML file for bootstrap")
 	flag.BoolVar(&vars.Verbose, "verbose", false, "control verbosity")
-	flag.BoolVar(&printVersion, "version", false, "print the version and exit")
+	flag.BoolVar(&printVersion, "version", false, "print the version of the CLI")
 
 	flag.Parse()
 
@@ -95,10 +96,10 @@ func main() {
 			`ofc-bootstrap
   Bootstrap your own OpenFaaS Cloud within 100 seconds
 
-  Usage:
-	ofc-bootstrap -help
+ Commit: %s
+ Version: %s
 
-`)
+`, version.GitCommit, version.GetVersion())
 		os.Exit(0)
 	}
 
