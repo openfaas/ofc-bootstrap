@@ -2,6 +2,13 @@
 ./scripts/reset-kind.sh
 export KUBECONFIG="$(kind get kubeconfig-path --name="1")"
 
+#add kubectl in ci stage
+sudo apt-get update && sudo apt-get install -y apt-transport-https
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubectl
+
 # Build the code
 go build
 
