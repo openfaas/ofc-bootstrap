@@ -18,70 +18,6 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-// Vars are variables parsed from flags
-type Vars struct {
-	YamlFile string
-	Verbose  bool
-}
-
-const (
-	// OrchestrationK8s uses Kubernetes
-	OrchestrationK8s = "kubernetes"
-
-	// OrchestrationSwarm uses Docker Swarm
-	OrchestrationSwarm = "swarm"
-)
-
-func taskGivesStdout(tool string) error {
-	task := execute.ExecTask{Command: tool}
-	res, err := task.Execute()
-	if err != nil {
-		return fmt.Errorf("could not run: '%s', error: %s", tool, err)
-	}
-	if len(res.Stdout) == 0 {
-		return fmt.Errorf("error executing '%s', no output was given - tool is available in PATH", task.Command)
-	}
-	return nil
-}
-
-func validateTools(tools []string) error {
-
-	for _, tool := range tools {
-		err := taskGivesStdout(tool)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-
-}
-
-func validatePlan(plan types.Plan) error {
-	for _, secret := range plan.Secrets {
-		if featureEnabled(plan.Features, secret.Filters) {
-			err := filesExists(secret.Files)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
-
-func filesExists(files []types.FileSecret) error {
-	if len(files) > 0 {
-		for _, file := range files {
-			if len(file.ValueCommand) == 0 {
-				if _, err := os.Stat(file.ExpandValueFrom()); err != nil {
-					return err
-				}
-			}
-		}
-	}
-	return nil
-}
-
 func main() {
 	var printVersion bool
 	vars := Vars{}
@@ -90,6 +26,8 @@ func main() {
 	flag.BoolVar(&printVersion, "version", false, "print the version of the CLI")
 
 	flag.Parse()
+
+	fmt.Println(version.Logo)
 
 	if printVersion {
 		fmt.Printf(
@@ -162,6 +100,70 @@ func main() {
 	}
 
 	fmt.Fprintf(os.Stdout, "Plan completed in %f seconds\n", done.Seconds())
+}
+
+// Vars are variables parsed from flags
+type Vars struct {
+	YamlFile string
+	Verbose  bool
+}
+
+const (
+	// OrchestrationK8s uses Kubernetes
+	OrchestrationK8s = "kubernetes"
+
+	// OrchestrationSwarm uses Docker Swarm
+	OrchestrationSwarm = "swarm"
+)
+
+func taskGivesStdout(tool string) error {
+	task := execute.ExecTask{Command: tool}
+	res, err := task.Execute()
+	if err != nil {
+		return fmt.Errorf("could not run: '%s', error: %s", tool, err)
+	}
+	if len(res.Stdout) == 0 {
+		return fmt.Errorf("error executing '%s', no output was given - tool is available in PATH", task.Command)
+	}
+	return nil
+}
+
+func validateTools(tools []string) error {
+
+	for _, tool := range tools {
+		err := taskGivesStdout(tool)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+
+}
+
+func validatePlan(plan types.Plan) error {
+	for _, secret := range plan.Secrets {
+		if featureEnabled(plan.Features, secret.Filters) {
+			err := filesExists(secret.Files)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func filesExists(files []types.FileSecret) error {
+	if len(files) > 0 {
+		for _, file := range files {
+			if len(file.ValueCommand) == 0 {
+				if _, err := os.Stat(file.ExpandValueFrom()); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 func process(plan types.Plan) error {

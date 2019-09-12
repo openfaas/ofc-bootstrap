@@ -14,3 +14,10 @@ func GetVersion() string {
 	}
 	return Version
 }
+
+const Logo = `  ___  _____ ____ 
+ / _ \|  ___/ ___|
+| | | | |_ | |    
+| |_| |  _|| |___ 
+ \___/|_|   \____|
+`
