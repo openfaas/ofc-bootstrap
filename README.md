@@ -354,7 +354,7 @@ If you are now ready, you can run the `ofc-bootstrap` tool:
 ```bash
 cd $GOPATH/src/github.com/openfaas-incubator/ofc-bootstrap
 
-./ofc-bootstrap -yaml=init.yaml
+ofc-bootstrap -yaml=init.yaml
 ```
 
 Pay attention to the output from the tool and watch out for any errors that may come up. You will need to store the logs and share them with the maintainers if you run into any issues.
