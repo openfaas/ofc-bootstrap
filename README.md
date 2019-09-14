@@ -58,12 +58,12 @@ These are guidelines and not a hard requirement, you may well be able to run wit
 OpenFaaS Cloud installs, manages, and bundles software which spans source-control, TLS, DNS, and Docker image registries. You must have the following prepared before you start your installation.
 
 * You'll need to register a domain-name and set it up for management in Google Cloud DNS, DigitalOcean or AWS Route 53.
-* Set up a registry - the simplest option is to use your [Docker Hub](https://hub.docker.com) account. You can also use your own private registry or a cloud-hosted registry. You will need the credentials.
+* Set up a registry - the simplest option is to use your [Docker Hub](https://hub.docker.com) account. You can also use your own private registry or a cloud-hosted registry. You will need the credentials. If you need to, [set up your own private registry](https://github.com/alexellis/k8s-tls-registry).
 * `docker` installed locally so that you can provide the `config.json` file with credentials.
 * Admin-level access to a GitHub.com account or a self-hosted GitLab installation.
-* A valid email address for use with LetsEncrypt.
+* A valid email address for use with [LetsEncrypt](https://letsencrypt.org), beware of [rate limits](https://letsencrypt.org/docs/rate-limits/).
 * Admin access to a Kubernetes cluster.
-* The ability to create one or more git repositories - one will be for your customers ACL and the other will be your test repository to check that everything worked.
+* The ability to create one or more git repositories - one will be for your `CUSTOMERS` Access-Control List ACL and the other will be your test repository to check that everything worked.
 
 #### Tools
 
@@ -255,7 +255,7 @@ Your SCM will need to send webhooks to OpenFaaS Cloud's github-event or gitlab-e
 
 Access control to your OFC is controlled by a text file containing a list of valid usernames or organisations. This list only needs to contain organisation names, or the names of the users who are hosting repositories that OFC will manage.
 
-Create a new GitHub repository with a CUSTOMERS ACL file.
+Create a new GitHub repository with a CUSTOMERS Access Control List (ACL) file.
 
 > Note: This repository should not contain any code or functions.
 
@@ -381,13 +381,13 @@ When ofc-bootstrap has completed and you know the IP of your LoadBalancer:
 
 Now over on GitHub / GitLab enter the URL for webhooks:
 
-GitHub:
+GitHub.com:
 
 ```
 http://system.example.com/github-event
 ```
 
-GitLab:
+GitLab self-hosted:
 
 ```
 http://system.example.com/gitlab-event
