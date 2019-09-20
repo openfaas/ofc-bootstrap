@@ -1,6 +1,6 @@
 ## Roadmap
 
-### Goals for initial release
+### Goals for 1.0
 
 * Install OpenFaaS and Install OpenFaaS Cloud with a single command
 * Mirror features and config of OpenFaaS Cloud Community Cluster
@@ -10,19 +10,15 @@
 * Offer a flag for sourcing configuration from a YAML file
 * Offer a dry-run flag or configuration in the YAML file
 * Build a config file for the current OpenFaaS Cloud Community Cluster
-* Light-weight unit-testing
-
-### Goals for 1.0
-
+* Light-touch unit-testing
 * Publish a static binary on GitHub Releases for `ofc-bootstrap` tool
 * Use GitLab for as SCM (the source for git)
-* Implement a back-end for Swarm in addition to the Kubernetes support.
-* Allow namespaces to be overriden from `openfaas`/`openfaas-fn` to something else
+* Allow namespaces to be overridden from `openfaas`/`openfaas-fn` to something else
 
 ### Goals for 2.0
 
-* Build a suitable dev environment for local work (without Ingress, TLS)
 * Add version number to YAML file i.e `1.0` to enable versioning/migration of configs
+* Build a suitable dev environment for local work (without Ingress, TLS)
 * Move code into official CLI via `faas-cli system install openfaas-cloud`
 * Separate out the OpenFaaS installation for the official CLI `faas-cli system install --kubernetes/--swarm`
 
@@ -37,15 +33,15 @@
 * Installing, configuring or provisioning Kubernetes clusters or nodes
 * Running on a system without bash
 * Terraform/Ansible/Puppet style of experience
-* Re-run without clean-up (i.e. no updates to config)
+* Re-run without clean-up (i.e. no updates or upgrades)
 * go modules (`dep` is fine, let's add features instead)
+* Swarm support
 
 ## Status
 
 Help is wanted - the code is in a private repo for OpenFaaS maintainers to contribute to. Sign-off/DCO is required and standard OpenFaaS contributing procedures apply.
 
 Status:
-* [ ] Flag: Add dry-run to init.yaml
 * [x] Step: generate `payload_secret` for trust
 * [x] Refactor: default to init.yaml if present
 * [x] Step: Clone OpenFaaS Cloud repo https://github.com/openfaas/openfaas-cloud
@@ -72,7 +68,7 @@ Status:
 * [x] init.yml - define and OAuth App and load via struct
 * [x] Step: generate secrets and keys for the auth service (see auth/README.md)
 * [x] Template: auth service deployment YAML file
-* [ ] Refactor: Generate passwords via Golang code or library
+* [x] Refactor: Generate passwords via Golang code or library
 
 Add all remaining steps from [installation guide](https://github.com/openfaas/openfaas-cloud/tree/master/docs).
 
