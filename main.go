@@ -111,9 +111,6 @@ type Vars struct {
 const (
 	// OrchestrationK8s uses Kubernetes
 	OrchestrationK8s = "kubernetes"
-
-	// OrchestrationSwarm uses Docker Swarm
-	OrchestrationSwarm = "swarm"
 )
 
 func taskGivesStdout(tool string) error {
@@ -173,132 +170,123 @@ func process(plan types.Plan) error {
 		fmt.Println("No openfaas_cloud_version set in init.yaml, using: master.")
 	}
 
-	if plan.Orchestration == OrchestrationK8s {
-		fmt.Println("Orchestration: Kubernetes")
-	} else if plan.Orchestration == OrchestrationSwarm {
-		fmt.Println("Orchestration: Swarm")
+	nsErr := createNamespaces()
+	if nsErr != nil {
+		log.Println(nsErr)
 	}
 
-	if plan.Orchestration == OrchestrationK8s {
+	fmt.Println("Building Ingress")
+	tillerErr := installTiller()
+	if tillerErr != nil {
+		log.Println(tillerErr)
+	}
 
-		nsErr := createNamespaces()
-		if nsErr != nil {
-			log.Println(nsErr)
+	retries := 260
+	for i := 0; i < retries; i++ {
+		log.Printf("Is tiller ready? %d/%d\n", i+1, retries)
+		ready := tillerReady()
+		if ready {
+			break
 		}
+		time.Sleep(time.Second * 2)
+	}
 
-		fmt.Println("Building Ingress")
-		tillerErr := installTiller()
-		if tillerErr != nil {
-			log.Println(tillerErr)
+	if err := helmRepoUpdate(); err != nil {
+		log.Println(err.Error())
+	}
+
+	installIngressErr := installIngressController(plan.Ingress)
+	if installIngressErr != nil {
+		log.Println(installIngressErr.Error())
+	}
+
+	createSecrets(plan)
+
+	saErr := patchFnServiceaccount()
+	if saErr != nil {
+		log.Println(saErr)
+	}
+
+	minioErr := installMinio()
+	if minioErr != nil {
+		log.Println(minioErr)
+	}
+
+	if plan.TLS {
+		cmErr := installCertmanager()
+		if cmErr != nil {
+			log.Println(cmErr)
 		}
+	}
 
-		retries := 260
+	functionAuthErr := createFunctionsAuth()
+	if functionAuthErr != nil {
+		log.Println(functionAuthErr.Error())
+	}
+
+	ofErr := installOpenfaas(plan.ScaleToZero)
+	if ofErr != nil {
+		log.Println(ofErr)
+	}
+
+	if plan.TLS {
 		for i := 0; i < retries; i++ {
-			log.Printf("Is tiller ready? %d/%d\n", i+1, retries)
-			ready := tillerReady()
+			log.Printf("Is cert-manager ready? %d/%d\n", i+1, retries)
+			ready := certManagerReady()
 			if ready {
 				break
 			}
 			time.Sleep(time.Second * 2)
 		}
+	}
 
-		if err := helmRepoUpdate(); err != nil {
-			log.Println(err.Error())
+	ingressErr := ingress.Apply(plan)
+	if ingressErr != nil {
+		log.Println(ingressErr)
+	}
+
+	if plan.TLS {
+		tlsErr := tls.Apply(plan)
+		if tlsErr != nil {
+			log.Println(tlsErr)
 		}
+	}
 
-		installIngressErr := installIngressController(plan.Ingress)
-		if installIngressErr != nil {
-			log.Println(installIngressErr.Error())
+	fmt.Println("Creating stack.yml")
+
+	planErr := stack.Apply(plan)
+	if planErr != nil {
+		log.Println(planErr)
+	}
+
+	sealedSecretsErr := installSealedSecrets()
+	if sealedSecretsErr != nil {
+		log.Println(sealedSecretsErr)
+	}
+
+	for i := 0; i < retries; i++ {
+		log.Printf("Are SealedSecrets ready? %d/%d\n", i+1, retries)
+		ready := sealedSecretsReady()
+		if ready {
+			break
 		}
+		time.Sleep(time.Second * 2)
+	}
 
-		createSecrets(plan)
+	pubCert := exportSealedSecretPubCert()
+	writeErr := ioutil.WriteFile("tmp/pubcert.pem", []byte(pubCert), 0700)
+	if writeErr != nil {
+		log.Println(writeErr)
+	}
 
-		saErr := patchFnServiceaccount()
-		if saErr != nil {
-			log.Println(saErr)
-		}
+	cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion)
+	if cloneErr != nil {
+		return cloneErr
+	}
 
-		minioErr := installMinio()
-		if minioErr != nil {
-			log.Println(minioErr)
-		}
-
-		if plan.TLS {
-			cmErr := installCertmanager()
-			if cmErr != nil {
-				log.Println(cmErr)
-			}
-		}
-
-		functionAuthErr := createFunctionsAuth()
-		if functionAuthErr != nil {
-			log.Println(functionAuthErr.Error())
-		}
-
-		ofErr := installOpenfaas(plan.ScaleToZero)
-		if ofErr != nil {
-			log.Println(ofErr)
-		}
-
-		if plan.TLS {
-			for i := 0; i < retries; i++ {
-				log.Printf("Is cert-manager ready? %d/%d\n", i+1, retries)
-				ready := certManagerReady()
-				if ready {
-					break
-				}
-				time.Sleep(time.Second * 2)
-			}
-		}
-
-		ingressErr := ingress.Apply(plan)
-		if ingressErr != nil {
-			log.Println(ingressErr)
-		}
-
-		if plan.TLS {
-			tlsErr := tls.Apply(plan)
-			if tlsErr != nil {
-				log.Println(tlsErr)
-			}
-		}
-
-		fmt.Println("Creating stack.yml")
-
-		planErr := stack.Apply(plan)
-		if planErr != nil {
-			log.Println(planErr)
-		}
-
-		sealedSecretsErr := installSealedSecrets()
-		if sealedSecretsErr != nil {
-			log.Println(sealedSecretsErr)
-		}
-
-		for i := 0; i < retries; i++ {
-			log.Printf("Are SealedSecrets ready? %d/%d\n", i+1, retries)
-			ready := sealedSecretsReady()
-			if ready {
-				break
-			}
-			time.Sleep(time.Second * 2)
-		}
-
-		pubCert := exportSealedSecretPubCert()
-		writeErr := ioutil.WriteFile("tmp/pubcert.pem", []byte(pubCert), 0700)
-		if writeErr != nil {
-			log.Println(writeErr)
-		}
-
-		cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion)
-		if cloneErr != nil {
-			return cloneErr
-		}
-
-		deployErr := deployCloudComponents(plan)
-		if deployErr != nil {
-			return deployErr
-		}
+	deployErr := deployCloudComponents(plan)
+	if deployErr != nil {
+		return deployErr
 	}
 
 	return nil
@@ -528,13 +516,9 @@ func createSecrets(plan types.Plan) error {
 			fmt.Printf("Creating secret: %s\n", secret.Name)
 
 			var command execute.ExecTask
-			if plan.Orchestration == OrchestrationK8s {
-				command = execute.ExecTask{
-					Command: types.CreateK8sSecret(secret),
-					Shell:   false,
-				}
-			} else if plan.Orchestration == OrchestrationSwarm {
-				command = execute.ExecTask{Command: types.CreateDockerSecret(secret)}
+			command = execute.ExecTask{
+				Command: types.CreateK8sSecret(secret),
+				Shell:   false,
 			}
 
 			res, err := command.Execute()

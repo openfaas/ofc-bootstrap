@@ -1,4 +1,4 @@
-orchestration: kubernetes
+orchestration: kubernetes  # This line can be removed in 0.7.3
 secrets:
   ### Generated secrets (do not edit)
   - name: s3-secret-key
