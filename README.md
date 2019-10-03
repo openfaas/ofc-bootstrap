@@ -53,6 +53,18 @@ For your cluster the following specifications are recommended:
 
 These are guidelines and not a hard requirement, you may well be able to run with fewer resources, such as with a single 2vCPU node with 2GB RAM.
 
+#### Note for k3s users
+
+If using k3s. ofc-bootstrap uses Nginx for its IngressController, but k3s ships with Traefik and this will configuration is incompatible. When you set up k3s, make sure you pass the `--no-deploy traefik` flag.
+
+Example with [k3sup](https://k3sup.dev):
+
+```sh
+k3sup install --ip $IP --user $USER --k3s-extra-args `--no-deploy traefik`
+```
+
+> From Alex: If you're planning on using k3s with DigitalOcean, please stop and think why you are doing this instead of using the managed service called DOKS. DOKS is a free, managed control-plane and much less work for you, k3s on Droplets will be more expensive given that you have to run your own "master".
+
 #### Credentials and dependent systems
 
 OpenFaaS Cloud installs, manages, and bundles software which spans source-control, TLS, DNS, and Docker image registries. You must have the following prepared before you start your installation.
