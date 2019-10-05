@@ -237,6 +237,20 @@ It should look like this, if it does not, then remove the file and run `docker l
 }
 ```
 
+If you absolutely cannot get Docker to store a password in plaintext, try the following as a last resort:
+
+```sh
+export SERVER="https://index.docker.io/v1/"
+export DOCKER_USERNAME="your-username"
+export DOCKER_PASSWORD="your-pass"
+
+kubectl create secret docker-registry registry-secret \
+        --docker-username=$DOCKER_USERNAME \
+        --docker-password=$DOCKER_PASSWORD \
+        --docker-server=$SERVER \
+        --dry-run -o jsonpath="{.data.\.dockerconfigjson}" | base64 -D > ~/.docker/config.json
+```
+
 Find the section of the YAML `registry: docker.io/ofctest/`
 
 You need to replace the value for your registry, note the final `/` which is required.
