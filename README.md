@@ -214,6 +214,28 @@ Log into your own private Docker registry, or the [Docker Hub](https://hub.docke
 
 * Open the Docker for Mac/Windows settings and uncheck "store my password securely" / "in a keychain"
 * Run `docker login` to populate `~/.docker/config.json` - this will be used to configure your Docker registry or Docker Hub account for functions.
+* Remove the following setting if you see it in the file: `	"credsStore": "osxkeychain"`.
+
+Now before you go any further, check the contents of the file.
+
+```sh
+cat ~/.docker/config.json
+```
+
+It should look like this, if it does not, then remove the file and run `docker login` again.
+
+```json
+{
+        "auths": {
+                "https://index.docker.io/v1/": {
+                        "auth": "dXNlcjpwYXNzd29yZAo=="
+                }
+        },
+        "HttpHeaders": {
+                "User-Agent": "Docker-Client/19.03.2 (darwin)"
+        }
+}
+```
 
 Find the section of the YAML `registry: docker.io/ofctest/`
 
