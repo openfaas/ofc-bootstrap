@@ -51,7 +51,7 @@ For your cluster the following specifications are recommended:
 
 * 2-3 nodes with 1-2 vCPU and 2-4GB RAM each
 
-These are guidelines and not a hard requirement, you may well be able to run with fewer resources, such as with a single 2vCPU node with 2GB RAM.
+These are guidelines and not a hard requirement, you may well be able to run with fewer resources.
 
 #### Note for k3s users
 
