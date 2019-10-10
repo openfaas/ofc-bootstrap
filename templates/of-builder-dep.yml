@@ -20,10 +20,10 @@ spec:
           secret:
             secretName: payload-secret
   {{ if .ECR }}
-        - name: ecr-credentials
+        - name: aws-ecr-credentials
           secret:
             defaultMode: 420
-            secretName: ecr-credentials
+            secretName: aws-ecr-credentials
   {{ end }}
       containers:
       - name: of-builder
@@ -58,7 +58,7 @@ spec:
   {{ if .ECR }}
         - mountPath: /home/app/.aws/
           readOnly: true
-          name: ecr-credentials
+          name: aws-ecr-credentials
   {{ end }}
       - name: of-buildkit
         args: ["--addr", "tcp://0.0.0.0:1234"]
