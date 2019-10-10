@@ -94,7 +94,6 @@ func Apply(plan types.Plan) error {
 	}
 
 	isGitHub := plan.SCM == "github"
-
 	stackErr := generateTemplate("stack", plan, stackConfig{
 		GitHub: isGitHub,
 	})
@@ -103,7 +102,19 @@ func Apply(plan types.Plan) error {
 		return stackErr
 	}
 
+	builderErr := generateTemplate("of-builder-dep", plan, builderConfig{
+		ECR: plan.EnableECR,
+	})
+
+	if builderErr != nil {
+		return builderErr
+	}
+
 	return nil
+}
+
+type builderConfig struct {
+	ECR bool
 }
 
 type stackConfig struct {

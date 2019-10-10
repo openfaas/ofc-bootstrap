@@ -1,0 +1,71 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: of-builder
+  namespace: openfaas
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        prometheus.io.scrape: "false"
+      labels:
+        app: of-builder
+    spec:
+      volumes:
+        - name: registry-secret
+          secret:
+            secretName: registry-secret
+        - name: payload-secret
+          secret:
+            secretName: payload-secret
+  {{ if .ECR }}
+        - name: ecr-credentials
+          secret:
+            defaultMode: 420
+            secretName: ecr-credentials
+  {{ end }}
+      containers:
+      - name: of-builder
+        image: openfaas/of-builder:0.7.2
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 2
+          periodSeconds: 10
+          timeoutSeconds: 2
+        env:
+          - name: enable_lchown
+            value: "true"
+          - name: insecure
+            value: "false"
+          - name: buildkit_url  
+            value: "tcp://127.0.0.1:1234"
+          - name: "disable_hmac"
+            value: "false"
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        volumeMounts:
+        - name: registry-secret
+          readOnly: true
+          mountPath: "/home/app/.docker/"
+        - name: payload-secret
+          readOnly: true
+          mountPath: "/var/openfaas/secrets/"
+  {{ if .ECR }}
+        - mountPath: /home/app/.aws/
+          readOnly: true
+          name: ecr-credentials
+  {{ end }}
+      - name: of-buildkit
+        args: ["--addr", "tcp://0.0.0.0:1234"]
+        image: moby/buildkit:v0.3.3
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 1234
+          protocol: TCP
+        securityContext:
+          privileged: true
