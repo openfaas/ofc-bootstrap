@@ -255,7 +255,7 @@ enable_dockerfile_lang: false
 scale_to_zero: false
 
 ## Version of OpenFaaS Cloud from https://github.com/openfaas/openfaas-cloud/releases/
-openfaas_cloud_version: 0.9.11
+openfaas_cloud_version: 0.9.12
 
 ## Enable network policies
 ### Prevents functions from talking to the openfaas namespace, and to each other.
