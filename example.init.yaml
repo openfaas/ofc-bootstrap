@@ -136,6 +136,7 @@ secrets:
     filters:
       - "default"
     namespace: "openfaas"
+
   # Used to pull functions / images to nodes by Kubernetes
   - name: "registry-pull-secret"
     files:
@@ -146,6 +147,17 @@ secrets:
       - "default"
     type: "kubernetes.io/dockerconfigjson"
 
+    # ECR credentials to push to AWS ECR
+    ## Make sure you do not use your admin account in ~/.aws/credentials, but a
+    ## new user with ECR power-user permissions only.
+  - name: "ecr-credentials"
+    files:
+      - name: "credentials"
+        value_from: "~/.aws/credentials"
+    filters:
+      - "ecr"
+    namespace: "openfaas"
+
 ### Docker registry
 #### This can be any cluster accessible by your cluster. To populate the file
 #### run `docker login` with "store in keychain" turned off in Docker Desktop.
@@ -153,6 +165,9 @@ secrets:
 #### Format: registry/username/ - i.e. replace ofctest with your login
 
 registry: docker.io/ofctest/
+
+### Enable only if using AWS ECR
+enable_ecr: false
 
 ### Your root DNS domain name, this can be a sub-domain i.e. staging.o6s.io / prod.o6s.io
 root_domain: "myfaas.club"

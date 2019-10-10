@@ -85,6 +85,22 @@ func Test_filterFeatures(t *testing.T) {
 			expectedError:    nil,
 		},
 		{
+			title: "AWS ECR is detected as a feature",
+			planConfig: types.Plan{
+				EnableECR: true,
+			},
+			expectedFeatures: []string{types.DefaultFeature, types.ECRFeature},
+			expectedError:    nil,
+		},
+		{
+			title: "AWS ECR is disabled when not set as a feature",
+			planConfig: types.Plan{
+				EnableECR: false,
+			},
+			expectedFeatures: []string{types.DefaultFeature},
+			expectedError:    nil,
+		},
+		{
 			title: "Every field which defines populated feature is populated for gitlab",
 			planConfig: types.Plan{
 				SCM: types.GitLabSCM,
@@ -123,16 +139,23 @@ func Test_filterFeatures(t *testing.T) {
 			expectedError:    nil,
 		},
 	}
+
 	for _, test := range tests {
+
 		t.Run(test.title, func(t *testing.T) {
+
 			var filterError error
 			test.planConfig, filterError = filterFeatures(test.planConfig)
 			t.Logf("Features in the plan: %v", test.planConfig.Features)
+
 			if filterError != nil && test.expectedError != nil {
+
 				if !strings.Contains(filterError.Error(), test.expectedError.Error()) {
 					t.Errorf("Expected error to contain: `%s` got: `%s`", test.expectedError.Error(), filterError.Error())
 				}
+
 			}
+
 			for _, expectedFeature := range test.expectedFeatures {
 				for allPlanFeatures, enabledFeature := range test.planConfig.Features {
 					if len(test.planConfig.Features) == 0 {

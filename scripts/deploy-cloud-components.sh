@@ -5,8 +5,11 @@ cp ./tmp/generated-github.yml ./tmp/openfaas-cloud/github.yml
 cp ./tmp/generated-slack.yml ./tmp/openfaas-cloud/slack.yml
 cp ./tmp/generated-dashboard_config.yml ./tmp/openfaas-cloud/dashboard/dashboard_config.yml
 
-kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-dep.yml
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-svc.yml
+
+# Update builder for any ECR secrets needed
+cp ./tmp/generated-of-builder-dep.yml ./tmp/openfaas-cloud/yaml/core/of-builder-dep.yml
+kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-dep.yml
 
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/rbac-import-secrets.yml
 
@@ -19,6 +22,7 @@ else
     #  Disable auth service by pointing the router at the echo function:
     sed s/edge-auth.openfaas/echo.openfaas-fn/g ./tmp/openfaas-cloud/yaml/core/edge-router-dep.yml | kubectl apply -f -
 fi
+
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-router-svc.yml
 
 kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-auth-svc.yml
@@ -67,6 +71,11 @@ if [ "$GITLAB" = "true" ] ; then
     cp ../generated-gitlab.yml ./gitlab.yml
     echo "Deploying gitlab functions..."
     faas deploy -f ./gitlab.yml
+fi
+
+if [ "$ENABLE_AWS_ECR" = "true" ] ; then
+    echo "Deploying AWS ECR functions (register-image)..."
+    faas deploy -f ./aws.yml
 fi
 
 cd ./dashboard

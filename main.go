@@ -604,19 +604,30 @@ func deployCloudComponents(plan types.Plan) error {
 	if plan.EnableOAuth {
 		authEnv = "ENABLE_OAUTH=true"
 	}
+
 	gitlabEnv := ""
 	if plan.SCM == "gitlab" {
 		gitlabEnv = "GITLAB=true"
 	}
+
 	networkPoliciesEnv := ""
 	if plan.NetworkPolicies {
 		networkPoliciesEnv = "ENABLE_NETWORK_POLICIES=true"
 	}
 
+	enableECREnv := ""
+	if plan.EnableECR {
+		enableECREnv = "ENABLE_AWS_ECR=true"
+	}
+
 	task := execute.ExecTask{
 		Command: "./scripts/deploy-cloud-components.sh",
 		Shell:   true,
-		Env:     []string{authEnv, gitlabEnv, networkPoliciesEnv},
+		Env: []string{authEnv,
+			gitlabEnv,
+			networkPoliciesEnv,
+			enableECREnv,
+		},
 	}
 
 	res, err := task.Execute()
@@ -644,6 +655,10 @@ func filterFeatures(plan types.Plan) (types.Plan, error) {
 	var err error
 
 	plan.Features = append(plan.Features, types.DefaultFeature)
+
+	if plan.EnableECR == true {
+		plan.Features = append(plan.Features, types.ECRFeature)
+	}
 
 	plan, err = filterGitRepositoryManager(plan)
 	if err != nil {

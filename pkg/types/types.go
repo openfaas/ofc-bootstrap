@@ -12,8 +12,10 @@ const (
 	GitHubFeature = "scm_github"
 	// GitLabFeature filter is the feature which enables secret creation for GitLab
 	GitLabFeature = "scm_gitlab"
+
 	// Auth filter enables OAuth secret creation
 	Auth = "auth"
+
 	// GCPDNS filter enables the creation of secrets for Google Cloud Platform DNS when TLS is enabled
 	GCPDNS = "gcp_dns01"
 	// DODNS filter enables the creation of secrets for Digital Ocean DNS when TLS is enabled
@@ -27,10 +29,14 @@ const (
 	DigitalOcean = "digitalocean"
 	// Route53 is the dns_service field in yaml file for Amazon
 	Route53 = "route53"
-	// GitLabManager repository manager name as displayed in the init.yaml file
+
+	// GitLabSCM repository manager name as displayed in the init.yaml file
 	GitLabSCM = "gitlab"
-	// GitHubManager repository manager name as displayed in the init.yaml file
+	// GitHubSCM repository manager name as displayed in the init.yaml file
 	GitHubSCM = "github"
+
+	// ECRFeature enable ECR
+	ECRFeature = "ecr"
 )
 
 type Plan struct {
@@ -55,6 +61,7 @@ type Plan struct {
 	ScaleToZero          bool                     `yaml:"scale_to_zero"`
 	OpenFaaSCloudVersion string                   `yaml:"openfaas_cloud_version"`
 	NetworkPolicies      bool                     `yaml:"network_policies"`
+	EnableECR            bool                     `yaml:"enable_ecr"`
 }
 
 // Deployment is the deployment section of YAML concerning
