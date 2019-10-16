@@ -68,7 +68,7 @@ getPackage() {
         rm $targetFile
     fi
 
-    url=https://github.com/alexellis/ofc-bootstrap/releases/download/$version/ofc-bootstrap$suffix
+    url=https://github.com/openfaas-incubator/ofc-bootstrap/releases/download/$version/ofc-bootstrap$suffix
     echo "Downloading package $url as $targetFile"
 
     curl -sSLf $url --output $targetFile
