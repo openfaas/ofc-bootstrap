@@ -2,8 +2,12 @@
 
 if [ ! -f kubeseal ];
 then
-    GOOS=$(go env GOOS)
-    GOARCH=$(go env GOARCH)
+    GOOS=$(echo $(uname -s) | tr '[:upper:]' '[:lower:]')
+    GOARCH=$(echo $(uname -m) | tr '[:upper:]' '[:lower:]')
+
+    if [ "$GOARCH" == "x86_64" ]; then
+       GOARCH="amd64"
+    fi
 
     release=$(curl -sI https://github.com/bitnami-labs/sealed-secrets/releases/latest | grep Location | awk -F"/" '{ printf "%s", $NF }' | tr -d '\r')
 
