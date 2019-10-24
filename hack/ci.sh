@@ -3,8 +3,12 @@
 
 export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 
+export GO111MODULE=OFF
+
+echo Folder: $(pwd)
+
 # Build the code
-go build
+make static
 
 # Fake the secrets from init.yaml
 mkdir -p ~/Downloads
