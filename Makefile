@@ -9,7 +9,7 @@ VERSION=$(shell git describe --all --exact-match `git rev-parse HEAD` | grep tag
 install-ci:
 	./hack/install-ci.sh
 ci:
-	./hack/ci.sh
+	./hack/integration-test.sh
 
 .PHONY: static
 static:
