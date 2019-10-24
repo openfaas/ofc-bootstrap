@@ -7,6 +7,8 @@ export GO111MODULE=OFF
 
 echo Folder: $(pwd)
 
+cd $GOPATH/src/github.com/openfaas-incubator/ofc-bootstrap
+
 # Build the code
 make static
 
