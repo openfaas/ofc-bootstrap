@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/execute"
+	"github.com/alexellis/go-execute"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/ingress"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/stack"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/tls"

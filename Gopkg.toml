@@ -2,6 +2,10 @@
   name = "gopkg.in/yaml.v2"
   version = "2.2.3"
 
+[[constraint]]
+  name = "github.com/alexellis/go-execute"
+  version = "0.1.1"
+
 [prune]
   go-tests = true
   unused-packages = true

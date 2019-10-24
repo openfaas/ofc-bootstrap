@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/execute"
+	"github.com/alexellis/go-execute"
 )
 
 func CreateDockerSecret(kvn KeyValueNamespaceTuple) string {

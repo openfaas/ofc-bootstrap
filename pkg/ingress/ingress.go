@@ -2,12 +2,13 @@ package ingress
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"os"
 
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/execute"
+	"github.com/alexellis/go-execute"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 )
 
@@ -44,25 +45,11 @@ func Apply(plan types.Plan) error {
 	return nil
 }
 
-func applyTemplate(templateFileName string, templateValues IngressTemplate) ([]byte, error) {
-	data, err := ioutil.ReadFile(templateFileName)
-	if err != nil {
-		return nil, err
-	}
-	t := template.Must(template.New(templateFileName).Parse(string(data)))
-
-	buffer := new(bytes.Buffer)
-
-	executeErr := t.Execute(buffer, templateValues)
-
-	return buffer.Bytes(), executeErr
-}
-
 func apply(source string, name string, ingress IngressTemplate) error {
 
 	generatedData, err := applyTemplate("templates/k8s/"+source, ingress)
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to read template %s (%s), error: %q", name, "templates/k8s/"+source, err)
 	}
 
 	tempFilePath := "tmp/generated-ingress-" + name + ".yaml"
@@ -80,7 +67,8 @@ func apply(source string, name string, ingress IngressTemplate) error {
 	}
 
 	execTask := execute.ExecTask{
-		Command: "kubectl apply -f " + tempFilePath,
+		Command: "kubectl",
+		Args:    []string{"apply", "-f", tempFilePath},
 		Shell:   false,
 	}
 
@@ -92,4 +80,18 @@ func apply(source string, name string, ingress IngressTemplate) error {
 	log.Println(execRes.ExitCode, execRes.Stdout, execRes.Stderr)
 
 	return nil
+}
+
+func applyTemplate(templateFileName string, templateValues IngressTemplate) ([]byte, error) {
+	data, err := ioutil.ReadFile(templateFileName)
+	if err != nil {
+		return nil, err
+	}
+	t := template.Must(template.New(templateFileName).Parse(string(data)))
+
+	buffer := new(bytes.Buffer)
+
+	executeErr := t.Execute(buffer, templateValues)
+
+	return buffer.Bytes(), executeErr
 }

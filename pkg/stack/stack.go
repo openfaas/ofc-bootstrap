@@ -110,20 +110,6 @@ type stackConfig struct {
 	GitHub bool
 }
 
-func applyTemplate(templateFileName string, templateType interface{}) ([]byte, error) {
-	data, err := ioutil.ReadFile(templateFileName)
-	if err != nil {
-		return nil, err
-	}
-	t := template.Must(template.New(templateFileName).Parse(string(data)))
-
-	buffer := new(bytes.Buffer)
-
-	executeErr := t.Execute(buffer, templateType)
-
-	return buffer.Bytes(), executeErr
-}
-
 func generateTemplate(fileName string, plan types.Plan, templateType interface{}) error {
 
 	generatedData, err := applyTemplate("templates/"+fileName+".yml", templateType)
@@ -146,4 +132,18 @@ func generateTemplate(fileName string, plan types.Plan, templateType interface{}
 	}
 
 	return nil
+}
+
+func applyTemplate(templateFileName string, templateType interface{}) ([]byte, error) {
+	data, err := ioutil.ReadFile(templateFileName)
+	if err != nil {
+		return nil, err
+	}
+	t := template.Must(template.New(templateFileName).Parse(string(data)))
+
+	buffer := new(bytes.Buffer)
+
+	executeErr := t.Execute(buffer, templateType)
+
+	return buffer.Bytes(), executeErr
 }
