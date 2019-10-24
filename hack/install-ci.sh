@@ -1,10 +1,11 @@
 #!/bin/bash
 
 curl -sLSf https://get.docker.com | sudo sh
+export GOVER=1.12.12
 
-curl -OSL https://dl.google.com/go/go1.10.7.linux-amd64.tar.gz
-mkdir -p /usr/local/go
-tar -xvf go1.10.7.linux-amd64.tar.gz --strip-components=1 -C /usr/local/go/
+curl -OSL https://dl.google.com/go/go$GOVER.linux-amd64.tar.gz
+sudo mkdir -p /usr/local/go
+sudo -E tar -xvf go$GOVER.linux-amd64.tar.gz --strip-components=1 -C /usr/local/go/
 
 echo "export GOPATH=\$HOME/go" | tee -a ~/.bash_profile
 echo "export PATH=\$GOPATH/bin:\$PATH:/usr/local/go/bin/" | tee -a ~/.bash_profile
