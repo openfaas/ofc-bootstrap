@@ -5,7 +5,8 @@ export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 
 export GO111MODULE=OFF
 
-echo Folder: $(pwd)
+echo Folder: `pwd`
+echo GOPATH: $GOPATH
 
 cd $GOPATH/src/github.com/openfaas-incubator/ofc-bootstrap
 
