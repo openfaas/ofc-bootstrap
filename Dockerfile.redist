@@ -1,5 +1,6 @@
 # Build stage
 FROM golang:1.11 as builder
+ENV GO111MODULE=off
 
 ENV CGO_ENABLED=0
 
