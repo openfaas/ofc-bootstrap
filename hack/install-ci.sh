@@ -16,9 +16,3 @@ curl -sLSf https://raw.githubusercontent.com/helm/helm/master/scripts/get | sudo
 curl -SLfs https://github.com/kubernetes-sigs/kind/releases/download/v0.5.1/kind-linux-amd64 > kind-linux-amd64
 chmod +x kind-linux-amd64 
 sudo mv kind-linux-amd64 /usr/local/bin/kind
-
-kind create cluster
-export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
-
-# wait, roughly for the cluster to finish starting
-kubectl rollout status deploy coredns --watch -n kube-system

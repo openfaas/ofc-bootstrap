@@ -1,10 +1,12 @@
 #!/bin/bash
 
-# Reset script
+kind delete cluster
+kind create cluster
 
-export KUBECONFIG="$(kind get kubeconfig-path --name="1")"
+export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 
-kind delete cluster --name 1
-kind create cluster --name 1
+# wait, roughly for the cluster to finish starting
+kubectl rollout status deploy coredns --watch -n kube-system
+
 rm ./tmp/*.yml
 rm -rf ./tmp/openfaas-cloud
