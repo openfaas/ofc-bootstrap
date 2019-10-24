@@ -1,6 +1,7 @@
 #!/bin/bash
 ./scripts/reset-kind.sh
-export KUBECONFIG="$(kind get kubeconfig-path --name="1")"
+
+export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 
 # Build the code
 go build
