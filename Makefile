@@ -1,8 +1,8 @@
 
-GO_FILES?=$$(find . -name '*.go' |grep -v vendor)
+GO_FILES?=$(shell find . -name '*.go' |grep -v vendor)
 TAG?=latest
-GIT_COMMIT=$$(git rev-list -1 HEAD)
-VERSION=$$(git describe --all --exact-match `git rev-parse HEAD` | grep tags | sed 's/tags\///')
+GIT_COMMIT=$(shell git rev-list -1 HEAD)
+VERSION=$(shell git describe --all --exact-match `git rev-parse HEAD` | grep tags | sed 's/tags\///')
 
 .PHONY: build
 
