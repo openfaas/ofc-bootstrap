@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  digest = "1:5f3df16029b0602205733ba18f315ef0980c6d50cb83a5e033a18f5e25b21b88"
+  name = "github.com/alexellis/go-execute"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f43ca01b248ab8a3302c50770c30945d18546851"
+  version = "0.1.1"
+
+[[projects]]
   digest = "1:59f10c1537d2199d9115d946927fe31165959a95190849c82ff11e05803528b0"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -12,6 +20,9 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = ["gopkg.in/yaml.v2"]
+  input-imports = [
+    "github.com/alexellis/go-execute",
+    "gopkg.in/yaml.v2",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
