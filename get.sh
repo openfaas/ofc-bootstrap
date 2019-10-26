@@ -21,8 +21,6 @@ hasCli() {
         echo
         echo "You already have the ofc-bootstrap cli!"
         export n=1
-        echo "Overwriting in $n seconds.. Press Control+C to cancel."
-        echo
         sleep $n
     fi
 
