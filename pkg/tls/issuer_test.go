@@ -26,7 +26,7 @@ func Test_DigitalOcean_Issuer(t *testing.T) {
 
 	templateRes.Execute(&buf, &tlsTemplate)
 
-	wantTemplate := `apiVersion: certmanager.k8s.io/v1alpha1
+	wantTemplate := `apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-prod
@@ -83,7 +83,7 @@ func Test_Route53_Issuer(t *testing.T) {
 	buf := bytes.Buffer{}
 	templateRes.Execute(&buf, &tlsTemplate)
 
-	wantTemplate := `apiVersion: certmanager.k8s.io/v1alpha1
+	wantTemplate := `apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-prod
@@ -141,7 +141,7 @@ func Test_GoogleCloudDNS_Issuer(t *testing.T) {
 	buf := bytes.Buffer{}
 	templateRes.Execute(&buf, &tlsTemplate)
 
-	wantTemplate := `apiVersion: certmanager.k8s.io/v1alpha1
+	wantTemplate := `apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-prod

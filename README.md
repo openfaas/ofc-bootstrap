@@ -546,7 +546,7 @@ Flush out the staging certificates and orders
 
 ```sh
 kubectl delete certificates --all  -n openfaas
-kubectl delete secret -n openfaas -l="certmanager.k8s.io/certificate-name"
+kubectl delete secret -n openfaas -l="cert-manager.io/certificate-name"
 kubectl delete order -n openfaas --all
 ```
 
