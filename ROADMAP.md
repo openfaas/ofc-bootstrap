@@ -72,6 +72,3 @@ Status:
 
 Add all remaining steps from [installation guide](https://github.com/openfaas/openfaas-cloud/tree/master/docs).
 
-Caveats:
-
-* JetStack's cert-manager is currently pinned to an earlier version due to issues with re-creating the CRD entries. 

@@ -9,8 +9,8 @@ kubectl delete ns openfaas openfaas-fn
 kubectl delete ns  cert-manager
 
 kubectl delete crd sealedsecrets.bitnami.com
-kubectl delete \
-    -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.6/deploy/manifests/00-crds.yaml
+kubectl delete -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.11/deploy/manifests/00-crds.yaml
+
 
 kubectl delete deploy/tiller-deploy -n kube-system
 kubectl delete sa/tiller -n kube-system
