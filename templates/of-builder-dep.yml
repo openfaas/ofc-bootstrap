@@ -62,7 +62,7 @@ spec:
   {{ end }}
       - name: of-buildkit
         args: ["--addr", "tcp://0.0.0.0:1234"]
-        image: moby/buildkit:v0.3.3
+        image: moby/buildkit:v0.6.2
         imagePullPolicy: Always
         ports:
         - containerPort: 1234
