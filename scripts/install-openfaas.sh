@@ -18,4 +18,5 @@ helm upgrade openfaas --install openfaas/openfaas \
     --set gateway.replicas=2 \
     --set queueWorker.replicas=2 \
     --set faasIdler.dryRun=$FAAS_IDLER_DRY_RUN \
-    --set faasnetes.httpProbe=true
+    --set faasnetes.httpProbe=true \
+    --set faasnetes.imagePullPolicy=IfNotPresent
