@@ -1,3 +1,5 @@
+ignored = ["github.com/openfaas-incubator/ofc-bootstrap/tmp/*"]
+
 [[constraint]]
   name = "gopkg.in/yaml.v2"
   version = "2.2.3"
