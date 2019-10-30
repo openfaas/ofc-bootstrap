@@ -208,7 +208,9 @@ If you picked a root domain of `example.com`, then your URLs would correspond to
 
 After the installation has completed in a later step, you will need to create DNS A records with your DNS provider. You don't need to create these records now.
 
-#### Prepare your Docker registry
+#### Prepare your Docker registry (if not using AWS ECR)
+
+> Note: If using ECR, please go to the next step.
 
 Log into your own private Docker registry, or the [Docker Hub](https://hub.docker.com):
 
@@ -261,6 +263,60 @@ You need to replace the value for your registry, note the final `/` which is req
 * Valid: `registry: my-corp.jfrog.io/ofc-prod/`
 * Invalid: `registry: my-corp.jfrog.io/ofc-prod`
 * Invalid: `registry: my-corp.jfrog.io/`
+
+#### Prepare your Docker registry (if using AWS ECR)
+
+OpenFaaS Cloud also supports Amazon's managed container registry called ECR.
+
+* Set `enable_ecr: true` in `init.yaml`
+
+* Define a `config.json`
+
+        ```sh
+        export REGION="eu-central-1"
+        export ACCOUNT_ID="012345678900"
+
+        export SERVER="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/"
+
+        cat <<EOF > docker.config
+        {
+          "credsStore": "ecr-login",
+          "credHelpers": {
+            "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com": "ecr-login"
+          }
+        }
+        EOF
+        ```
+
+        At runtime it will use your mounted AWS credentials file from a separate secret to gain an access token for ECR. ECR access tokens need to be refreshed around every 12 hours and this is handled by the `ecr-login` binary built-into the OFC builder container image.
+
+* Set the `registry`
+
+        Find the section of the YAML `registry:` set the value accordingly, replacing `ACCOUNT_ID` and `REGION` as per previous step:
+        
+        `$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/`
+
+        The final `/` is required
+
+* Create a new user with the role `AmazonEC2ContainerRegistryPowerUser`
+
+* The file will be read from `~/.aws/credentials` by default, but you can change this via editing the path in `value_from` under the `ecr-credentials` secret
+
+* Get the credentials from the AWS console for your new user, and save the following file: `~/.aws/credentials`
+
+        ```ini
+        [default]
+        aws_access_key_id = ACCESS_KEY_ID
+        aws_secret_access_key = SECRET_ACCESS_KEY
+        ```
+
+* You'll need a secret for the AWS register-image function:
+
+        ```sh
+        kubectl create secret generic aws-ecr-createrepo-credentials \
+          --from-file ~/.aws/credentials \
+          -n openfaas-fn
+        ```
 
 #### Pick your Source Control Management (SCM)
 

@@ -150,13 +150,22 @@ secrets:
     # ECR credentials to push to AWS ECR
     ## Make sure you do not use your admin account in ~/.aws/credentials, but a
     ## new user with ECR power-user permissions only.
-  - name: "ecr-credentials"
+  - name: "aws-ecr-credentials"
     files:
       - name: "credentials"
         value_from: "~/.aws/credentials"
     filters:
       - "ecr"
     namespace: "openfaas"
+
+  - name: "aws-ecr-createrepo-credentials"
+    files:
+      - name: "credentials"
+        value_from: "~/.aws/credentials"
+    filters:
+      - "ecr"
+    namespace: "openfaas-fn"
+
 
 ### Docker registry
 #### This can be any cluster accessible by your cluster. To populate the file
