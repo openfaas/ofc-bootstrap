@@ -310,14 +310,6 @@ OpenFaaS Cloud also supports Amazon's managed container registry called ECR.
         aws_secret_access_key = SECRET_ACCESS_KEY
         ```
 
-* You'll need a secret for the AWS register-image function:
-
-        ```sh
-        kubectl create secret generic aws-ecr-createrepo-credentials \
-          --from-file ~/.aws/credentials \
-          -n openfaas-fn
-        ```
-
 #### Pick your Source Control Management (SCM)
 
 Choose SCM between GitHub.com or GitLab self-hosted.
