@@ -61,6 +61,7 @@ type Plan struct {
 	ScaleToZero          bool                     `yaml:"scale_to_zero"`
 	OpenFaaSCloudVersion string                   `yaml:"openfaas_cloud_version"`
 	NetworkPolicies      bool                     `yaml:"network_policies"`
+	BuildBranch          string                   `yaml:"build_branch"`
 	EnableECR            bool                     `yaml:"enable_ecr"`
 }
 
