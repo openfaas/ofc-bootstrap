@@ -272,31 +272,31 @@ OpenFaaS Cloud also supports Amazon's managed container registry called ECR.
 
 * Define a `config.json`
 
-        ```sh
-        export REGION="eu-central-1"
-        export ACCOUNT_ID="012345678900"
+```sh
+export REGION="eu-central-1"
+export ACCOUNT_ID="012345678900"
 
-        export SERVER="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/"
+export SERVER="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/"
 
-        cat <<EOF > docker.config
-        {
-          "credsStore": "ecr-login",
-          "credHelpers": {
-            "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com": "ecr-login"
-          }
+cat <<EOF > docker.config
+{
+        "credsStore": "ecr-login",
+        "credHelpers": {
+        "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com": "ecr-login"
         }
-        EOF
-        ```
+}
+EOF
+```
 
-        At runtime it will use your mounted AWS credentials file from a separate secret to gain an access token for ECR. ECR access tokens need to be refreshed around every 12 hours and this is handled by the `ecr-login` binary built-into the OFC builder container image.
+At runtime it will use your mounted AWS credentials file from a separate secret to gain an access token for ECR. ECR access tokens need to be refreshed around every 12 hours and this is handled by the `ecr-login` binary built-into the OFC builder container image.
 
 * Set the `registry`
 
-        Find the section of the YAML `registry:` set the value accordingly, replacing `ACCOUNT_ID` and `REGION` as per previous step:
-        
-        `$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/`
+Find the section of the YAML `registry:` set the value accordingly, replacing `ACCOUNT_ID` and `REGION` as per previous step:
 
-        The final `/` is required
+`$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/`
+
+The final `/` is required
 
 * Create a new user with the role `AmazonEC2ContainerRegistryPowerUser`
 
@@ -304,11 +304,11 @@ OpenFaaS Cloud also supports Amazon's managed container registry called ECR.
 
 * Get the credentials from the AWS console for your new user, and save the following file: `~/.aws/credentials`
 
-        ```ini
-        [default]
-        aws_access_key_id = ACCESS_KEY_ID
-        aws_secret_access_key = SECRET_ACCESS_KEY
-        ```
+```ini
+[default]
+aws_access_key_id = ACCESS_KEY_ID
+aws_secret_access_key = SECRET_ACCESS_KEY
+```
 
 #### Pick your Source Control Management (SCM)
 
