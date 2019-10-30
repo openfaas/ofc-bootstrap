@@ -17,6 +17,7 @@ type gatewayConfig struct {
 	S3                   types.S3
 	CustomTemplates      string
 	EnableDockerfileLang bool
+	BuildBranch          string
 }
 
 type authConfig struct {
@@ -43,6 +44,7 @@ func Apply(plan types.Plan) error {
 		S3:                   plan.S3,
 		CustomTemplates:      plan.Deployment.FormatCustomTemplates(),
 		EnableDockerfileLang: plan.EnableDockerfileLang,
+		BuildBranch:          plan.BuildBranch,
 	})
 
 	if gwConfigErr != nil {

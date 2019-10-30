@@ -431,6 +431,11 @@ When this value is set to `false`, your users can only use your recommended set 
 
 If you want your functions to scale to zero then you need to set `scale_to_zero: true`.
 
+#### Set the branch that will be built and deployed (optional)
+
+If you wish to deploy a branch other than master you can edit `build_branch` and set it to your desired branch.
+
+The default branch is `master`
 #### Set the OpenFaaS Cloud version (optional)
 
 This value should normally be left as per the number in the master branch, however you can edit `openfaas_cloud_version` if required.

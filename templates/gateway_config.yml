@@ -38,5 +38,5 @@ environment:
   enable_dockerfile_lang: {{.EnableDockerfileLang}}
 
   # Set the build branch to be used by ofc
-  build_branch: master
+  build_branch: {{.BuildBranch}}
 
