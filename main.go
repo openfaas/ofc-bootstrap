@@ -24,6 +24,7 @@ func main() {
 	flag.StringVar(&vars.YamlFile, "yaml", "init.yaml", "YAML file for bootstrap")
 	flag.BoolVar(&vars.Verbose, "verbose", false, "control verbosity")
 	flag.BoolVar(&printVersion, "version", false, "print the version of the CLI")
+	flag.BoolVar(&vars.DryRun, "dry", false, "dry run")
 
 	flag.Parse()
 
@@ -52,11 +53,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	plan := types.Plan{}
+	plan := types.Plan{}	
 	unmarshalErr := yaml.Unmarshal(yamlBytes, &plan)
 	if unmarshalErr != nil {
 		fmt.Fprintf(os.Stderr, "-yaml file gave error: %s\n", unmarshalErr.Error())
 		os.Exit(1)
+	}
+
+	// It could be set in the plan yaml, but we want to be able to override it with a argument
+	if vars.DryRun {
+		plan.DryRun = true
 	}
 
 	var featuresErr error
@@ -82,30 +88,38 @@ func main() {
 	validateErr := validatePlan(plan)
 	if validateErr != nil {
 		panic(validateErr)
-
 	}
 
 	fmt.Fprintf(os.Stdout, "Plan loaded from: %s\n", vars.YamlFile)
 
 	os.Mkdir("tmp", 0700)
 
-	start := time.Now()
-	err := process(plan)
-	done := time.Since(start)
+	if (vars.DryRun) {
+		start := time.Now()
+		dryProcess(plan)
+		done := time.Since(start)
 
-	if err != nil {
-		fmt.Fprintf(os.Stdout, "Plan failed after %f seconds\nError: %s", done.Seconds(), err.Error())
-
-		os.Exit(1)
+		fmt.Fprintf(os.Stdout, "Plan dry run completed in %f seconds\n", done.Seconds())
+	} else {
+		start := time.Now()
+		err := process(plan)	
+		done := time.Since(start)
+	
+		if err != nil {
+			fmt.Fprintf(os.Stdout, "Plan failed after %f seconds\nError: %s", done.Seconds(), err.Error())
+	
+			os.Exit(1)
+		}
+	
+		fmt.Fprintf(os.Stdout, "Plan completed in %f seconds\n", done.Seconds())
 	}
-
-	fmt.Fprintf(os.Stdout, "Plan completed in %f seconds\n", done.Seconds())
 }
 
 // Vars are variables parsed from flags
 type Vars struct {
 	YamlFile string
 	Verbose  bool
+	DryRun  bool
 }
 
 const (
@@ -163,8 +177,28 @@ func filesExists(files []types.FileSecret) error {
 	return nil
 }
 
-func process(plan types.Plan) error {
+func dryProcess(plan types.Plan) {
+	ingressErr := ingress.Apply(plan)
+	if ingressErr != nil {
+		log.Println(ingressErr)
+	}
 
+	if plan.TLS {
+		tlsErr := tls.Apply(plan)
+		if tlsErr != nil {
+			log.Println(tlsErr)
+		}
+	}
+
+	fmt.Println("Creating stack.yml")
+
+	planErr := stack.Apply(plan)
+	if planErr != nil {
+		log.Println(planErr)
+	}	
+}
+
+func process(plan types.Plan) error {
 	if plan.OpenFaaSCloudVersion == "" {
 		plan.OpenFaaSCloudVersion = "master"
 		fmt.Println("No openfaas_cloud_version set in init.yaml, using: master.")

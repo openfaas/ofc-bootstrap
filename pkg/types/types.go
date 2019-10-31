@@ -63,6 +63,7 @@ type Plan struct {
 	NetworkPolicies      bool                     `yaml:"network_policies"`
 	BuildBranch          string                   `yaml:"build_branch"`
 	EnableECR            bool                     `yaml:"enable_ecr"`
+	DryRun               bool                     `yaml:"dry"`
 }
 
 // Deployment is the deployment section of YAML concerning

@@ -26,7 +26,7 @@ func Apply(plan types.Plan) error {
 		RootDomain: plan.RootDomain,
 		TLS:        plan.TLS,
 		IssuerType: plan.TLSConfig.IssuerType,
-	})
+	}, plan.DryRun)
 
 	if err != nil {
 		return err
@@ -36,7 +36,7 @@ func Apply(plan types.Plan) error {
 		RootDomain: plan.RootDomain,
 		TLS:        plan.TLS,
 		IssuerType: plan.TLSConfig.IssuerType,
-	})
+	}, plan.DryRun)
 
 	if err1 != nil {
 		return err1
@@ -45,7 +45,7 @@ func Apply(plan types.Plan) error {
 	return nil
 }
 
-func apply(source string, name string, ingress IngressTemplate) error {
+func apply(source string, name string, ingress IngressTemplate, dryRun bool) error {
 
 	generatedData, err := applyTemplate("templates/k8s/"+source, ingress)
 	if err != nil {
@@ -70,6 +70,10 @@ func apply(source string, name string, ingress IngressTemplate) error {
 		Command: "kubectl",
 		Args:    []string{"apply", "-f", tempFilePath},
 		Shell:   false,
+	}
+
+	if dryRun {
+		execTask.Args = append(execTask.Args, "--dry-run=true")
 	}
 
 	execRes, execErr := execTask.Execute()

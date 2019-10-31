@@ -41,7 +41,7 @@ func Apply(plan types.Plan) error {
 			return tlsTemplateErr
 		}
 
-		applyErr := applyTemplate(tempFilePath)
+		applyErr := applyTemplate(tempFilePath, plan.DryRun)
 		if applyErr != nil {
 			return applyErr
 		}
@@ -85,13 +85,16 @@ func generateTemplate(fileName string, tlsTemplate TLSTemplate) (string, error) 
 	return tempFilePath, nil
 }
 
-func applyTemplate(tempFilePath string) error {
+func applyTemplate(tempFilePath string, dryRun bool) error {
 
 	execTask := execute.ExecTask{
 		Command: "kubectl apply -f " + tempFilePath,
 		Shell:   false,
 	}
 
+	if dryRun {
+		execTask.Command = execTask.Command + " --dry-run=true"
+	}
 	execRes, execErr := execTask.Execute()
 	if execErr != nil {
 		return execErr
