@@ -26,7 +26,6 @@ type InstallPreferences struct {
 func main() {
 	prefs := InstallPreferences{}
 	var printVersion bool
-	var skipSealedSecrets bool
 
 	vars := Vars{}
 	flag.StringVar(&vars.YamlFile, "yaml", "init.yaml", "YAML file for bootstrap")
