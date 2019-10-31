@@ -53,7 +53,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	plan := types.Plan{}	
+	plan := types.Plan{}
 	unmarshalErr := yaml.Unmarshal(yamlBytes, &plan)
 	if unmarshalErr != nil {
 		fmt.Fprintf(os.Stderr, "-yaml file gave error: %s\n", unmarshalErr.Error())
@@ -94,7 +94,7 @@ func main() {
 
 	os.Mkdir("tmp", 0700)
 
-	if (vars.DryRun) {
+	if vars.DryRun {
 		start := time.Now()
 		dryProcess(plan)
 		done := time.Since(start)
@@ -102,15 +102,15 @@ func main() {
 		fmt.Fprintf(os.Stdout, "Plan dry run completed in %f seconds\n", done.Seconds())
 	} else {
 		start := time.Now()
-		err := process(plan)	
+		err := process(plan)
 		done := time.Since(start)
-	
+
 		if err != nil {
 			fmt.Fprintf(os.Stdout, "Plan failed after %f seconds\nError: %s", done.Seconds(), err.Error())
-	
+
 			os.Exit(1)
 		}
-	
+
 		fmt.Fprintf(os.Stdout, "Plan completed in %f seconds\n", done.Seconds())
 	}
 }
@@ -119,7 +119,7 @@ func main() {
 type Vars struct {
 	YamlFile string
 	Verbose  bool
-	DryRun  bool
+	DryRun   bool
 }
 
 const (
@@ -195,7 +195,7 @@ func dryProcess(plan types.Plan) {
 	planErr := stack.Apply(plan)
 	if planErr != nil {
 		log.Println(planErr)
-	}	
+	}
 }
 
 func process(plan types.Plan) error {
