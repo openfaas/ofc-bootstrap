@@ -21,6 +21,7 @@ import (
 type InstallPreferences struct {
 	SkipMinio         bool
 	SkipSealedSecrets bool
+	DryRun            bool
 }
 
 func main() {
@@ -33,6 +34,7 @@ func main() {
 	flag.BoolVar(&printVersion, "version", false, "print the version of the CLI")
 	flag.BoolVar(&prefs.SkipSealedSecrets, "skip-sealed-secrets", false, "Skip installing SealedSecrets")
 	flag.BoolVar(&prefs.SkipMinio, "skip-minio", false, "Skip installing Minio")
+	flag.BoolVar(&prefs.DryRun, "dry", false, "dry run")
 
 	flag.Parse()
 
@@ -91,7 +93,6 @@ func main() {
 	validateErr := validatePlan(plan)
 	if validateErr != nil {
 		panic(validateErr)
-
 	}
 
 	fmt.Fprintf(os.Stdout, "Plan loaded from: %s\n", vars.YamlFile)
@@ -115,6 +116,7 @@ func main() {
 type Vars struct {
 	YamlFile string
 	Verbose  bool
+	DryRun   bool
 }
 
 const (
@@ -173,6 +175,27 @@ func filesExists(files []types.FileSecret) error {
 }
 
 func process(plan types.Plan, prefs InstallPreferences) error {
+	if prefs.DryRun {
+		ingressErr := ingress.Apply(plan)
+		if ingressErr != nil {
+			log.Println(ingressErr)
+		}
+		return nil
+	}
+
+	if plan.TLS {
+		tlsErr := tls.Apply(plan)
+		if tlsErr != nil {
+			log.Println(tlsErr)
+		}
+	}
+
+	fmt.Println("Creating stack.yml")
+
+	planErr := stack.Apply(plan)
+	if planErr != nil {
+		log.Println(planErr)
+	}
 
 	if plan.OpenFaaSCloudVersion == "" {
 		plan.OpenFaaSCloudVersion = "master"
@@ -265,7 +288,7 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 
 	fmt.Println("Creating stack.yml")
 
-	planErr := stack.Apply(plan)
+	planErr = stack.Apply(plan)
 	if planErr != nil {
 		log.Println(planErr)
 	}
