@@ -174,13 +174,34 @@ func filesExists(files []types.FileSecret) error {
 	return nil
 }
 
+func dryProcess(plan types.Plan, prefs InstallPreferences) error {
+	plan.DryRun = true
+
+	ingressErr := ingress.Apply(plan)
+	if ingressErr != nil {
+		log.Println(ingressErr)
+	}
+
+	if plan.TLS {
+		tlsErr := tls.Apply(plan)
+		if tlsErr != nil {
+			log.Println(tlsErr)
+		}
+	}
+
+	fmt.Println("Creating stack.yml")
+
+	planErr := stack.Apply(plan)
+	if planErr != nil {
+		log.Println(planErr)
+	}
+
+	return nil
+}
+
 func process(plan types.Plan, prefs InstallPreferences) error {
 	if prefs.DryRun {
-		ingressErr := ingress.Apply(plan)
-		if ingressErr != nil {
-			log.Println(ingressErr)
-		}
-		return nil
+		return dryProcess(plan, prefs)
 	}
 
 	if plan.TLS {
