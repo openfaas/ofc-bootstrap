@@ -21,6 +21,7 @@ import (
 type InstallPreferences struct {
 	SkipMinio         bool
 	SkipSealedSecrets bool
+	OnlySecrets       bool
 }
 
 func main() {
@@ -33,6 +34,7 @@ func main() {
 	flag.BoolVar(&printVersion, "version", false, "print the version of the CLI")
 	flag.BoolVar(&prefs.SkipSealedSecrets, "skip-sealed-secrets", false, "Skip installing SealedSecrets")
 	flag.BoolVar(&prefs.SkipMinio, "skip-minio", false, "Skip installing Minio")
+	flag.BoolVar(&prefs.OnlySecrets, "only-secrets", false, "Apply only secrets (it will create namespaces if they not exists)")
 
 	flag.Parse()
 
@@ -173,6 +175,16 @@ func filesExists(files []types.FileSecret) error {
 }
 
 func process(plan types.Plan, prefs InstallPreferences) error {
+	if prefs.OnlySecrets {
+		nsErr := createNamespaces()
+		if nsErr != nil {
+			log.Println(nsErr)
+		}
+
+		createSecrets(plan)
+
+		return nil
+	}
 
 	if plan.OpenFaaSCloudVersion == "" {
 		plan.OpenFaaSCloudVersion = "master"
@@ -524,9 +536,16 @@ func createNamespaces() error {
 
 func createSecrets(plan types.Plan) error {
 
+	filename := "./tmp/secrets.yaml"
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
 	for _, secret := range plan.Secrets {
 		if featureEnabled(plan.Features, secret.Filters) {
-			fmt.Printf("Creating secret: %s\n", secret.Name)
+			fmt.Printf("Add secret: %s to %s\n", secret.Name, filename)
 
 			var command execute.ExecTask
 			command = execute.ExecTask{
@@ -540,9 +559,32 @@ func createSecrets(plan types.Plan) error {
 				log.Println(err)
 			}
 
-			fmt.Println(res)
+			if res.ExitCode == 0 {
+				_, err = f.WriteString(res.Stdout)
+				if err != nil {
+					return err
+				}
+			}
 		}
 	}
+
+	f.Close()
+
+	fmt.Printf("Apply all secrets from %s\n", filename)
+
+	var task execute.ExecTask
+	task = execute.ExecTask{
+		Command: fmt.Sprintf("kubectl apply -f %s", filename),
+		Shell:   false,
+	}
+
+	taskRes, err := task.Execute()
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	fmt.Println(taskRes)
 
 	return nil
 }
