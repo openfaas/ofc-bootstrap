@@ -18,12 +18,21 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+type InstallPreferences struct {
+	SkipMinio         bool
+	SkipSealedSecrets bool
+}
+
 func main() {
+	prefs := InstallPreferences{}
 	var printVersion bool
+
 	vars := Vars{}
 	flag.StringVar(&vars.YamlFile, "yaml", "init.yaml", "YAML file for bootstrap")
 	flag.BoolVar(&vars.Verbose, "verbose", false, "control verbosity")
 	flag.BoolVar(&printVersion, "version", false, "print the version of the CLI")
+	flag.BoolVar(&prefs.SkipSealedSecrets, "skip-sealed-secrets", false, "Skip installing SealedSecrets")
+	flag.BoolVar(&prefs.SkipMinio, "skip-minio", false, "Skip installing Minio")
 
 	flag.Parse()
 
@@ -90,7 +99,7 @@ func main() {
 	os.Mkdir("tmp", 0700)
 
 	start := time.Now()
-	err := process(plan)
+	err := process(plan, prefs)
 	done := time.Since(start)
 
 	if err != nil {
@@ -163,7 +172,7 @@ func filesExists(files []types.FileSecret) error {
 	return nil
 }
 
-func process(plan types.Plan) error {
+func process(plan types.Plan, prefs InstallPreferences) error {
 
 	if plan.OpenFaaSCloudVersion == "" {
 		plan.OpenFaaSCloudVersion = "master"
@@ -207,9 +216,11 @@ func process(plan types.Plan) error {
 		log.Println(saErr)
 	}
 
-	minioErr := installMinio()
-	if minioErr != nil {
-		log.Println(minioErr)
+	if !prefs.SkipMinio {
+		minioErr := installMinio()
+		if minioErr != nil {
+			log.Println(minioErr)
+		}
 	}
 
 	if plan.TLS {
@@ -259,24 +270,26 @@ func process(plan types.Plan) error {
 		log.Println(planErr)
 	}
 
-	sealedSecretsErr := installSealedSecrets()
-	if sealedSecretsErr != nil {
-		log.Println(sealedSecretsErr)
-	}
-
-	for i := 0; i < retries; i++ {
-		log.Printf("Are SealedSecrets ready? %d/%d\n", i+1, retries)
-		ready := sealedSecretsReady()
-		if ready {
-			break
+	if !prefs.SkipSealedSecrets {
+		sealedSecretsErr := installSealedSecrets()
+		if sealedSecretsErr != nil {
+			log.Println(sealedSecretsErr)
 		}
-		time.Sleep(time.Second * 2)
-	}
 
-	pubCert := exportSealedSecretPubCert()
-	writeErr := ioutil.WriteFile("tmp/pubcert.pem", []byte(pubCert), 0700)
-	if writeErr != nil {
-		log.Println(writeErr)
+		for i := 0; i < retries; i++ {
+			log.Printf("Are SealedSecrets ready? %d/%d\n", i+1, retries)
+			ready := sealedSecretsReady()
+			if ready {
+				break
+			}
+			time.Sleep(time.Second * 2)
+		}
+
+		pubCert := exportSealedSecretPubCert()
+		writeErr := ioutil.WriteFile("tmp/pubcert.pem", []byte(pubCert), 0700)
+		if writeErr != nil {
+			log.Println(writeErr)
+		}
 	}
 
 	cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion)
