@@ -3,10 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/openfaas-incubator/ofc-bootstrap/pkg/validators"
 	"io/ioutil"
 	"log"
 	"os"
+	"os/user"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/alexellis/go-execute"
@@ -98,6 +102,13 @@ func main() {
 
 	os.Mkdir("tmp", 0700)
 
+	log.Println("Validating registry credentials file")
+
+	registryAuthErr := validateRegistryAuth(plan.Registry, plan.Secrets, plan.EnableECR)
+	if registryAuthErr != nil {
+		fmt.Fprint(os.Stderr, "error with registry credentials file. Please ensure it has been created correctly")
+	}
+
 	start := time.Now()
 	err := process(plan, prefs)
 	done := time.Since(start)
@@ -147,6 +158,23 @@ func validateTools(tools []string) error {
 
 }
 
+func validateRegistryAuth(regEndpoint string, planSecrets []types.KeyValueNamespaceTuple, enableECR bool) error {
+	if enableECR {
+		return nil
+	}
+	for _, planSecret := range planSecrets {
+		if planSecret.Name == "registry-secret" {
+			confFileLocation := planSecret.Files[0].ValueFrom
+			fileBytes, err := ioutil.ReadFile(expandPath(confFileLocation))
+			if err != nil {
+				return err
+			}
+			return validators.ValidateRegistryAuth(regEndpoint, fileBytes)
+		}
+	}
+	return nil
+}
+
 func validatePlan(plan types.Plan) error {
 	for _, secret := range plan.Secrets {
 		if featureEnabled(plan.Features, secret.Filters) {
@@ -157,6 +185,20 @@ func validatePlan(plan types.Plan) error {
 		}
 	}
 	return nil
+}
+func expandPath(path string) string {
+	usr, _ := user.Current()
+	dir := usr.HomeDir
+	if path == "~" {
+		// In case of "~", which won't be caught by the "else if"
+		path = dir
+	} else if strings.HasPrefix(path, "~/") {
+		// Use strings.HasPrefix so we don't match paths like
+		// "/something/~/something/"
+		path = filepath.Join(dir, path[2:])
+	}
+
+	return path
 }
 
 func filesExists(files []types.FileSecret) error {
