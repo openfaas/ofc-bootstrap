@@ -537,12 +537,21 @@ func createNamespaces() error {
 func createSecrets(plan types.Plan) error {
 
 	filename := "./tmp/secrets.yaml"
+
 	f, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
+	numberOfEnabledSecrets := 0
+	for _, secret := range plan.Secrets {
+		if featureEnabled(plan.Features, secret.Filters) {
+			numberOfEnabledSecrets++
+		}
+	}
+
+	numberOfAddedSecrets := 1
 	for _, secret := range plan.Secrets {
 		if featureEnabled(plan.Features, secret.Filters) {
 			fmt.Printf("Add secret: %s to %s\n", secret.Name, filename)
@@ -564,6 +573,15 @@ func createSecrets(plan types.Plan) error {
 				if err != nil {
 					return err
 				}
+
+				if numberOfEnabledSecrets > numberOfAddedSecrets {
+					_, err = f.WriteString("---\n")
+					if err != nil {
+						return err
+					}
+				}
+
+				numberOfAddedSecrets++
 			}
 		}
 	}
