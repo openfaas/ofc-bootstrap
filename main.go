@@ -7,10 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/user"
-	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/alexellis/go-execute"
@@ -164,8 +161,8 @@ func validateRegistryAuth(regEndpoint string, planSecrets []types.KeyValueNamesp
 	}
 	for _, planSecret := range planSecrets {
 		if planSecret.Name == "registry-secret" {
-			confFileLocation := planSecret.Files[0].ValueFrom
-			fileBytes, err := ioutil.ReadFile(expandPath(confFileLocation))
+			confFileLocation := planSecret.Files[0].ExpandValueFrom()
+			fileBytes, err := ioutil.ReadFile(confFileLocation)
 			if err != nil {
 				return err
 			}
@@ -185,20 +182,6 @@ func validatePlan(plan types.Plan) error {
 		}
 	}
 	return nil
-}
-func expandPath(path string) string {
-	usr, _ := user.Current()
-	dir := usr.HomeDir
-	if path == "~" {
-		// In case of "~", which won't be caught by the "else if"
-		path = dir
-	} else if strings.HasPrefix(path, "~/") {
-		// Use strings.HasPrefix so we don't match paths like
-		// "/something/~/something/"
-		path = filepath.Join(dir, path[2:])
-	}
-
-	return path
 }
 
 func filesExists(files []types.FileSecret) error {
