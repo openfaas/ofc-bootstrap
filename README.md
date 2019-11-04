@@ -298,7 +298,7 @@ Find the section of the YAML `registry:` set the value accordingly, replacing `A
 
 The final `/` is required
 
-* Create a new user with the role `AmazonEC2ContainerRegistryPowerUser`
+* Create a new user with the role `AmazonEC2ContainerRegistryFullAccess` - see also [AWS permissions for ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr_managed_policies.html)
 
 * The file will be read from `~/.aws/credentials` by default, but you can change this via editing the path in `value_from` under the `ecr-credentials` secret
 
@@ -575,8 +575,14 @@ cd tmp/openfaas-cloud/
 # Edit gateway_config.yml
 # Edit buildshiprun_limits.yml
 
+# Edit aws.yml if you want to change AWS ECR settings such as the region
+
 # Update all functions
 faas-cli deploy -f stack.yml
+
+
+# Update AWS ECR functions if needed
+faas-cli deploy -f aws.yml
 
 # Update a single function, such as "buildshiprun"
 faas-cli deploy -f stack.yml --filter=buildshiprun
