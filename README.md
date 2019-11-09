@@ -109,7 +109,7 @@ Cloud-services:
 
 * [DigitalOcean Kubernetes](https://www.digitalocean.com/products/kubernetes/) (recommended)
 * [AKS](https://docs.microsoft.com/en-us/azure/aks/)
-* [EKS](https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html)
+* [EKS](https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html) ([Guide](https://www.openfaas.com/blog/eks-openfaas-cloud-build-guide/))
 * [GKE](https://cloud.google.com/kubernetes-engine/)
 
 Local / on-premises:
