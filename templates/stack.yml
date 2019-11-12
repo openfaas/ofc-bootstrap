@@ -224,3 +224,20 @@ functions:
     environment:
       content_type: "application/json"
 
+  function-logs:
+    lang: go
+    handler: ./function-logs
+    image: functions/function-logs:0.1.1
+    labels:
+      openfaas-cloud: "1"
+      role: openfaas-system
+      com.openfaas.scale.zero: false
+    environment:
+      write_debug: true
+      read_debug: true
+    environment_file:
+      - gateway_config.yml
+    secrets:
+      - basic-auth-user
+      - basic-auth-password
+
