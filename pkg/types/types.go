@@ -22,6 +22,8 @@ const (
 	DODNS = "do_dns01"
 	// Route53DNS filter enables the creation of secrets for Amazon Route53 DNS when TLS is enabled
 	Route53DNS = "route53_dns01"
+	// CloudflareDNS filter enables the creation of secrets for Cloudflare DNS when TLS is enabled
+	CloudflareDNS = "cloudflare_dns01"
 
 	// CloudDNS is the dns_service field in yaml file for Google Cloud Platform
 	CloudDNS = "clouddns"
@@ -29,6 +31,8 @@ const (
 	DigitalOcean = "digitalocean"
 	// Route53 is the dns_service field in yaml file for Amazon
 	Route53 = "route53"
+	// Cloudflare for dns_service
+	Cloudflare = "cloudflare"
 
 	// GitLabSCM repository manager name as displayed in the init.yaml file
 	GitLabSCM = "gitlab"
