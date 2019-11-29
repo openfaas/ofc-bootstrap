@@ -178,4 +178,59 @@ spec:
 	}
 }
 
+func Test_CloudFlare_Issuer(t *testing.T) {
+	tlsTemplate := TLSTemplate{
+		Email:      "sales@openfaas.com",
+		IssuerType: "ClusterIssuer",
+		DNSService: "cloudflare",
+	}
+
+	templatePath := "../../templates/k8s/tls/issuer-prod.yml"
+	templateData, err := ioutil.ReadFile(templatePath)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	templateRes := template.Must(template.New("prod-issuer").Parse(string(templateData)))
+	buf := bytes.Buffer{}
+	templateRes.Execute(&buf, &tlsTemplate)
+
+	wantTemplate := `apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+  namespace: openfaas
+spec:
+  acme:
+    email: "sales@openfaas.com"
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - dns01:
+        cloudflare:
+          
+          email: sales@openfaas.com
+          apiKeySecretRef:
+            name: cloudflare-api-key-secret
+            key: api-key
+          `
+
+	got := string(buf.Bytes())
+	if len(got) == 0 {
+		t.Errorf("No bytes generated from template")
+		t.Fail()
+	}
+
+	if debugYAML {
+		ioutil.WriteFile("want-"+tlsTemplate.DNSService+".yaml", []byte(wantTemplate), 0700)
+		ioutil.WriteFile("got-"+tlsTemplate.DNSService+".yaml", []byte(got), 0700)
+	}
+
+	if got != wantTemplate {
+		t.Errorf("Want\n`%q`\n, but got\n`%q`", wantTemplate, got)
+	}
+}
+
 var debugYAML bool
