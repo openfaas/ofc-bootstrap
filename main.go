@@ -3,12 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/validators"
 	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/openfaas-incubator/ofc-bootstrap/pkg/validators"
 
 	"github.com/alexellis/go-execute"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/ingress"
@@ -724,6 +725,8 @@ func filterDNSFeature(plan types.Plan) (types.Plan, error) {
 		plan.Features = append(plan.Features, types.GCPDNS)
 	} else if plan.TLSConfig.DNSService == types.Route53 {
 		plan.Features = append(plan.Features, types.Route53DNS)
+	} else if plan.TLSConfig.DNSService == types.Cloudflare {
+		plan.Features = append(plan.Features, types.CloudflareDNS)
 	} else {
 		return plan, fmt.Errorf("Error unavailable DNS service provider: %s", plan.TLSConfig.DNSService)
 	}

@@ -127,6 +127,15 @@ secrets:
       - "route53_dns01"
     namespace: "cert-manager"
 
+  ## Use Cloudflare
+  ### Create role and download its secret access key
+  - name: "cloudflare-api-key-secret"
+    files:
+      - name: "api-key"
+        value_from: "~/Downloads/cloudflare-secret-access-key"
+    filters:
+      - "cloudflare_dns01"
+    namespace: "cert-manager"
 
   # Used by Buildkit to push images to your registry
   - name: "registry-secret"
@@ -261,13 +270,18 @@ tls_config:
 
   ### DigitalOcean
   dns_service: digitalocean
+
   ### Google Cloud DNS
   # dns_service: clouddns
   # project_id: "my-openfaas-cloud"
+
   ### AWS Route53
   # dns_service: route53
   # region: us-east-1
   # access_key_id: ASYAKIUJE8AYRQQ7DU3M
+
+  ### Cloudflare
+  # dns_service: cloudflare
 
 ## Dockerfile language support
 ### Use with caution, it allows any workload to be built and run

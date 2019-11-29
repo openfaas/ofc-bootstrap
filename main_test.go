@@ -34,7 +34,13 @@ func Test_filterDNSFeature(t *testing.T) {
 			expectedErr:     nil,
 		},
 		{
-			title:           "DNS Service provider is Digital Ocean",
+			title:           "DNS Service provider is Cloudflare",
+			plan:            types.Plan{TLSConfig: types.TLSConfig{DNSService: "cloudflare"}},
+			expectedFeature: types.CloudflareDNS,
+			expectedErr:     nil,
+		},
+		{
+			title:           "DNS Service provider is not supported",
 			plan:            types.Plan{TLSConfig: types.TLSConfig{DNSService: "unsupporteddns"}},
 			expectedFeature: "",
 			expectedErr:     errors.New("Error unavailable DNS service provider"),
@@ -45,10 +51,16 @@ func Test_filterDNSFeature(t *testing.T) {
 			var planError error
 			test.plan, planError = filterDNSFeature(test.plan)
 			if planError != nil {
-				if !strings.Contains(planError.Error(), test.expectedErr.Error()) {
-					t.Errorf("Unexpected error message: %s", planError.Error())
+				wantErr := ""
+				if test.expectedErr != nil {
+					wantErr = test.expectedErr.Error()
+				}
+
+				if strings.Contains(planError.Error(), wantErr) == false || len(wantErr) == 0 {
+					t.Errorf("Got plan error: %s", planError.Error())
 				}
 			}
+
 			for _, feature := range test.plan.Features {
 				if feature != test.expectedFeature {
 					t.Errorf("Unexpected feature: %s", feature)
