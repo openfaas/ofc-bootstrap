@@ -395,13 +395,14 @@ OpenFaaS Cloud can use cert-manager to automatically provision TLS certificates 
 
 > This feature is optional, but highly recommended
 
-Pick between the following providers for the DNS01 challenge:
+Pick between the following providers for the [DNS01 challenge](https://cert-manager.io/docs/configuration/acme/dns01/):
 
 * DigitalOcean DNS (free at time of writing)
 * Google Cloud DNS
 * AWS Route53
+* Cloudflare DNS
 
-> See also: [cert-manager docs for ACME/DNS01](https://docs.cert-manager.io/en/latest/tasks/issuers/setup-acme/index.html)
+> See also: [cert-manager docs for ACME/DNS01](https://cert-manager.io/docs/configuration/acme/dns01/)
 
 > Note: Comment out the relevant sections and configure as necessary
 
