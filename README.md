@@ -212,46 +212,15 @@ After the installation has completed in a later step, you will need to create DN
 
 > Note: If using ECR, please go to the next step.
 
-Log into your own private Docker registry, or the [Docker Hub](https://hub.docker.com):
+ofc-bootstrap has a command to generate the registry auth file in the correct format.
 
-* Open the Docker for Mac/Windows settings and uncheck "store my password securely" / "in a keychain"
-* Run `docker login` to populate `~/.docker/config.json` - this will be used to configure your Docker registry or Docker Hub account for functions.
-* Remove the following setting if you see it in the file: `	"credsStore": "osxkeychain"`.
-
-Now before you go any further, check the contents of the file.
-
+If you are using Dockerhub you only need to supply your `--username` and `--password`.
 ```sh
-cat ~/.docker/config.json
+ofc-bootstrap registry-login --username <your-registry-username> --password <your-registry-password>
 ```
 
-It should look like this, if it does not, then remove the file and run `docker login` again.
+If you are using a different registry (that is not ECR) then also provide a `--registry-url` as well
 
-```json
-{
-        "auths": {
-                "https://index.docker.io/v1/": {
-                        "auth": "dXNlcjpwYXNzd29yZAo=="
-                }
-        },
-        "HttpHeaders": {
-                "User-Agent": "Docker-Client/19.03.2 (darwin)"
-        }
-}
-```
-
-If you absolutely cannot get Docker to store a password in plaintext, try the following as a last resort:
-
-```sh
-export SERVER="https://index.docker.io/v1/"
-export DOCKER_USERNAME="your-username"
-export DOCKER_PASSWORD="your-pass"
-
-kubectl create secret docker-registry registry-secret \
-        --docker-username=$DOCKER_USERNAME \
-        --docker-password=$DOCKER_PASSWORD \
-        --docker-server=$SERVER \
-        --dry-run -o jsonpath="{.data.\.dockerconfigjson}" | base64 -D > ~/.docker/config.json
-```
 
 Find the section of the YAML `registry: docker.io/ofctest/`
 
@@ -270,23 +239,12 @@ OpenFaaS Cloud also supports Amazon's managed container registry called ECR.
 
 * Set `enable_ecr: true` in `init.yaml`
 
-* Define a `config.json`
+* Define a `config.json` by running the following command
 
 ```sh
-export REGION="eu-central-1"
-export ACCOUNT_ID="012345678900"
-
-export SERVER="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/"
-
-cat <<EOF > docker.config
-{
-        "credsStore": "ecr-login",
-        "credHelpers": {
-        "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com": "ecr-login"
-        }
-}
-EOF
+ofc-bootstrap registry-login --ecr --region <your-aws-region> --account-id <your-account-id>
 ```
+
 
 At runtime it will use your mounted AWS credentials file from a separate secret to gain an access token for ECR. ECR access tokens need to be refreshed around every 12 hours and this is handled by the `ecr-login` binary built-into the OFC builder container image.
 

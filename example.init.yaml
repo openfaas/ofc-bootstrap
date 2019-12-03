@@ -141,7 +141,7 @@ secrets:
   - name: "registry-secret"
     files:
       - name: "config.json"
-        value_from: "~/.docker/config.json"
+        value_from: "./credentials/config.json"
     filters:
       - "default"
     namespace: "openfaas"
@@ -150,7 +150,7 @@ secrets:
   - name: "registry-pull-secret"
     files:
       - name: ".dockerconfigjson"
-        value_from: "~/.docker/config.json"
+        value_from: "./credentials/config.json"
     namespace: "openfaas-fn"
     filters:
       - "default"
