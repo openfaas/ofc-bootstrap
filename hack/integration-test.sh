@@ -14,4 +14,4 @@ touch ~/Downloads/do-access-token
 touch ~/.docker/config.json
 
 # Run end to end
-./bin/ofc-bootstrap -yaml example.init.yaml
+./bin/ofc-bootstrap apply --file example.init.yaml
