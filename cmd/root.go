@@ -83,6 +83,7 @@ func runRootCommand(cmd *cobra.Command, args []string) error {
 
 	printLogo()
 	cmd.Help()
+
 	return nil
 }
 
