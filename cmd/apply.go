@@ -100,7 +100,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 
 	os.Mkdir("tmp", 0700)
 
-	log.Println("Validating registry credentials file")
+	fmt.Fprint(os.Stdout, "Validating registry credentials file")
 
 	registryAuthErr := validateRegistryAuth(plan.Registry, plan.Secrets, plan.EnableECR)
 	if registryAuthErr != nil {

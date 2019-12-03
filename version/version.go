@@ -7,7 +7,7 @@ var (
 	Version string
 )
 
-//GetVersion get lastest version
+//GetVersion get latest version
 func GetVersion() string {
 	if len(Version) == 0 {
 		return "dev"
@@ -19,5 +19,4 @@ const Logo = `  ___  _____ ____
  / _ \|  ___/ ___|
 | | | | |_ | |    
 | |_| |  _|| |___ 
- \___/|_|   \____|
-`
+ \___/|_|   \____|`

@@ -13,3 +13,4 @@ init.yaml
 main
 bin/
 config.json
+credentials/
