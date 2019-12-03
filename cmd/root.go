@@ -24,6 +24,7 @@ const WelcomeMessage = "Welcome to ofc-bootstrap! Find out more at https://githu
 
 func init() {
 	rootCommand.AddCommand(versionCmd)
+	rootCommand.Flags().StringArrayP("yaml", "f", []string{""}, "The init.yaml plan file")
 }
 
 var rootCommand = &cobra.Command{
@@ -32,7 +33,8 @@ var rootCommand = &cobra.Command{
 	Long: `
 Bootstrap OpenFaaS Cloud
 `,
-	Run: runRootCommand,
+	RunE:         runRootCommand,
+	SilenceUsage: true,
 }
 
 var versionCmd = &cobra.Command{
@@ -73,9 +75,15 @@ func Execute(version, gitCommit string) error {
 	return nil
 }
 
-func runRootCommand(cmd *cobra.Command, args []string) {
+func runRootCommand(cmd *cobra.Command, args []string) error {
+
+	if cmd.Flags().Changed("yaml") {
+		return fmt.Errorf("a breaking change was introduced, you now need to use ofc-bootstrap apply --file init.yaml")
+	}
+
 	printLogo()
 	cmd.Help()
+	return nil
 }
 
 func printLogo() {
