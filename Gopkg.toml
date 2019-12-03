@@ -2,7 +2,7 @@ ignored = ["github.com/openfaas-incubator/ofc-bootstrap/tmp/*"]
 
 [[constraint]]
   name = "gopkg.in/yaml.v2"
-  version = "2.2.3"
+  version = "2.2.7"
 
 [[constraint]]
   name = "github.com/alexellis/go-execute"

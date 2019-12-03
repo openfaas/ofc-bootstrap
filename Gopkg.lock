@@ -10,12 +10,12 @@
   version = "0.1.1"
 
 [[projects]]
-  digest = "1:59f10c1537d2199d9115d946927fe31165959a95190849c82ff11e05803528b0"
+  digest = "1:b75b3deb2bce8bc079e16bb2aecfe01eb80098f5650f9e93e5643ca8b7b73737"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = "UT"
-  revision = "f221b8435cfb71e54062f6c6e99e9ade30b124d5"
-  version = "v2.2.4"
+  revision = "1f64d6156d11335c3f22d9330b0ad14fc1e789ce"
+  version = "v2.2.7"
 
 [solve-meta]
   analyzer-name = "dep"
