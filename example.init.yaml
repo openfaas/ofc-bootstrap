@@ -293,7 +293,7 @@ enable_dockerfile_lang: false
 scale_to_zero: false
 
 ## Version of OpenFaaS Cloud from https://github.com/openfaas/openfaas-cloud/releases/
-openfaas_cloud_version: 0.11.11
+openfaas_cloud_version: 0.12.0
 
 ## Enable network policies
 ### Prevents functions from talking to the openfaas namespace, and to each other.
@@ -303,3 +303,4 @@ network_policies: false
 ## Branch that OpenFaaS Cloud will build and deploy
 ## You should change this if you want a different branch to be built and deployed instead of master
 build_branch: master
+
