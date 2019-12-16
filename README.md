@@ -219,7 +219,7 @@ If you are using Dockerhub you only need to supply your `--username` and `--pass
 ofc-bootstrap registry-login --username <your-registry-username> --password <your-registry-password>
 ```
 
-If you are using a different registry (that is not ECR) then also provide a `--registry-url` as well
+If you are using a different registry (that is not ECR) then also provide a `--server` as well.
 
 
 Find the section of the YAML `registry: docker.io/ofctest/`

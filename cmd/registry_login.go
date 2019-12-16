@@ -13,7 +13,7 @@ import (
 
 func init() {
 	rootCommand.AddCommand(registryLoginCommand)
-	registryLoginCommand.Flags().String("registry-url", "https://index.docker.io/v1/", "The Registry URL, it is defaulted to the docker registry")
+	registryLoginCommand.Flags().String("server", "https://index.docker.io/v1/", "The server URL, it is defaulted to the docker registry")
 	registryLoginCommand.Flags().String("username", "", "The Registry Username")
 	registryLoginCommand.Flags().String("password", "", "The registry password")
 
@@ -35,18 +35,18 @@ func generateRegistryAuthFile(command *cobra.Command, _ []string) error {
 	region, _ := command.Flags().GetString("region")
 	username, _ := command.Flags().GetString("username")
 	password, _ := command.Flags().GetString("password")
-	registryURL, _ := command.Flags().GetString("registry-url")
+	server, _ := command.Flags().GetString("server")
 
 	if ecrEnabled {
 		return generateECRFile(accountID, region)
 	} else {
-		return generateFile(username, password, registryURL)
+		return generateFile(username, password, server)
 	}
 }
 
-func generateFile(username string, password string, registryURL string) error {
+func generateFile(username string, password string, server string) error {
 
-	fileBytes, err := generateRegistryAuth(registryURL, username, password)
+	fileBytes, err := generateRegistryAuth(server, username, password)
 	if err != nil {
 		return err
 	}
@@ -75,15 +75,15 @@ func generateECRFile(accountID string, region string) error {
 	return writeErr
 }
 
-func generateRegistryAuth(registryURL, username, password string) ([]byte, error) {
-	if len(username) == 0 || len(password) == 0 || len(registryURL) == 0 {
-		return nil, errors.New("both --username and --password-stdin must be used, and provided, for us to generate a valid file")
+func generateRegistryAuth(server, username, password string) ([]byte, error) {
+	if len(username) == 0 || len(password) == 0 || len(server) == 0 {
+		return nil, errors.New("both --username and --password must be used, and provided, for us to generate a valid file")
 	}
 
 	encodedString := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password)))
 	data := RegistryAuth{
 		AuthConfigs: map[string]Auth{
-			registryURL: {Base64AuthString: encodedString},
+			server: {Base64AuthString: encodedString},
 		},
 	}
 
