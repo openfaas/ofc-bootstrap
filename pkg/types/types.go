@@ -67,6 +67,7 @@ type Plan struct {
 	NetworkPolicies      bool                     `yaml:"network_policies"`
 	BuildBranch          string                   `yaml:"build_branch"`
 	EnableECR            bool                     `yaml:"enable_ecr"`
+	ECRConfig            ECRConfig                `yaml:"ecr_config"`
 }
 
 // Deployment is the deployment section of YAML concerning
@@ -148,4 +149,8 @@ type TLSConfig struct {
 	IssuerType  string `yaml:"issuer_type"`
 	Region      string `yaml:"region"`
 	AccessKeyID string `yaml:"access_key_id"`
+}
+
+type ECRConfig struct {
+	ECRRegion string `yaml:"ecr_region"`
 }

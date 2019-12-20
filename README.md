@@ -239,7 +239,9 @@ OpenFaaS Cloud also supports Amazon's managed container registry called ECR.
 
 * Set `enable_ecr: true` in `init.yaml`
 
-* Define a `config.json` by running the following command
+* Set your AWS region `ecr_region: "your-aws-region"` in `init.yaml`
+ 
+* Define a `./credentials/config.json` by running the following command
 
 ```sh
 ofc-bootstrap registry-login --ecr --region <your-aws-region> --account-id <your-account-id>

@@ -112,6 +112,14 @@ func Apply(plan types.Plan) error {
 		return builderErr
 	}
 
+	ecrErr := generateTemplate("aws", plan, awsConfig{
+		ECRRegion: plan.ECRConfig.ECRRegion,
+	})
+
+	if ecrErr != nil {
+		return ecrErr
+	}
+
 	return nil
 }
 
@@ -121,6 +129,10 @@ type builderConfig struct {
 
 type stackConfig struct {
 	GitHub bool
+}
+
+type awsConfig struct {
+	ECRRegion string
 }
 
 func generateTemplate(fileName string, plan types.Plan, templateType interface{}) error {
