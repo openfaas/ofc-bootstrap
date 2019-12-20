@@ -187,6 +187,11 @@ registry: docker.io/ofctest/
 ### Enable only if using AWS ECR
 enable_ecr: false
 
+### Change if your using ECR
+ecr_config:
+  ### The region to use for ECR
+  ecr_region: "eu-central-1"
+
 ### Your root DNS domain name, this can be a sub-domain i.e. staging.o6s.io / prod.o6s.io
 root_domain: "myfaas.club"
 
