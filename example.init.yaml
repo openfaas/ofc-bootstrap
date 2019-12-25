@@ -1,4 +1,3 @@
-orchestration: kubernetes  # This line can be removed in 0.7.3
 secrets:
   ### Generated secrets (do not edit)
   - name: s3-secret-key
@@ -298,7 +297,7 @@ enable_dockerfile_lang: false
 scale_to_zero: false
 
 ## Version of OpenFaaS Cloud from https://github.com/openfaas/openfaas-cloud/releases/
-openfaas_cloud_version: 0.11.11
+openfaas_cloud_version: 0.12.0
 
 ## Enable network policies
 ### Prevents functions from talking to the openfaas namespace, and to each other.
