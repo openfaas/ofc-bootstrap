@@ -214,10 +214,14 @@ After the installation has completed in a later step, you will need to create DN
 
 ofc-bootstrap has a command to generate the registry auth file in the correct format.
 
-If you are using Dockerhub you only need to supply your `--username` and `--password`.
+If you are using Dockerhub you only need to supply your `--username` and `--password-stdin` (or `--password`, but this leaves the password in history).
 ```sh
-ofc-bootstrap registry-login --username <your-registry-username> --password <your-registry-password>
+
+ofc-bootstrap registry-login --username <your-registry-username> --password-stdin
+(the enter your password and hit return)
 ```
+
+You could also have you password in a file, or environment variable and echo/cat this instead of entering interactively
 
 If you are using a different registry (that is not ECR) then also provide a `--server` as well.
 

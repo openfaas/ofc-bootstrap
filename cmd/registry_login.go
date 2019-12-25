@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func init() {
@@ -16,8 +17,9 @@ func init() {
 	registryLoginCommand.Flags().String("server", "https://index.docker.io/v1/", "The server URL, it is defaulted to the docker registry")
 	registryLoginCommand.Flags().String("username", "", "The Registry Username")
 	registryLoginCommand.Flags().String("password", "", "The registry password")
+	registryLoginCommand.Flags().BoolP("password-stdin", "s", false, "Reads the gateway password from stdin")
 
-	registryLoginCommand.Flags().Bool("ecr", false, "If we are using ECR we need a different set of flags, so if this is set, we need to set --username and --password-stdin")
+	registryLoginCommand.Flags().Bool("ecr", false, "If we are using ECR we need a different set of flags, so if this is set, we need to set --username and --password")
 	registryLoginCommand.Flags().String("account-id", "", "Your AWS Account id")
 	registryLoginCommand.Flags().String("region", "", "Your AWS region")
 }
@@ -36,11 +38,20 @@ func generateRegistryAuthFile(command *cobra.Command, _ []string) error {
 	username, _ := command.Flags().GetString("username")
 	password, _ := command.Flags().GetString("password")
 	server, _ := command.Flags().GetString("server")
+	passStdIn, _ := command.Flags().GetBool("password-stdin")
 
 	if ecrEnabled {
 		return generateECRFile(accountID, region)
 	} else {
-		return generateFile(username, password, server)
+		if passStdIn {
+			passwordStdin, err := ioutil.ReadAll(os.Stdin)
+			if err != nil {
+				return err
+			}
+			return generateFile(username, strings.TrimSpace(string(passwordStdin)), server)
+		} else {
+			return generateFile(username, password, server)
+		}
 	}
 }
 
