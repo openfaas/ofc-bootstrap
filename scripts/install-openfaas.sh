@@ -7,7 +7,7 @@ helm upgrade openfaas --install openfaas/openfaas \
     --namespace openfaas  \
     --set basic_auth=true \
     --set functionNamespace=openfaas-fn \
-    --set ingress.enabled=true \
+    --set ingress.enabled=false \
     --set gateway.scaleFromZero=true \
     --set gateway.readTimeout=15m \
     --set gateway.writeTimeout=15m \
