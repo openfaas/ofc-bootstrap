@@ -9,7 +9,7 @@ export VERIFY_CHECKSUM=0
 export ALIAS=""
 export OWNER=openfaas-incubator
 export REPO=ofc-bootstrap
-export SUCCESS_CMD="$REPO --version"
+export SUCCESS_CMD="$REPO version"
 export BINLOCATION="/usr/local/bin"
 
 ###############################
