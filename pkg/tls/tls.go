@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/alexellis/go-execute"
+	execute "github.com/alexellis/go-execute/pkg/v1"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 )
 
@@ -88,8 +88,9 @@ func generateTemplate(fileName string, tlsTemplate TLSTemplate) (string, error) 
 func applyTemplate(tempFilePath string) error {
 
 	execTask := execute.ExecTask{
-		Command: "kubectl apply -f " + tempFilePath,
-		Shell:   false,
+		Command:     "kubectl apply -f " + tempFilePath,
+		Shell:       false,
+		StreamStdio: true,
 	}
 
 	execRes, execErr := execTask.Execute()

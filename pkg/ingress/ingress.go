@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/alexellis/go-execute"
+	execute "github.com/alexellis/go-execute/pkg/v1"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 )
 
@@ -67,9 +67,10 @@ func apply(source string, name string, ingress IngressTemplate) error {
 	}
 
 	execTask := execute.ExecTask{
-		Command: "kubectl",
-		Args:    []string{"apply", "-f", tempFilePath},
-		Shell:   false,
+		Command:     "kubectl",
+		Args:        []string{"apply", "-f", tempFilePath},
+		Shell:       false,
+		StreamStdio: true,
 	}
 
 	execRes, execErr := execTask.Execute()
