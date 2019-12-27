@@ -4,10 +4,10 @@ ignored = ["github.com/openfaas-incubator/ofc-bootstrap/tmp/*"]
   name = "gopkg.in/yaml.v2"
   version = "2.2.7"
 
-[[constraint]]
-  name = "github.com/alexellis/go-execute"
-  version = "0.1.1"
-
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  name = "github.com/alexellis/go-execute"
+  version = "0.3.0"

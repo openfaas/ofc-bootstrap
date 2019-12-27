@@ -6,24 +6,18 @@ import (
 	"log"
 	"os"
 
-	"github.com/alexellis/go-execute"
+	execute "github.com/alexellis/go-execute/pkg/v1"
 )
 
-func CreateDockerSecret(kvn KeyValueNamespaceTuple) string {
-	val, err := generateSecret()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+func BuildSecretTask(kvn KeyValueNamespaceTuple) execute.ExecTask {
+	task := execute.ExecTask{
+		Command:     "kubectl",
+		Args:        []string{"create", "secret", "generic", "-n=" + kvn.Namespace, kvn.Name},
+		StreamStdio: true,
 	}
 
-	return fmt.Sprintf("echo %s | docker secret create %s", val, kvn.Name)
-}
-
-func CreateK8sSecret(kvn KeyValueNamespaceTuple) string {
-	secretCmd := fmt.Sprintf("kubectl create secret generic -n %s %s", kvn.Namespace, kvn.Name)
-
-	if len(kvn.Type) != 0 {
-		secretCmd = fmt.Sprintf("%s --type=%s", secretCmd, kvn.Type)
+	if len(kvn.Type) > 0 {
+		task.Args = append(task.Args, "--type="+kvn.Type)
 	}
 
 	for _, key := range kvn.Literals {
@@ -36,33 +30,38 @@ func CreateK8sSecret(kvn KeyValueNamespaceTuple) string {
 			}
 			secretValue = val
 		}
-
-		secretCmd = fmt.Sprintf(`%s --from-literal=%s=%s`, secretCmd, key.Name, secretValue)
-
+		task.Args = append(task.Args, fmt.Sprintf("--from-literal=%s=%s", key.Name, secretValue))
 	}
 
 	for _, file := range kvn.Files {
 		if len(file.ValueCommand) > 0 {
-			task := execute.ExecTask{
-				Command: file.ValueCommand,
-			}
-			_, err := task.Execute()
 
+			valueTask := execute.ExecTask{
+				Command:     file.ValueCommand,
+				StreamStdio: true,
+			}
+			res, err := valueTask.Execute()
 			if err != nil {
-				log.Println(err)
+				log.Fatal(fmt.Errorf("error executing value_command: %s", file.ValueCommand))
+			}
+
+			if res.ExitCode != 0 {
+				log.Fatal(fmt.Errorf("error running value_command: %s, stderr: %s", file.ValueCommand, res.Stderr))
 			}
 		}
 
-		secretCmd = fmt.Sprintf("%s --from-file=%s=%s", secretCmd, file.Name, file.ExpandValueFrom())
+		task.Args = append(task.Args, fmt.Sprintf("--from-file=%s=%s", file.Name, file.ExpandValueFrom()))
+
 	}
 
-	return secretCmd
+	return task
 }
 
 func generateSecret() (string, error) {
 	task := execute.ExecTask{
-		Command: "scripts/generate-sha.sh",
-		Shell:   false,
+		Command:     "scripts/generate-sha.sh",
+		Shell:       false,
+		StreamStdio: false,
 	}
 
 	res, err := task.Execute()

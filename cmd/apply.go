@@ -15,7 +15,7 @@ import (
 
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/validators"
 
-	"github.com/alexellis/go-execute"
+	execute "github.com/alexellis/go-execute/pkg/v1"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/ingress"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/stack"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/tls"
@@ -131,7 +131,11 @@ const (
 )
 
 func taskGivesStdout(tool string) error {
-	task := execute.ExecTask{Command: tool}
+	task := execute.ExecTask{
+		Command:     tool,
+		StreamStdio: true,
+	}
+
 	res, err := task.Execute()
 	if err != nil {
 		return fmt.Errorf("could not run: '%s', error: %s", tool, err)
@@ -334,7 +338,8 @@ func helmRepoUpdate() error {
 	log.Println("Updating helm repos")
 
 	task := execute.ExecTask{
-		Command: "helm repo update",
+		Command:     "helm repo update",
+		StreamStdio: true,
 	}
 
 	taskRes, taskErr := task.Execute()
@@ -353,8 +358,9 @@ func installTiller() error {
 	log.Println("Creating Tiller")
 
 	task1 := execute.ExecTask{
-		Command: "scripts/create-tiller-sa.sh",
-		Shell:   true,
+		Command:     "scripts/create-tiller-sa.sh",
+		Shell:       true,
+		StreamStdio: true,
 	}
 
 	res1, err1 := task1.Execute()
@@ -367,8 +373,9 @@ func installTiller() error {
 	log.Println(res1.Stderr)
 
 	task2 := execute.ExecTask{
-		Command: "scripts/create-tiller.sh",
-		Shell:   true,
+		Command:     "scripts/create-tiller.sh",
+		Shell:       true,
+		StreamStdio: true,
 	}
 
 	res2, err2 := task2.Execute()
@@ -387,8 +394,9 @@ func createFunctionsAuth() error {
 	log.Println("Creating secrets for functions to consume")
 
 	task := execute.ExecTask{
-		Command: "scripts/create-functions-auth.sh",
-		Shell:   true,
+		Command:     "scripts/create-functions-auth.sh",
+		Shell:       true,
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
@@ -413,9 +421,10 @@ func installIngressController(ingress string) error {
 	}
 
 	task := execute.ExecTask{
-		Command: "scripts/install-nginx.sh",
-		Shell:   true,
-		Env:     env,
+		Command:     "scripts/install-nginx.sh",
+		Shell:       true,
+		Env:         env,
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
@@ -433,8 +442,9 @@ func installSealedSecrets() error {
 	log.Println("Creating SealedSecrets")
 
 	task := execute.ExecTask{
-		Command: "scripts/install-sealedsecrets.sh",
-		Shell:   true,
+		Command:     "scripts/install-sealedsecrets.sh",
+		Shell:       true,
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
@@ -453,9 +463,10 @@ func installOpenfaas(scaleToZero bool) error {
 	log.Println("Creating OpenFaaS")
 
 	task := execute.ExecTask{
-		Command: "scripts/install-openfaas.sh",
-		Shell:   true,
-		Env:     []string{fmt.Sprintf("FAAS_IDLER_DRY_RUN=%v", strconv.FormatBool(!scaleToZero))},
+		Command:     "scripts/install-openfaas.sh",
+		Shell:       true,
+		Env:         []string{fmt.Sprintf("FAAS_IDLER_DRY_RUN=%v", strconv.FormatBool(!scaleToZero))},
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
@@ -473,8 +484,9 @@ func installMinio() error {
 	log.Println("Creating Minio")
 
 	task := execute.ExecTask{
-		Command: "scripts/install-minio.sh",
-		Shell:   true,
+		Command:     "scripts/install-minio.sh",
+		Shell:       true,
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
@@ -493,8 +505,9 @@ func patchFnServiceaccount() error {
 	log.Println("Patching openfaas-fn serviceaccount for pull secrets")
 
 	task := execute.ExecTask{
-		Command: "scripts/patch-fn-serviceaccount.sh",
-		Shell:   true,
+		Command:     "scripts/patch-fn-serviceaccount.sh",
+		Shell:       true,
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
@@ -513,8 +526,9 @@ func installCertmanager() error {
 	log.Println("Creating Cert-Manager")
 
 	task := execute.ExecTask{
-		Command: "scripts/install-cert-manager.sh",
-		Shell:   true,
+		Command:     "scripts/install-cert-manager.sh",
+		Shell:       true,
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
@@ -532,8 +546,9 @@ func createNamespaces() error {
 	log.Println("Creating namespaces")
 
 	task := execute.ExecTask{
-		Command: "scripts/create-namespaces.sh",
-		Shell:   true,
+		Command:     "scripts/create-namespaces.sh",
+		Shell:       true,
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
@@ -553,12 +568,8 @@ func createSecrets(plan types.Plan) error {
 		if featureEnabled(plan.Features, secret.Filters) {
 			fmt.Printf("Creating secret: %s\n", secret.Name)
 
-			var command execute.ExecTask
-			command = execute.ExecTask{
-				Command: types.CreateK8sSecret(secret),
-				Shell:   false,
-			}
-
+			command := types.BuildSecretTask(secret)
+			fmt.Printf("Secret - %s %s\n", command.Command, command.Args)
 			res, err := command.Execute()
 
 			if err != nil {
@@ -575,8 +586,9 @@ func createSecrets(plan types.Plan) error {
 func sealedSecretsReady() bool {
 
 	task := execute.ExecTask{
-		Command: "./scripts/get-sealedsecretscontroller.sh",
-		Shell:   true,
+		Command:     "./scripts/get-sealedsecretscontroller.sh",
+		Shell:       true,
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
@@ -587,8 +599,9 @@ func sealedSecretsReady() bool {
 func exportSealedSecretPubCert() string {
 
 	task := execute.ExecTask{
-		Command: "./scripts/export-sealed-secret-pubcert.sh",
-		Shell:   true,
+		Command:     "./scripts/export-sealed-secret-pubcert.sh",
+		Shell:       true,
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
@@ -598,8 +611,9 @@ func exportSealedSecretPubCert() string {
 
 func certManagerReady() bool {
 	task := execute.ExecTask{
-		Command: "./scripts/get-cert-manager.sh",
-		Shell:   true,
+		Command:     "./scripts/get-cert-manager.sh",
+		Shell:       true,
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
@@ -610,8 +624,9 @@ func certManagerReady() bool {
 func tillerReady() bool {
 
 	task := execute.ExecTask{
-		Command: "./scripts/get-tiller.sh",
-		Shell:   true,
+		Command:     "./scripts/get-tiller.sh",
+		Shell:       true,
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
@@ -621,9 +636,10 @@ func tillerReady() bool {
 
 func cloneCloudComponents(tag string) error {
 	task := execute.ExecTask{
-		Command: "./scripts/clone-cloud-components.sh",
-		Shell:   true,
-		Env:     []string{fmt.Sprintf("TAG=%v", tag)},
+		Command:     "./scripts/clone-cloud-components.sh",
+		Shell:       true,
+		Env:         []string{fmt.Sprintf("TAG=%v", tag)},
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
@@ -666,6 +682,7 @@ func deployCloudComponents(plan types.Plan) error {
 			networkPoliciesEnv,
 			enableECREnv,
 		},
+		StreamStdio: true,
 	}
 
 	res, err := task.Execute()
