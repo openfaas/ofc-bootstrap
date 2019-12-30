@@ -382,6 +382,9 @@ You can start out by using the Staging issuer, then switch to the production iss
 
 * Set `issuer_type: "prod"` (recommended) or `issuer_type: "staging"` (for testing)
 
+
+> Hint: For aws route53 DNS, create your secret key file `~/Downloads/route53-secret-access-key` (the default location) with only the secret access key, no newline and no other characters.
+
 > Note if you want to switch from the staging TLS certificates to production certificates, see the appendix.
 
 #### Enable dockerfile language support (optional)
