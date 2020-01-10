@@ -1,6 +1,7 @@
 #!/bin/sh
 
-set -eo pipefail
+set -e
+
 
 export eTAG="latest-dev"
 echo $1
