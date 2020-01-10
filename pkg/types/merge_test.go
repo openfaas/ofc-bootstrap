@@ -1,17 +1,15 @@
 // Copyright (c) OpenFaaS Author(s) 2019. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-package cmd
+package types
 
 import (
 	"testing"
-
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 )
 
 func Test_mergePlans_Empty(t *testing.T) {
 
-	_, err := mergePlans([]types.Plan{})
+	_, err := MergePlans([]Plan{})
 
 	if err == nil {
 		t.Errorf("Expected an error for no plans")
@@ -26,11 +24,11 @@ func Test_mergePlans_Empty(t *testing.T) {
 
 func Test_mergePlans_OnlyOneItem(t *testing.T) {
 
-	plan1 := types.Plan{
+	plan1 := Plan{
 		OpenFaaSCloudVersion: "master",
 	}
 
-	planOut, err := mergePlans([]types.Plan{plan1})
+	planOut, err := MergePlans([]Plan{plan1})
 
 	if err != nil {
 		t.Errorf("Got error for a single plan, expected no error: %s", err.Error())
@@ -44,15 +42,15 @@ func Test_mergePlans_OnlyOneItem(t *testing.T) {
 
 func Test_mergePlans_MergeEmptyItemsFromBoth(t *testing.T) {
 
-	plan1 := types.Plan{
+	plan1 := Plan{
 		OpenFaaSCloudVersion: "master",
 	}
 
-	plan2 := types.Plan{
+	plan2 := Plan{
 		CustomersURL: "https://127.0.0.1:8443/customers",
 	}
 
-	planOut, err := mergePlans([]types.Plan{plan1, plan2})
+	planOut, err := MergePlans([]Plan{plan1, plan2})
 
 	if err != nil {
 		t.Errorf("Got error, expected no error: %s", err.Error())
@@ -70,15 +68,15 @@ func Test_mergePlans_MergeEmptyItemsFromBoth(t *testing.T) {
 
 func Test_mergePlans_PlanValuesOverwriteAccordingToOrder(t *testing.T) {
 
-	plan1 := types.Plan{
+	plan1 := Plan{
 		OpenFaaSCloudVersion: "0.12.0",
 	}
 
-	plan2 := types.Plan{
+	plan2 := Plan{
 		OpenFaaSCloudVersion: "0.11.0",
 	}
 
-	planOut, err := mergePlans([]types.Plan{plan1, plan2})
+	planOut, err := MergePlans([]Plan{plan1, plan2})
 
 	if err != nil {
 		t.Errorf("Got error, expected no error: %s", err.Error())
