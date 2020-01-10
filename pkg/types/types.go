@@ -44,36 +44,36 @@ const (
 )
 
 type Plan struct {
-	Features             []string                 `yaml:"features"`
-	Orchestration        string                   `yaml:"orchestration"`
-	Secrets              []KeyValueNamespaceTuple `yaml:"secrets"`
-	RootDomain           string                   `yaml:"root_domain"`
-	Registry             string                   `yaml:"registry"`
-	CustomersURL         string                   `yaml:"customers_url"`
-	SCM                  string                   `yaml:"scm"`
-	Github               Github                   `yaml:"github"`
-	Gitlab               Gitlab                   `yaml:"gitlab"`
-	TLS                  bool                     `yaml:"tls"`
-	OAuth                OAuth                    `yaml:"oauth"`
-	S3                   S3                       `yaml:"s3"`
-	EnableOAuth          bool                     `yaml:"enable_oauth"`
-	TLSConfig            TLSConfig                `yaml:"tls_config"`
-	Slack                Slack                    `yaml:"slack"`
-	Ingress              string                   `yaml:"ingress"`
-	Deployment           Deployment               `yaml:"deployment"`
-	EnableDockerfileLang bool                     `yaml:"enable_dockerfile_lang"`
-	ScaleToZero          bool                     `yaml:"scale_to_zero"`
-	OpenFaaSCloudVersion string                   `yaml:"openfaas_cloud_version"`
-	NetworkPolicies      bool                     `yaml:"network_policies"`
-	BuildBranch          string                   `yaml:"build_branch"`
-	EnableECR            bool                     `yaml:"enable_ecr"`
-	ECRConfig            ECRConfig                `yaml:"ecr_config"`
+	Features             []string                 `yaml:"features,omitempty"`
+	Orchestration        string                   `yaml:"orchestration,omitempty"`
+	Secrets              []KeyValueNamespaceTuple `yaml:"secrets,omitempty"`
+	RootDomain           string                   `yaml:"root_domain,omitempty"`
+	Registry             string                   `yaml:"registry,omitempty"`
+	CustomersURL         string                   `yaml:"customers_url,omitempty"`
+	SCM                  string                   `yaml:"scm,omitempty"`
+	Github               Github                   `yaml:"github,omitempty"`
+	Gitlab               Gitlab                   `yaml:"gitlab,omitempty"`
+	TLS                  bool                     `yaml:"tls,omitempty"`
+	OAuth                OAuth                    `yaml:"oauth,omitempty"`
+	S3                   S3                       `yaml:"s3,omitempty"`
+	EnableOAuth          bool                     `yaml:"enable_oauth,omitempty"`
+	TLSConfig            TLSConfig                `yaml:"tls_config,omitempty"`
+	Slack                Slack                    `yaml:"slack,omitempty"`
+	Ingress              string                   `yaml:"ingress,omitempty"`
+	Deployment           Deployment               `yaml:"deployment,omitempty"`
+	EnableDockerfileLang bool                     `yaml:"enable_dockerfile_lang,omitempty"`
+	ScaleToZero          bool                     `yaml:"scale_to_zero,omitempty"`
+	OpenFaaSCloudVersion string                   `yaml:"openfaas_cloud_version,omitempty"`
+	NetworkPolicies      bool                     `yaml:"network_policies,omitempty"`
+	BuildBranch          string                   `yaml:"build_branch,omitempty"`
+	EnableECR            bool                     `yaml:"enable_ecr,omitempty"`
+	ECRConfig            ECRConfig                `yaml:"ecr_config,omitempty"`
 }
 
 // Deployment is the deployment section of YAML concerning
 // functions as deployed
 type Deployment struct {
-	CustomTemplate []string `yaml:"custom_templates"`
+	CustomTemplate []string `yaml:"custom_templates,omitempty"`
 }
 
 // FormatCustomTemplates are formatted in a CSV format with a space after each comma
@@ -87,17 +87,17 @@ func (d Deployment) FormatCustomTemplates() string {
 }
 
 type KeyValueTuple struct {
-	Name  string `yaml:"name"`
-	Value string `yaml:"value"`
+	Name  string `yaml:"name,omitempty"`
+	Value string `yaml:"value,omitempty"`
 }
 
 type FileSecret struct {
-	Name      string `yaml:"name"`
-	ValueFrom string `yaml:"value_from"`
+	Name      string `yaml:"name,omitempty"`
+	ValueFrom string `yaml:"value_from,omitempty"`
 
 	// ValueCommand is a command to execute to generate
 	// a secret file specified in ValueFrom
-	ValueCommand string `yaml:"value_command"`
+	ValueCommand string `yaml:"value_command,omitempty"`
 }
 
 // ExpandValueFrom expands ~ to the home directory of the current user
@@ -109,48 +109,48 @@ func (fs FileSecret) ExpandValueFrom() string {
 }
 
 type KeyValueNamespaceTuple struct {
-	Name      string          `yaml:"name"`
-	Literals  []KeyValueTuple `yaml:"literals"`
-	Namespace string          `yaml:"namespace"`
-	Files     []FileSecret    `yaml:"files"`
-	Type      string          `yaml:"type"`
-	Filters   []string        `yaml:"filters"`
+	Name      string          `yaml:"name,omitempty"`
+	Literals  []KeyValueTuple `yaml:"literals,omitempty"`
+	Namespace string          `yaml:"namespace,omitempty"`
+	Files     []FileSecret    `yaml:"files,omitempty"`
+	Type      string          `yaml:"type,omitempty"`
+	Filters   []string        `yaml:"filters,omitempty"`
 }
 
 type Github struct {
-	AppID          string `yaml:"app_id"`
-	PrivateKeyFile string `yaml:"private_key_filename"`
+	AppID          string `yaml:"app_id,omitempty"`
+	PrivateKeyFile string `yaml:"private_key_filename,omitempty"`
 }
 
 type Gitlab struct {
-	GitLabInstance string `yaml:"gitlab_instance"`
+	GitLabInstance string `yaml:"gitlab_instance,omitempty"`
 }
 
 type Slack struct {
-	URL string `yaml:"url"`
+	URL string `yaml:"url,omitempty"`
 }
 
 type OAuth struct {
-	ClientId             string `yaml:"client_id"`
-	OAuthProviderBaseURL string `yaml:"oauth_provider_base_url"`
+	ClientId             string `yaml:"client_id,omitempty"`
+	OAuthProviderBaseURL string `yaml:"oauth_provider_base_url,omitempty"`
 }
 
 type S3 struct {
-	Url    string `yaml:"s3_url"`
-	Region string `yaml:"s3_region"`
-	TLS    bool   `yaml:"s3_tls"`
-	Bucket string `yaml:"s3_bucket"`
+	Url    string `yaml:"s3_url,omitempty"`
+	Region string `yaml:"s3_region,omitempty"`
+	TLS    bool   `yaml:"s3_tls,omitempty"`
+	Bucket string `yaml:"s3_bucket,omitempty"`
 }
 
 type TLSConfig struct {
-	Email       string `yaml:"email"`
-	DNSService  string `yaml:"dns_service"`
-	ProjectID   string `yaml:"project_id"`
-	IssuerType  string `yaml:"issuer_type"`
-	Region      string `yaml:"region"`
-	AccessKeyID string `yaml:"access_key_id"`
+	Email       string `yaml:"email,omitempty"`
+	DNSService  string `yaml:"dns_service,omitempty"`
+	ProjectID   string `yaml:"project_id,omitempty"`
+	IssuerType  string `yaml:"issuer_type,omitempty"`
+	Region      string `yaml:"region,omitempty"`
+	AccessKeyID string `yaml:"access_key_id,omitempty"`
 }
 
 type ECRConfig struct {
-	ECRRegion string `yaml:"ecr_region"`
+	ECRRegion string `yaml:"ecr_region,omitempty"`
 }
