@@ -1,18 +1,17 @@
 // Copyright (c) OpenFaaS Author(s) 2019. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-package cmd
+package types
 
 import (
 	"fmt"
 
 	"github.com/imdario/mergo"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 )
 
-func mergePlans(plans []types.Plan) (*types.Plan, error) {
+func MergePlans(plans []Plan) (*Plan, error) {
 	var err error
-	masterPlan := &types.Plan{}
+	masterPlan := &Plan{}
 
 	if len(plans) == 1 {
 		return &plans[0], nil

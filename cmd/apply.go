@@ -19,6 +19,7 @@ import (
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/ingress"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/stack"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/tls"
+
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -76,7 +77,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 		plans = append(plans, plan)
 	}
 
-	planMerged, mergeErr := mergePlans(plans)
+	planMerged, mergeErr := types.MergePlans(plans)
 
 	if mergeErr != nil {
 		return mergeErr

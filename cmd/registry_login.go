@@ -5,15 +5,24 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
+
+var registryLoginCommand = &cobra.Command{
+	Use:          "registry-login",
+	Short:        "Generate and save the registry authentication file",
+	SilenceUsage: true,
+	RunE:         generateRegistryAuthFile,
+}
 
 func init() {
 	rootCommand.AddCommand(registryLoginCommand)
+
 	registryLoginCommand.Flags().String("server", "https://index.docker.io/v1/", "The server URL, it is defaulted to the docker registry")
 	registryLoginCommand.Flags().String("username", "", "The Registry Username")
 	registryLoginCommand.Flags().String("password", "", "The registry password")
@@ -22,13 +31,6 @@ func init() {
 	registryLoginCommand.Flags().Bool("ecr", false, "If we are using ECR we need a different set of flags, so if this is set, we need to set --username and --password")
 	registryLoginCommand.Flags().String("account-id", "", "Your AWS Account id")
 	registryLoginCommand.Flags().String("region", "", "Your AWS region")
-}
-
-var registryLoginCommand = &cobra.Command{
-	Use:          "registry-login",
-	Short:        "Generate and save the registry authentication file",
-	SilenceUsage: true,
-	RunE:         generateRegistryAuthFile,
 }
 
 func generateRegistryAuthFile(command *cobra.Command, _ []string) error {
