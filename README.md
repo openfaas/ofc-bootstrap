@@ -311,6 +311,11 @@ Your SCM will need to send webhooks to OpenFaaS Cloud's github-event or gitlab-e
 * Create your GitHub / GitLab OAuth App which is used for logging in to the dashboard
 * For GitLab update `init.yaml` with your `gitlab_instance`
 
+Alternatively, there are two automated ways you can create a GitHub App, but the GitHub OAuth configuration cannot be automated at this time.
+
+1) Fully-automatic `ofc-bootstrap create-github-app` command - this is in Alpha status, but will generate a YAML file you can use with `--file` / `-f` as an override
+2) Semi-automatic [GitHub App generator](http://alexellis.o6s.io/github-app)
+
 #### Setup your access control
 
 Access control to your OFC is controlled by a text file containing a list of valid usernames or organisations. This list only needs to contain organisation names, or the names of the users who are hosting repositories that OFC will manage.
