@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -eo pipefail
+
 ./scripts/reset-kind.sh
 
 export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"

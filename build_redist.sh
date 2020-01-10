@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -eo pipefail
+
 export eTAG="latest-dev"
 echo $1
 if [ $1 ] ; then
