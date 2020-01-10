@@ -59,17 +59,30 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 		return fmt.Errorf("Provide one or more --file arguments")
 	}
 
-	yamlFile := files[0]
-	yamlBytes, yamlErr := ioutil.ReadFile(yamlFile)
-	if yamlErr != nil {
-		return fmt.Errorf("loading --file %s gave error: %s", yamlFile, yamlErr.Error())
+	plans := []types.Plan{}
+
+	for _, yamlFile := range files {
+
+		yamlBytes, yamlErr := ioutil.ReadFile(yamlFile)
+		if yamlErr != nil {
+			return fmt.Errorf("loading --file %s gave error: %s", yamlFile, yamlErr.Error())
+		}
+
+		plan := types.Plan{}
+		unmarshalErr := yaml.Unmarshal(yamlBytes, &plan)
+		if unmarshalErr != nil {
+			return fmt.Errorf("unmarshal of --file %s gave error: %s", yamlFile, unmarshalErr.Error())
+		}
+		plans = append(plans, plan)
 	}
 
-	plan := types.Plan{}
-	unmarshalErr := yaml.Unmarshal(yamlBytes, &plan)
-	if unmarshalErr != nil {
-		return fmt.Errorf("unmarshal of --file %s gave error: %s", yamlFile, unmarshalErr.Error())
+	planMerged, mergeErr := mergePlans(plans)
+
+	if mergeErr != nil {
+		return mergeErr
 	}
+
+	plan := *planMerged
 
 	var featuresErr error
 	plan, featuresErr = filterFeatures(plan)
@@ -96,7 +109,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 
 	}
 
-	fmt.Fprintf(os.Stdout, "Plan loaded from: %s\n", yamlFile)
+	fmt.Fprintf(os.Stdout, "Plan loaded from: %s\n", files)
 
 	os.Mkdir("tmp", 0700)
 
