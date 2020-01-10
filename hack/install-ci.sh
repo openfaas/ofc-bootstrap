@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 curl -sLSf https://get.docker.com | sudo sh
 
 echo "export GOPATH=\$HOME/go" | tee -a ~/.bash_profile
