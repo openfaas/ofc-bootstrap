@@ -58,8 +58,7 @@ func createGitHubAppE(command *cobra.Command, _ []string) error {
 		"GitHubEvent": fmt.Sprintf("%s://system.%s/github-event", scheme, rootDomain),
 	}
 
-	fmt.Println("Name:", name)
-	fmt.Println("Root domain:", rootDomain)
+	fmt.Printf("Name: %s\tRoot domain: %s\tScheme: %v\n", name, rootDomain, scheme)
 
 	launchBrowser := true
 
@@ -68,13 +67,15 @@ func createGitHubAppE(command *cobra.Command, _ []string) error {
 	resCh := make(chan github.AppResult)
 	go func() {
 		appRes := <-resCh
-		fmt.Printf("Result received.\n")
+		fmt.Printf("GitHub App result received.\n")
 		printResult(rootDomain, appRes)
 
 		cancel()
 	}()
 
-	err := receiveGitHubApp(context, inputMap, resCh, launchBrowser)
+	listenPort := 30010
+
+	err := receiveGitHubApp(context, inputMap, resCh, launchBrowser, listenPort)
 
 	if err != nil {
 		return err
@@ -83,20 +84,18 @@ func createGitHubAppE(command *cobra.Command, _ []string) error {
 	return nil
 }
 
-func receiveGitHubApp(ctx context.Context, inputMap map[string]string, resCh chan github.AppResult, launchBrowser bool) error {
-
-	listenPort := 30010
+func receiveGitHubApp(ctx context.Context, inputMap map[string]string, resCh chan github.AppResult, launchBrowser bool, listenPort int) error {
 
 	server := &http.Server{
 		Addr:           fmt.Sprintf(":%d", listenPort),
-		ReadTimeout:    5 * time.Second,
-		WriteTimeout:   5 * time.Second,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20, // Max header of 1MB
 		Handler:        http.HandlerFunc(github.MakeHandler(inputMap, resCh)),
 	}
 
 	go func() {
-		fmt.Printf("Starting local token server on port %d\n", listenPort)
+		fmt.Printf("Starting local HTTP server on port %d\n", listenPort)
 		if err := server.ListenAndServe(); err != nil {
 			panic(err)
 		}
@@ -118,7 +117,7 @@ func receiveGitHubApp(ctx context.Context, inputMap map[string]string, resCh cha
 		}
 	}
 
-	fmt.Printf("Awaiting action to complete.\n")
+	fmt.Printf("Please complete the workflow in the browser to create your GitHub App.\n")
 
 	<-ctx.Done()
 	return nil
@@ -159,7 +158,7 @@ func printResult(rootDomain string, appRes github.AppResult) {
 
 	fmt.Printf("App: %s\tURL: %s\nYAML file\n\n", appRes.Name, appRes.URL)
 
-	fmt.Printf("%s", string(res))
+	fmt.Printf("%s\n", string(res))
 
 }
 
