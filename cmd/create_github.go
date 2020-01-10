@@ -31,7 +31,8 @@ func init() {
 
 	createGitHubAppCommand.Flags().String("name", "", "The name of your GitHub App for OpenFaaS Cloud, leave blank to generate")
 	createGitHubAppCommand.Flags().String("root-domain", "", "The root domain for your app i.e. ofc.example.com")
-	createGitHubAppCommand.Flags().Bool("insecure", false, "Use http instead of https for webhooks")
+	createGitHubAppCommand.Flags().Bool("insecure", false, "Use HTTP instead of HTTPS for webhooks")
+	createGitHubAppCommand.Flags().Int("port", 30010, "HTTP port to listen to for GitHub App automation")
 }
 
 func createGitHubAppE(command *cobra.Command, _ []string) error {
@@ -46,6 +47,11 @@ func createGitHubAppE(command *cobra.Command, _ []string) error {
 	var rootDomain string
 	if rootDomain, _ = command.Flags().GetString("root-domain"); len(rootDomain) == 0 {
 		return fmt.Errorf("give a value for --root-domain")
+	}
+
+	port, portErr := command.Flags().GetInt("port")
+	if portErr != nil {
+		return fmt.Errorf("--port error: %s", portErr.Error())
 	}
 
 	scheme := "https"
@@ -73,9 +79,7 @@ func createGitHubAppE(command *cobra.Command, _ []string) error {
 		cancel()
 	}()
 
-	listenPort := 30010
-
-	err := receiveGitHubApp(context, inputMap, resCh, launchBrowser, listenPort)
+	err := receiveGitHubApp(context, inputMap, resCh, launchBrowser, port)
 
 	if err != nil {
 		return err
