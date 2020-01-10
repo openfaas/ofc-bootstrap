@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+set -e
 
 curl -sLSf https://get.docker.com | sudo sh
 
