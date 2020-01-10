@@ -11,3 +11,7 @@ ignored = ["github.com/openfaas-incubator/ofc-bootstrap/tmp/*"]
 [[constraint]]
   name = "github.com/alexellis/go-execute"
   version = "0.3.0"
+
+[[constraint]]
+  name = "github.com/imdario/mergo"
+  version = "0.3.8"
