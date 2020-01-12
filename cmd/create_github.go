@@ -107,7 +107,7 @@ func receiveGitHubApp(ctx context.Context, inputMap map[string]string, resCh cha
 
 	defer server.Shutdown(ctx)
 
-	localURL, err := url.Parse("http://" + server.Addr)
+	localURL, err := url.Parse("http://" + "127.0.0.1" + server.Addr)
 
 	if err != nil {
 		return err
