@@ -278,11 +278,6 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 		log.Println(functionAuthErr.Error())
 	}
 
-	ofErr := installOpenfaas(plan.ScaleToZero)
-	if ofErr != nil {
-		log.Println(ofErr)
-	}
-
 	if plan.TLS {
 		for i := 0; i < retries; i++ {
 			log.Printf("Is cert-manager ready? %d/%d\n", i+1, retries)
@@ -292,6 +287,11 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 			}
 			time.Sleep(time.Second * 2)
 		}
+	}
+
+	ofErr := installOpenfaas(plan.ScaleToZero)
+	if ofErr != nil {
+		log.Println(ofErr)
 	}
 
 	ingressErr := ingress.Apply(plan)
