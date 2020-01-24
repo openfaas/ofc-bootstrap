@@ -2,8 +2,6 @@
 
 set -e
 
-./scripts/reset-kind.sh
-
 export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 
 cd $GOPATH/src/github.com/openfaas-incubator/ofc-bootstrap

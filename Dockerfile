@@ -23,13 +23,20 @@ RUN go test $(go list ./... | grep -v /vendor/ | grep -v /template/|grep -v /bui
     -a -installsuffix cgo -o ofc-bootstrap
 
 # Release stage
-FROM alpine:3.10
+FROM alpine:3.11
 
 RUN apk --no-cache add ca-certificates git
 
-WORKDIR /root/
+RUN addgroup -S app \
+    && adduser -S -g app app \
+    && apk add --no-cache ca-certificates
+
+WORKDIR /home/app
 
 COPY --from=builder /go/src/github.com/openfaas-incubator/ofc-bootstrap/ofc-bootstrap               /usr/bin/
+RUN chown -R app:app ./
+
+USER app
 
 ENV PATH=$PATH:/usr/bin/
 

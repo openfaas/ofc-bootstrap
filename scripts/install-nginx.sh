@@ -1,4 +1,8 @@
 #!/bin/bash
 
-echo helm install stable/nginx-ingress --name nginxingress --set rbac.create=true$ADDITIONAL_SET
-helm install stable/nginx-ingress --name nginxingress --set rbac.create=true$ADDITIONAL_SET
+set -e
+
+echo helm upgrade --install nginxingress \
+  stable/nginx-ingress --set rbac.create=true$ADDITIONAL_SET
+helm upgrade --install nginxingress \
+  stable/nginx-ingress --set rbac.create=true$ADDITIONAL_SET
