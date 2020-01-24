@@ -60,7 +60,13 @@ If using k3s. ofc-bootstrap uses Nginx for its IngressController, but k3s ships 
 Example with [k3sup](https://k3sup.dev):
 
 ```sh
-k3sup install --ip $IP --user $USER --k3s-extra-args `--no-deploy traefik`
+k3sup install --ip $IP --user $USER --k3s-extra-args "--no-deploy traefik"
+```
+
+Example with [k3d](https://github.com/rancher/k3d):
+
+```sh
+k3d create --server-arg "--no-deploy=traefik"
 ```
 
 > From Alex: If you're planning on using k3s with DigitalOcean, please stop and think why you are doing this instead of using the managed service called DOKS. DOKS is a free, managed control-plane and much less work for you, k3s on Droplets will be more expensive given that you have to run your own "master".
@@ -435,11 +441,7 @@ Pay attention to the output from the tool and watch out for any errors that may 
 
 ### Finish the configuration
 
-If you get anything wrong, there are some instructions in the appendix on how to make edits. It is usually easier to edit `init.yaml` and re-run the tool.
-
-If you want to completely remove all the components that `ofc-bootstrap` installed to start-over then you can use: `./scripts/reset.sh`. Caution: read the contents of the script carefully before running it.
-
-> Note: Be careful if you run `reset.sh` and make 100% sure that you are pointing at the correct cluster by checking `kubectl config get-context`.
+If you get anything wrong, there are some instructions in the appendix on how to make edits. It is usually easier to edit `init.yaml` and re-run the tool, or to delete your cluster and run the tool again.
 
 #### Configure DNS
 
@@ -521,7 +523,6 @@ You may still want access to your OpenFaaS cluster, in which case run the follow
 
 ```sh
 # Fetch your generated admin password:
-
 export PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
 
 # Open a tunnel to the gateway using `kubectl`:

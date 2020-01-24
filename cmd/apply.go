@@ -9,16 +9,19 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/validators"
-
 	execute "github.com/alexellis/go-execute/pkg/v1"
+	"github.com/alexellis/k3sup/pkg/config"
+	"github.com/alexellis/k3sup/pkg/env"
+	"github.com/alexellis/k3sup/pkg/helm"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/ingress"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/stack"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/tls"
+	"github.com/openfaas-incubator/ofc-bootstrap/pkg/validators"
 
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 	yaml "gopkg.in/yaml.v2"
@@ -30,6 +33,7 @@ func init() {
 	applyCmd.Flags().StringArrayP("file", "f", []string{""}, "A number of init.yaml plan files")
 	applyCmd.Flags().Bool("skip-sealedsecrets", false, "Skip SealedSecrets installation")
 	applyCmd.Flags().Bool("skip-minio", false, "Skip Minio installation")
+	applyCmd.Flags().Bool("skip-create-secrets", false, "Skip creating secrets")
 }
 
 var applyCmd = &cobra.Command{
@@ -42,6 +46,7 @@ var applyCmd = &cobra.Command{
 type InstallPreferences struct {
 	SkipMinio         bool
 	SkipSealedSecrets bool
+	SkipCreateSecrets bool
 }
 
 func runApplyCommandE(command *cobra.Command, _ []string) error {
@@ -55,6 +60,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 
 	prefs.SkipMinio, _ = command.Flags().GetBool("skip-minio")
 	prefs.SkipSealedSecrets, _ = command.Flags().GetBool("skip-sealedsecrets")
+	prefs.SkipCreateSecrets, _ = command.Flags().GetBool("skip-create-secrets")
 
 	if len(files) == 0 {
 		return fmt.Errorf("Provide one or more --file arguments")
@@ -91,23 +97,49 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 		return fmt.Errorf("error while retreiving features: %s", featuresErr.Error())
 	}
 
-	log.Println("Validating tools available in PATH")
+	const helm3Version = "v3.0.2"
+	os.Setenv("HELM_VERSION", helm3Version)
 
-	var tools []string
-	if plan.Orchestration == OrchestrationK8s {
-		tools = []string{"kubectl version --client", "openssl version", "helm version -c", "faas-cli version"}
+	userPath, err := config.InitUserDir()
+	if err != nil {
+		return err
 	}
 
-	validateToolsErr := validateTools(tools)
+	clientArch, clientOS := env.GetClientArch()
+	helmPathOut, err := helm.TryDownloadHelm(userPath, clientArch, clientOS, true)
+
+	if err != nil {
+		return err
+	}
+
+	log.Printf("helm3 at: %s\n", helmPathOut)
+
+	additionalPaths := []string{helmPathOut}
+
+	pathCurrent := os.Getenv("PATH")
+	newPath := strings.Join(additionalPaths, ":") + ":" + pathCurrent
+	os.Setenv("PATH", newPath)
+
+	log.Printf("Validating tools available in PATH: %q\n", newPath)
+
+	tools := []string{
+		"kubectl version --client",
+		"openssl version",
+		"helm version -c",
+		"faas-cli version",
+	}
+
+	validateToolsErr := validateTools(tools, additionalPaths)
 
 	if validateToolsErr != nil {
 		panic(validateToolsErr)
 	}
 
-	validateErr := validatePlan(plan)
-	if validateErr != nil {
-		panic(validateErr)
-
+	if !prefs.SkipCreateSecrets {
+		validateErr := validatePlan(plan)
+		if validateErr != nil {
+			panic(validateErr)
+		}
 	}
 
 	fmt.Fprintf(os.Stdout, "Plan loaded from: %s\n", files)
@@ -122,7 +154,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	}
 
 	start := time.Now()
-	err = process(plan, prefs)
+	err = process(plan, prefs, additionalPaths)
 	done := time.Since(start)
 
 	if err != nil {
@@ -139,14 +171,19 @@ type Vars struct {
 	YamlFile string
 }
 
-const (
-	// OrchestrationK8s uses Kubernetes
-	OrchestrationK8s = "kubernetes"
-)
+func taskGivesStdout(tool string, additionalPaths []string) error {
 
-func taskGivesStdout(tool string) error {
+	parts := strings.Split(tool, " ")
+
+	args := []string{}
+
+	if len(parts) > 0 {
+		args = parts[1:]
+	}
+
 	task := execute.ExecTask{
-		Command:     tool,
+		Command:     parts[0],
+		Args:        args,
 		StreamStdio: true,
 	}
 
@@ -160,10 +197,10 @@ func taskGivesStdout(tool string) error {
 	return nil
 }
 
-func validateTools(tools []string) error {
+func validateTools(tools []string, additionalPaths []string) error {
 
 	for _, tool := range tools {
-		err := taskGivesStdout(tool)
+		err := taskGivesStdout(tool, additionalPaths)
 		if err != nil {
 			return err
 		}
@@ -215,7 +252,7 @@ func filesExists(files []types.FileSecret) error {
 	return nil
 }
 
-func process(plan types.Plan, prefs InstallPreferences) error {
+func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string) error {
 
 	if plan.OpenFaaSCloudVersion == "" {
 		plan.OpenFaaSCloudVersion = "master"
@@ -225,34 +262,28 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 	nsErr := createNamespaces()
 	if nsErr != nil {
 		log.Println(nsErr)
+		return nsErr
 	}
 
-	fmt.Println("Building Ingress")
-	tillerErr := installTiller()
-	if tillerErr != nil {
-		log.Println(tillerErr)
-	}
-
-	retries := 260
-	for i := 0; i < retries; i++ {
-		log.Printf("Is tiller ready? %d/%d\n", i+1, retries)
-		ready := tillerReady()
-		if ready {
-			break
-		}
-		time.Sleep(time.Second * 2)
+	if err := helmRepoAddStable(); err != nil {
+		log.Println(err.Error())
+		return err
 	}
 
 	if err := helmRepoUpdate(); err != nil {
 		log.Println(err.Error())
+		return err
 	}
 
-	installIngressErr := installIngressController(plan.Ingress)
+	installIngressErr := installIngressController(plan.Ingress, additionalPaths)
 	if installIngressErr != nil {
 		log.Println(installIngressErr.Error())
+		return installIngressErr
 	}
 
-	createSecrets(plan)
+	if !prefs.SkipCreateSecrets {
+		createSecrets(plan)
+	}
 
 	saErr := patchFnServiceaccount()
 	if saErr != nil {
@@ -270,6 +301,7 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 		cmErr := installCertmanager()
 		if cmErr != nil {
 			log.Println(cmErr)
+			return cmErr
 		}
 	}
 
@@ -278,11 +310,12 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 		log.Println(functionAuthErr.Error())
 	}
 
-	ofErr := installOpenfaas(plan.ScaleToZero)
+	ofErr := installOpenfaas(plan.ScaleToZero, additionalPaths)
 	if ofErr != nil {
 		log.Println(ofErr)
 	}
 
+	retries := 260
 	if plan.TLS {
 		for i := 0; i < retries; i++ {
 			log.Printf("Is cert-manager ready? %d/%d\n", i+1, retries)
@@ -317,30 +350,23 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 		sealedSecretsErr := installSealedSecrets()
 		if sealedSecretsErr != nil {
 			log.Println(sealedSecretsErr)
-		}
-
-		for i := 0; i < retries; i++ {
-			log.Printf("Are SealedSecrets ready? %d/%d\n", i+1, retries)
-			ready := sealedSecretsReady()
-			if ready {
-				break
-			}
-			time.Sleep(time.Second * 2)
+			return sealedSecretsErr
 		}
 
 		pubCert := exportSealedSecretPubCert()
 		writeErr := ioutil.WriteFile("tmp/pubcert.pem", []byte(pubCert), 0700)
 		if writeErr != nil {
 			log.Println(writeErr)
+			return writeErr
 		}
 	}
 
-	cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion)
+	cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion, additionalPaths)
 	if cloneErr != nil {
 		return cloneErr
 	}
 
-	deployErr := deployCloudComponents(plan)
+	deployErr := deployCloudComponents(plan, additionalPaths)
 	if deployErr != nil {
 		return deployErr
 	}
@@ -348,11 +374,25 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 	return nil
 }
 
-func helmRepoUpdate() error {
-	log.Println("Updating helm repos")
+func buildPath(additionalPaths []string) string {
+
+	pathVal := "PATH="
+	for _, p := range additionalPaths {
+		pathVal = pathVal + p + ":"
+	}
+
+	// pathVal = strings.TrimRight(pathVal, ":")
+
+	pathVal = pathVal + os.Getenv("PATH")
+	return pathVal
+}
+
+func helmRepoAddStable() error {
+	log.Println("Adding stable helm repo")
 
 	task := execute.ExecTask{
-		Command:     "helm repo update",
+		Command:     "helm",
+		Args:        []string{"repo", "add", "stable", "https://kubernetes-charts.storage.googleapis.com"},
 		StreamStdio: true,
 	}
 
@@ -368,38 +408,23 @@ func helmRepoUpdate() error {
 	return nil
 }
 
-func installTiller() error {
-	log.Println("Creating Tiller")
+func helmRepoUpdate() error {
+	log.Println("Updating helm repos")
 
-	task1 := execute.ExecTask{
-		Command:     "scripts/create-tiller-sa.sh",
-		Shell:       true,
+	task := execute.ExecTask{
+		Command:     "helm",
+		Args:        []string{"repo", "update"},
 		StreamStdio: true,
 	}
 
-	res1, err1 := task1.Execute()
+	taskRes, taskErr := task.Execute()
 
-	if err1 != nil {
-		return err1
+	if taskErr != nil {
+		return taskErr
 	}
 
-	log.Println(res1.Stdout)
-	log.Println(res1.Stderr)
-
-	task2 := execute.ExecTask{
-		Command:     "scripts/create-tiller.sh",
-		Shell:       true,
-		StreamStdio: true,
-	}
-
-	res2, err2 := task2.Execute()
-
-	if err2 != nil {
-		return err2
-	}
-
-	log.Println(res2.Stdout)
-	log.Println(res2.Stderr)
+	log.Println(taskRes.Stdout)
+	log.Println(taskRes.Stderr)
 
 	return nil
 }
@@ -425,13 +450,12 @@ func createFunctionsAuth() error {
 	return nil
 }
 
-func installIngressController(ingress string) error {
+func installIngressController(ingress string, additionalPaths []string) error {
 	log.Println("Creating Ingress Controller")
 
-	env := os.Environ()
-
+	var env []string
 	if ingress == "host" {
-		env = append(os.Environ(), "ADDITIONAL_SET=,controller.hostNetwork=true,controller.daemonset.useHostPort=true,dnsPolicy=ClusterFirstWithHostNet,controller.kind=DaemonSet")
+		env = append(env, "ADDITIONAL_SET=,controller.hostNetwork=true,controller.daemonset.useHostPort=true,dnsPolicy=ClusterFirstWithHostNet,controller.kind=DaemonSet")
 	}
 
 	task := execute.ExecTask{
@@ -473,13 +497,15 @@ func installSealedSecrets() error {
 	return nil
 }
 
-func installOpenfaas(scaleToZero bool) error {
+func installOpenfaas(scaleToZero bool, additionalPaths []string) error {
 	log.Println("Creating OpenFaaS")
 
 	task := execute.ExecTask{
-		Command:     "scripts/install-openfaas.sh",
-		Shell:       true,
-		Env:         []string{fmt.Sprintf("FAAS_IDLER_DRY_RUN=%v", strconv.FormatBool(!scaleToZero))},
+		Command: "scripts/install-openfaas.sh",
+		Shell:   true,
+		Env: []string{
+			fmt.Sprintf("FAAS_IDLER_DRY_RUN=%v", strconv.FormatBool(!scaleToZero)),
+		},
 		StreamStdio: true,
 	}
 
@@ -635,24 +661,13 @@ func certManagerReady() bool {
 	return res.Stdout == "True"
 }
 
-func tillerReady() bool {
-
+func cloneCloudComponents(tag string, additionalPaths []string) error {
 	task := execute.ExecTask{
-		Command:     "./scripts/get-tiller.sh",
-		Shell:       true,
-		StreamStdio: true,
-	}
-
-	res, err := task.Execute()
-	fmt.Println("tiller", res.ExitCode, res.Stdout, res.Stderr, err)
-	return res.Stdout == "1"
-}
-
-func cloneCloudComponents(tag string) error {
-	task := execute.ExecTask{
-		Command:     "./scripts/clone-cloud-components.sh",
-		Shell:       true,
-		Env:         []string{fmt.Sprintf("TAG=%v", tag)},
+		Command: "./scripts/clone-cloud-components.sh",
+		Shell:   true,
+		Env: []string{
+			fmt.Sprintf("TAG=%v", tag),
+		},
 		StreamStdio: true,
 	}
 
@@ -666,7 +681,7 @@ func cloneCloudComponents(tag string) error {
 	return nil
 }
 
-func deployCloudComponents(plan types.Plan) error {
+func deployCloudComponents(plan types.Plan, additionalPaths []string) error {
 
 	authEnv := ""
 	if plan.EnableOAuth {

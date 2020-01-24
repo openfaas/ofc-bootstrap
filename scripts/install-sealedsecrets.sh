@@ -1,8 +1,9 @@
 #!/bin/bash
 
-release=$(curl -sI https://github.com/bitnami-labs/sealed-secrets/releases/latest | grep Location | awk -F"/" '{ printf "%s", $NF }' | tr -d '\r')
-#release=$(curl --silent "https://api.github.com/repos/bitnami-labs/sealed-secrets/releases/latest" | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+set -e
 
-echo "SealedSecrets release: $release"
+helm upgrade --install \
+ --namespace kube-system ofc-sealedsecrets stable/sealed-secrets \
+  --wait
 
-helm install --namespace kube-system --name ofc-sealedsecrets stable/sealed-secrets
+kubectl rollout status deploy/ofc-sealedsecrets-sealed-secrets -n kube-system --timeout 5m

@@ -2,12 +2,24 @@
 
 
 [[projects]]
-  digest = "1:74860eb071d52337d67e9ffd6893b29affebd026505aa917ec23131576a91a77"
+  digest = "1:d7086e6a64a9e4fa54aaf56ce42ead0be1300b0285604c4d306438880db946ad"
   name = "github.com/alexellis/go-execute"
   packages = ["pkg/v1"]
   pruneopts = "UT"
-  revision = "961405ea754427780f2151adff607fa740d377f7"
-  version = "0.3.0"
+  revision = "8697e4e28c5e3ce441ff8b2b6073035606af2fe9"
+  version = "0.4.0"
+
+[[projects]]
+  digest = "1:03b5c7d3ba399e0bd2f306ff6201ae5ed0c6858c4ec8e87f1e33083694a983b6"
+  name = "github.com/alexellis/k3sup"
+  packages = [
+    "pkg/config",
+    "pkg/env",
+    "pkg/helm",
+  ]
+  pruneopts = "UT"
+  revision = "aec00235bcc36b6b2cc0799a0b89d9e7bccdd8c6"
+  version = "0.7.9"
 
 [[projects]]
   digest = "1:78d28d5b84a26159c67ea51996a230da4bc07cac648adaae1dfb5fc0ec8e40d3"
@@ -78,6 +90,9 @@
   analyzer-version = 1
   input-imports = [
     "github.com/alexellis/go-execute/pkg/v1",
+    "github.com/alexellis/k3sup/pkg/config",
+    "github.com/alexellis/k3sup/pkg/env",
+    "github.com/alexellis/k3sup/pkg/helm",
     "github.com/imdario/mergo",
     "github.com/inlets/inletsctl/pkg/names",
     "github.com/morikuni/aec",
