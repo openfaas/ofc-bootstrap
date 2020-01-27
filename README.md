@@ -2,7 +2,7 @@
 
 > "one-click" CLI to install OpenFaaS Cloud on Kubernetes
 
-[![Build Status](https://travis-ci.org/openfaas-incubator/ofc-bootstrap.svg?branch=master)](https://travis-ci.org/openfaas-incubator/ofc-bootstrap)
+[![Build Status](https://travis-ci.com/openfaas-incubator/ofc-bootstrap.svg?branch=master)](https://travis-ci.com/openfaas-incubator/ofc-bootstrap)
 
 ### What is this and who is it for?
 
