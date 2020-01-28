@@ -374,19 +374,6 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 	return nil
 }
 
-func buildPath(additionalPaths []string) string {
-
-	pathVal := "PATH="
-	for _, p := range additionalPaths {
-		pathVal = pathVal + p + ":"
-	}
-
-	// pathVal = strings.TrimRight(pathVal, ":")
-
-	pathVal = pathVal + os.Getenv("PATH")
-	return pathVal
-}
-
 func helmRepoAddStable() error {
 	log.Println("Adding stable helm repo")
 
