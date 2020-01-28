@@ -19,36 +19,37 @@
 
 * Add version number to YAML file i.e `1.0` to enable versioning/migration of configs
 * Build a suitable dev environment for local work (without Ingress, TLS)
-* Move code into official CLI via `faas-cli system install openfaas-cloud`
-* Separate out the OpenFaaS installation for the official CLI `faas-cli system install --kubernetes/--swarm`
-
-### Stretch goals
-
-* Automatic configuration of DNS Zones in GKE / AWS Route 53
+* Use the Cobra CLI package and separate CLI commands
+* Add a registry login command
+* Add a GitHub integration command
+* Accept several YAML override files
+* go modules instead of `dep`
 
 ### Non-goals
 
+* Automatic configuration of DNS Zones in GKE / AWS Route 53
 * Deep / extensive / complicated unit-tests
 * Create a Docker image / run in Docker
 * Installing, configuring or provisioning Kubernetes clusters or nodes
 * Running on a system without bash
 * Terraform/Ansible/Puppet style of experience
 * Re-run without clean-up (i.e. no updates or upgrades)
-* go modules (`dep` is fine, let's add features instead)
-* Swarm support
+* Docker Swarm support
+* Move code into official CLI via `faas-cli system install openfaas-cloud`
+* Separate out the OpenFaaS installation for the official CLI `faas-cli system install --kubernetes`
 
 ## Status
 
 Help is wanted - the code is in a private repo for OpenFaaS maintainers to contribute to. Sign-off/DCO is required and standard OpenFaaS contributing procedures apply.
 
 Status:
+* [x] Move to Helm3 from using Helm2/tiller.
 * [x] Step: generate `payload_secret` for trust
 * [x] Refactor: default to init.yaml if present
 * [x] Step: Clone OpenFaaS Cloud repo https://github.com/openfaas/openfaas-cloud
 * [x] Step: deploy container builder (buildkit)
 * [x] Step: Add Ingress controller
 * [x] Step: Install OpenFaaS via helm
-* [x] Step: Install tiller sa
 * [x] Step: Install OpenFaaS namespaces
 * [x] Wildcard ingress
 * [x] Auth ingress
