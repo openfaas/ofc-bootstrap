@@ -1,6 +1,8 @@
 ## ofc-bootstrap
 
-> "one-click" CLI to install OpenFaaS Cloud on Kubernetes
+> Provide a managed OpenFaaS experience for your team
+
+How? By automating the whole installation of OpenFaaS Cloud on Kubernetes into a single command and CLI.
 
 [![Build Status](https://travis-ci.com/openfaas-incubator/ofc-bootstrap.svg?branch=master)](https://travis-ci.com/openfaas-incubator/ofc-bootstrap)
 
