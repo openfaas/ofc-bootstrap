@@ -144,7 +144,8 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 
 	fmt.Fprintf(os.Stdout, "Plan loaded from: %s\n", files)
 
-	os.Mkdir("tmp", 0700)
+	os.MkdirAll("tmp", 0700)
+	ioutil.WriteFile("tmp/go.mod", []byte("\n"), 0700)
 
 	fmt.Fprint(os.Stdout, "Validating registry credentials file")
 
