@@ -34,9 +34,8 @@ k3d create --server-arg "--no-deploy=traefik"
 
 OpenFaaS Cloud installs, manages, and bundles software which spans source-control, TLS, DNS, and Docker image registries. You must have the following prepared before you start your installation.
 
-* You'll need to register a domain-name and set it up for management in Google Cloud DNS, DigitalOcean or AWS Route 53.
+* You'll need to register a domain-name and set it up for management in Google Cloud DNS, DigitalOcean, Cloudflare DNS or AWS Route 53.
 * Set up a registry - the simplest option is to use your [Docker Hub](https://hub.docker.com) account. You can also use your own private registry or a cloud-hosted registry. You will need the credentials. If you need to, [set up your own private registry](https://github.com/alexellis/k8s-tls-registry).
-* `docker` installed locally so that you can provide the `config.json` file with credentials.
 * Admin-level access to a GitHub.com account or a self-hosted GitLab installation.
 * A valid email address for use with [LetsEncrypt](https://letsencrypt.org), beware of [rate limits](https://letsencrypt.org/docs/rate-limits/).
 * Admin access to a Kubernetes cluster.
@@ -47,7 +46,6 @@ OpenFaaS Cloud installs, manages, and bundles software which spans source-contro
 * Kubernetes - [development options](https://blog.alexellis.io/be-kind-to-yourself/)
     * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-using-curl)
 * Linux or Mac. Windows if `bash` is available
-* [dep](https://github.com/golang/dep)
 * [helm](https://docs.helm.sh/using_helm/#installing-helm)
 * [faas-cli](https://github.com/openfaas/faas-cli) `curl -sL https://cli.openfaas.com | sudo sh`
 * OpenSSL - the `openssl` binary must be available in `PATH`
@@ -346,7 +344,7 @@ In order to enable TLS, edit the following configuration:
 
 * Set `tls: true`
 * Choose between `issuer_type: "prod"` or `issuer_type: "staging"`
-* Choose between DNS Service `route53`, `clouddns` or `digitalocean` and then update `init.yaml`
+* Choose between DNS Service `route53`, `clouddns`, `cloudflare` or `digitalocean` and then update `init.yaml`
 * If you are using an API credential for DigitalOcean, AWS or GCP, then download that file from your cloud provider and set the appropriate path.
 * Go to `# DNS Service Account secret` in `init.yaml` and choose and uncomment the section you need.
 
@@ -459,7 +457,7 @@ http://system.example.com/dashboard/<username>
 ```
 
 Just replace `<username>` with your GitHub account. 
-
+> If you have enabled OAuth you only need to navigate to system.example.com
 ## Trigger a build
 
 Now you can install your GitHub app on a repo, run `faas-cli new` and then rename the YAML file to `stack.yml` and do a `git push`. Your OpenFaaS Cloud cluster will build and deploy the functions found in that GitHub repo.
