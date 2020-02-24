@@ -26,7 +26,7 @@ functions:
       - payload-secret
       - gitlab-api-token
 
-  gitlab-push:
+  gitlab-status:
     lang: go
     handler: ./gitlab-push
     image: functions/gitlab-push:0.2.3
