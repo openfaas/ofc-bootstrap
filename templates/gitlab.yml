@@ -26,6 +26,22 @@ functions:
       - payload-secret
       - gitlab-api-token
 
+  gitlab-push:
+    lang: go
+    handler: ./gitlab-push
+    image: functions/gitlab-push:0.2.3
+    labels:
+      openfaas-cloud: "1"
+      role: openfaas-system
+      com.openfaas.scale.zero: false
+    environment:
+      write_debug: true
+      read_debug: true
+    environment_file:
+      - gateway_config.yml
+    secrets:
+      - payload-secret
+
   gitlab-status:
     lang: go
     handler: ./gitlab-status
@@ -43,27 +59,11 @@ functions:
       - gitlab-api-token
       - payload-secret
 
-  gitlab-push:
-    lang: go
-    handler: ./gitlab-push
-    image: functions/gitlab-push:0.2.2
-    labels:
-      openfaas-cloud: "1"
-      role: openfaas-system
-      com.openfaas.scale.zero: false
-    environment:
-      write_debug: true
-      read_debug: true
-    environment_file:
-      - gateway_config.yml
-    secrets:
-      - payload-secret
-
   ## Post-deployed with gitlab with `gitlab-api-token` secret
   git-tar:
     lang: dockerfile
     handler: ./git-tar
-    image: functions/of-git-tar:0.16.0
+    image: functions/of-git-tar:0.17.0
     labels:
       openfaas-cloud: "1"
       role: openfaas-system

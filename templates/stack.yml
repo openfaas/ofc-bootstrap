@@ -27,7 +27,7 @@ functions:
   github-push:
     lang: go
     handler: ./github-push
-    image: functions/github-push:0.7.3
+    image: functions/github-push:0.7.4
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -49,7 +49,7 @@ functions:
   git-tar:
     lang: dockerfile
     handler: ./git-tar
-    image: functions/of-git-tar:0.16.0
+    image: functions/of-git-tar:0.17.0
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -120,7 +120,7 @@ functions:
   github-status:
     lang: go
     handler: ./github-status
-    image: functions/github-status:0.3.6
+    image: functions/github-status:0.4.0
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
