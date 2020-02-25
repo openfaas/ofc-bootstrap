@@ -357,6 +357,12 @@ You can start out by using the Staging issuer, then switch to the production iss
 
 > Note if you want to switch from the staging TLS certificates to production certificates, see the appendix.
 
+### Use a Kubernetes secret instead of a customers URL (optional)
+
+If you want to keep your list of users private, you can use a Kubernetes secret instead.
+
+Set `customers_secret:` to `true` and then edit the two secrets `customers` and `of-customers`.
+
 ### Enable dockerfile language support (optional)
 
 If you are planning on building functions using the `dockerfile` template you need to set `enable_dockerfile_lang: true`.
@@ -458,6 +464,7 @@ http://system.example.com/dashboard/<username>
 
 Just replace `<username>` with your GitHub account. 
 > If you have enabled OAuth you only need to navigate to system.example.com
+
 ## Trigger a build
 
 Now you can install your GitHub app on a repo, run `faas-cli new` and then rename the YAML file to `stack.yml` and do a `git push`. Your OpenFaaS Cloud cluster will build and deploy the functions found in that GitHub repo.

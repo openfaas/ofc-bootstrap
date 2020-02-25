@@ -19,7 +19,7 @@ functions:
       read_debug: true
       installation_tag: "openfaas-cloud"
       gitlab_instance: "{{.GitLabInstance}}"
-      customers_path: {{.CustomersSecretPath}}
+      customers_path: "{{.CustomersSecretPath}}"
     environment_file:
       - gateway_config.yml
     secrets:
