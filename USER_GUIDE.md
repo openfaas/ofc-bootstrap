@@ -225,6 +225,12 @@ Find the section of the YAML `registry:` set the value accordingly, replacing `A
 
 The final `/` is required
 
+When using ECR a user can namespace their registries per cluster by adding a suffix to the ecr registry:
+
+`$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/your-cluster-suffix`
+
+This would create registries prefixed with `your-cluster-prefix` for the user's docker images.
+
 * Create a new user with the role `AmazonEC2ContainerRegistryFullAccess` - see also [AWS permissions for ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr_managed_policies.html)
 
 * The file will be read from `~/.aws/credentials` by default, but you can change this via editing the path in `value_from` under the `ecr-credentials` secret
@@ -267,7 +273,9 @@ Your SCM will need to send webhooks to OpenFaaS Cloud's github-event or gitlab-e
   * If not using a generated value, set the `github-webhook-secret` literal value with your *Webhook secret* for the GitHub App's
   * Click *Generate a private key*, this will be downloaded to your local computer (if you ever need a new one, generate a new one and delete the old key)
   * Update the `private-key` `value_from` to the path of the GitHub App's private key
-
+  * Make sure the app is "activated" using the checkbox at the bottom of the github page.
+  
+  
 * For GitLab create a System Hook
   * Leave the `value:` for `gitlab-webhook-secret` blank, or set your own password
   * Update the `## User-input` section including your System Hook's API Token and *Webhook secret*
