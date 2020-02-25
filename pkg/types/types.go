@@ -68,6 +68,7 @@ type Plan struct {
 	BuildBranch          string                   `yaml:"build_branch,omitempty"`
 	EnableECR            bool                     `yaml:"enable_ecr,omitempty"`
 	ECRConfig            ECRConfig                `yaml:"ecr_config,omitempty"`
+	CustomersSecret      bool                     `yaml:"customers_secret,omitempty"`
 }
 
 // Deployment is the deployment section of YAML concerning
