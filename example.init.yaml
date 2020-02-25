@@ -174,6 +174,21 @@ secrets:
       - "ecr"
     namespace: "openfaas-fn"
 
+## If not using a HTTPS URL, then set a list of CUSTOMERS
+  - name: "customers"
+    literals:
+      - name: "customers"
+        value: ""
+    namespace: "openfaas"
+    filters:
+      - "default"
+  - name: "customers"
+    literals:
+      - name: "customers"
+        value: ""
+    namespace: "openfaas-fn"
+    filters:
+      - "default"
 
 ### Docker registry
 #### This can be any cluster accessible by your cluster. To populate the file

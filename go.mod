@@ -7,6 +7,7 @@ require (
 	github.com/alexellis/k3sup v0.0.0-20200211110243-d7d1e594bc55
 	github.com/imdario/mergo v0.3.8
 	github.com/inlets/inletsctl v0.0.0-20200211123457-caff14436308
+	github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a
 	github.com/morikuni/aec v1.0.0
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v0.0.5

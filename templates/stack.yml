@@ -7,7 +7,7 @@ functions:
   system-github-event:
     lang: go
     handler: ./github-event
-    image: functions/github-event:0.8.1
+    image: functions/github-event:0.9.0
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -17,12 +17,14 @@ functions:
       write_debug: true
       read_debug: true
       validate_customers: true
+      customers_path: /var/openfaas/secrets/customers
     environment_file:
       - github.yml
       - gateway_config.yml
     secrets:
       - github-webhook-secret
       - payload-secret
+      - customers
 
   github-push:
     lang: go

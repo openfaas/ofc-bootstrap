@@ -6,7 +6,7 @@ functions:
   system-gitlab-event:
     lang: go
     handler: ./gitlab-event
-    image: functions/gitlab-event:0.1.3
+    image: functions/gitlab-event:0.2.0
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -19,12 +19,14 @@ functions:
       read_debug: true
       installation_tag: "openfaas-cloud"
       gitlab_instance: "{{.GitLabInstance}}"
+      customers_path: /var/openfaas/secrets/customers
     environment_file:
       - gateway_config.yml
     secrets:
       - gitlab-webhook-secret
       - payload-secret
       - gitlab-api-token
+      - customers
 
   gitlab-push:
     lang: go

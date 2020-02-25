@@ -69,11 +69,11 @@ func Test_mergePlans_MergeEmptyItemsFromBoth(t *testing.T) {
 func Test_mergePlans_PlanValuesOverwriteAccordingToOrder(t *testing.T) {
 
 	plan1 := Plan{
-		OpenFaaSCloudVersion: "0.12.0",
+		OpenFaaSCloudVersion: "0.11.0",
 	}
 
 	plan2 := Plan{
-		OpenFaaSCloudVersion: "0.11.0",
+		OpenFaaSCloudVersion: "0.12.0",
 	}
 
 	planOut, err := MergePlans([]Plan{plan1, plan2})
@@ -84,8 +84,67 @@ func Test_mergePlans_PlanValuesOverwriteAccordingToOrder(t *testing.T) {
 	}
 
 	wantVer := plan2.OpenFaaSCloudVersion
-	if planOut.OpenFaaSCloudVersion != wantVer {
-		t.Errorf("OpenFaaSCloudVersion want: %s, but got: %s", wantVer, planOut.OpenFaaSCloudVersion)
+	gotVer := planOut.OpenFaaSCloudVersion
+	if gotVer != wantVer {
+		t.Errorf("OpenFaaSCloudVersion want: %s, but got: %s", wantVer, gotVer)
+	}
+}
+
+func Test_mergePlans_CombineSecretsDifferentNames(t *testing.T) {
+
+	plan1 := Plan{
+		Secrets: []KeyValueNamespaceTuple{
+			KeyValueNamespaceTuple{Name: "one"},
+		},
 	}
 
+	plan2 := Plan{
+		Secrets: []KeyValueNamespaceTuple{
+			KeyValueNamespaceTuple{Name: "two"},
+		},
+	}
+
+	planOut, err := MergePlans([]Plan{plan1, plan2})
+
+	if err != nil {
+		t.Errorf("Got error, expected no error: %s", err.Error())
+		t.Fail()
+	}
+
+	wantLen := 2
+	gotLen := len(planOut.Secrets)
+	if gotLen != wantLen {
+		t.Errorf("Secrets want length %d, but got: %d", wantLen, gotLen)
+	}
+}
+
+func Test_mergePlans_CombineSecretsMatchingNames(t *testing.T) {
+
+	plan1 := Plan{
+		Secrets: []KeyValueNamespaceTuple{
+			KeyValueNamespaceTuple{Name: "one",
+				Namespace: "openfaas-fn",
+			},
+		},
+	}
+
+	plan2 := Plan{
+		Secrets: []KeyValueNamespaceTuple{
+			KeyValueNamespaceTuple{Name: "one",
+				Namespace: "openfaas-stag"},
+		},
+	}
+
+	planOut, err := MergePlans([]Plan{plan1, plan2})
+
+	if err != nil {
+		t.Errorf("Got error, expected no error: %s", err.Error())
+		t.Fail()
+	}
+
+	wantLen := 1
+	gotLen := len(planOut.Secrets)
+	if gotLen != wantLen {
+		t.Errorf("Secrets want length %d, but got: %d", wantLen, gotLen)
+	}
 }
