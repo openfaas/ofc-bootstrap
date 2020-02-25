@@ -148,3 +148,52 @@ func Test_mergePlans_CombineSecretsMatchingNames(t *testing.T) {
 		t.Errorf("Secrets want length %d, but got: %d", wantLen, gotLen)
 	}
 }
+
+func Test_mergePlans_CombineSecretsMatchingNamesLiterals(t *testing.T) {
+
+	plan1 := Plan{
+		Secrets: []KeyValueNamespaceTuple{
+			KeyValueNamespaceTuple{Name: "one",
+				Namespace: "openfaas-fn",
+				Literals: []KeyValueTuple{
+					KeyValueTuple{
+						Name:  "password",
+						Value: "",
+					},
+				},
+			},
+		},
+	}
+
+	wantPass := "test1234"
+	plan2 := Plan{
+		Secrets: []KeyValueNamespaceTuple{
+			KeyValueNamespaceTuple{Name: "one",
+				Namespace: "openfaas-stag",
+				Literals: []KeyValueTuple{
+					KeyValueTuple{
+						Name:  "password",
+						Value: wantPass,
+					},
+				},
+			},
+		},
+	}
+
+	planOut, err := MergePlans([]Plan{plan1, plan2})
+
+	if err != nil {
+		t.Errorf("Got error, expected no error: %s", err.Error())
+		t.Fail()
+	}
+
+	wantLen := 1
+	gotLen := len(planOut.Secrets)
+	if gotLen != wantLen {
+		t.Errorf("Secrets want length %d, but got: %d", wantLen, gotLen)
+	}
+
+	if planOut.Secrets[0].Literals[0].Value != wantPass {
+		t.Errorf("Secret merged incorrectly, want: %s, got %s", wantPass, planOut.Secrets[0].Literals[0].Value)
+	}
+}

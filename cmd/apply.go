@@ -34,6 +34,7 @@ func init() {
 	applyCmd.Flags().Bool("skip-sealedsecrets", false, "Skip SealedSecrets installation")
 	applyCmd.Flags().Bool("skip-minio", false, "Skip Minio installation")
 	applyCmd.Flags().Bool("skip-create-secrets", false, "Skip creating secrets")
+	applyCmd.Flags().Bool("print-plan", false, "Print merged plan and exit")
 }
 
 var applyCmd = &cobra.Command{
@@ -57,6 +58,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
+	printPlan, _ := command.Flags().GetBool("print-plan")
 
 	prefs.SkipMinio, _ = command.Flags().GetBool("skip-minio")
 	prefs.SkipSealedSecrets, _ = command.Flags().GetBool("skip-sealedsecrets")
@@ -68,6 +70,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 
 	plans := []types.Plan{}
 
+	log.Printf("Loading %d plans\n", len(files))
 	for _, yamlFile := range files {
 
 		yamlBytes, yamlErr := ioutil.ReadFile(yamlFile)
@@ -80,6 +83,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 		if unmarshalErr != nil {
 			return fmt.Errorf("unmarshal of --file %s gave error: %s", yamlFile, unmarshalErr.Error())
 		}
+		log.Printf("%s loaded\n", yamlFile)
 		plans = append(plans, plan)
 	}
 
@@ -87,6 +91,14 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 
 	if mergeErr != nil {
 		return mergeErr
+	}
+
+	if printPlan {
+
+		out, _ := yaml.Marshal(planMerged)
+		fmt.Println(string(out))
+
+		os.Exit(0)
 	}
 
 	plan := *planMerged
