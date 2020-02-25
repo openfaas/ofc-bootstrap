@@ -9,6 +9,11 @@ import (
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 )
 
+type gitlabConfig struct {
+	GitLabInstance      string `yaml:"gitlab_instance,omitempty"`
+	CustomersSecretPath string
+}
+
 type gatewayConfig struct {
 	Registry             string
 	RootDomain           string
@@ -18,15 +23,30 @@ type gatewayConfig struct {
 	CustomTemplates      string
 	EnableDockerfileLang bool
 	BuildBranch          string
+	CustomersSecretPath  string
 }
 
 type authConfig struct {
-	RootDomain           string
-	ClientId             string
-	CustomersURL         string
-	Scheme               string
-	OAuthProvider        string
-	OAuthProviderBaseURL string
+	RootDomain            string
+	ClientId              string
+	CustomersURL          string
+	Scheme                string
+	OAuthProvider         string
+	OAuthProviderBaseURL  string
+	OFCustomersSecretPath string
+}
+
+type builderConfig struct {
+	ECR bool
+}
+
+type stackConfig struct {
+	GitHub              bool
+	CustomersSecretPath string
+}
+
+type awsConfig struct {
+	ECRRegion string
 }
 
 // Apply creates `templates/gateway_config.yml` to be referenced by stack.yml
@@ -36,7 +56,13 @@ func Apply(plan types.Plan) error {
 		scheme += "s"
 	}
 
-	gwConfigErr := generateTemplate("gateway_config", plan, gatewayConfig{
+	customersSecretPath := ""
+
+	if plan.CustomersSecret {
+		customersSecretPath = "/var/openfaas/secrets/customers"
+	}
+
+	if gwConfigErr := generateTemplate("gateway_config", plan, gatewayConfig{
 		Registry:             plan.Registry,
 		RootDomain:           plan.RootDomain,
 		CustomersURL:         plan.CustomersURL,
@@ -45,17 +71,14 @@ func Apply(plan types.Plan) error {
 		CustomTemplates:      plan.Deployment.FormatCustomTemplates(),
 		EnableDockerfileLang: plan.EnableDockerfileLang,
 		BuildBranch:          plan.BuildBranch,
-	})
-
-	if gwConfigErr != nil {
+	}); gwConfigErr != nil {
 		return gwConfigErr
 	}
 
-	githubConfigErr := generateTemplate("github", plan, types.Github{
+	if githubConfigErr := generateTemplate("github", plan, types.Github{
 		AppID:          plan.Github.AppID,
 		PrivateKeyFile: plan.Github.PrivateKeyFile,
-	})
-	if githubConfigErr != nil {
+	}); githubConfigErr != nil {
 		return githubConfigErr
 	}
 
@@ -66,10 +89,10 @@ func Apply(plan types.Plan) error {
 	}
 
 	if plan.SCM == "gitlab" {
-		gitlabConfigErr := generateTemplate("gitlab", plan, types.Gitlab{
-			GitLabInstance: plan.Gitlab.GitLabInstance,
-		})
-		if gitlabConfigErr != nil {
+		if gitlabConfigErr := generateTemplate("gitlab", plan, gitlabConfig{
+			GitLabInstance:      plan.Gitlab.GitLabInstance,
+			CustomersSecretPath: customersSecretPath,
+		}); gitlabConfigErr != nil {
 			return gitlabConfigErr
 		}
 	}
@@ -82,57 +105,45 @@ func Apply(plan types.Plan) error {
 	}
 
 	if plan.EnableOAuth {
-		ofAuthDepErr := generateTemplate("edge-auth-dep", plan, authConfig{
-			RootDomain:           plan.RootDomain,
-			ClientId:             plan.OAuth.ClientId,
-			CustomersURL:         plan.CustomersURL,
-			Scheme:               scheme,
-			OAuthProvider:        plan.SCM,
-			OAuthProviderBaseURL: plan.OAuth.OAuthProviderBaseURL,
-		})
-		if ofAuthDepErr != nil {
+		ofCustomersSecretPath := ""
+		if plan.CustomersSecret {
+			ofCustomersSecretPath = "/var/secrets/of-customers/of-customers"
+		}
+
+		if ofAuthDepErr := generateTemplate("edge-auth-dep", plan, authConfig{
+			RootDomain:            plan.RootDomain,
+			ClientId:              plan.OAuth.ClientId,
+			CustomersURL:          plan.CustomersURL,
+			Scheme:                scheme,
+			OAuthProvider:         plan.SCM,
+			OAuthProviderBaseURL:  plan.OAuth.OAuthProviderBaseURL,
+			OFCustomersSecretPath: ofCustomersSecretPath,
+		}); ofAuthDepErr != nil {
 			return ofAuthDepErr
 		}
 	}
 
 	isGitHub := plan.SCM == "github"
-	stackErr := generateTemplate("stack", plan, stackConfig{
-		GitHub: isGitHub,
-	})
-
-	if stackErr != nil {
+	if stackErr := generateTemplate("stack", plan, stackConfig{
+		GitHub:              isGitHub,
+		CustomersSecretPath: customersSecretPath,
+	}); stackErr != nil {
 		return stackErr
 	}
 
-	builderErr := generateTemplate("of-builder-dep", plan, builderConfig{
+	if builderErr := generateTemplate("of-builder-dep", plan, builderConfig{
 		ECR: plan.EnableECR,
-	})
-
-	if builderErr != nil {
+	}); builderErr != nil {
 		return builderErr
 	}
 
-	ecrErr := generateTemplate("aws", plan, awsConfig{
+	if ecrErr := generateTemplate("aws", plan, awsConfig{
 		ECRRegion: plan.ECRConfig.ECRRegion,
-	})
-
-	if ecrErr != nil {
+	}); ecrErr != nil {
 		return ecrErr
 	}
 
 	return nil
-}
-
-type builderConfig struct {
-	ECR bool
-}
-
-type stackConfig struct {
-	GitHub bool
-}
-
-type awsConfig struct {
-	ECRRegion string
 }
 
 func generateTemplate(fileName string, plan types.Plan, templateType interface{}) error {

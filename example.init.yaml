@@ -178,14 +178,14 @@ secrets:
   - name: "of-customers"
     literals:
       - name: "of-customers"
-        value: "alexellis"
+        value_from: "/dev/null"
     namespace: "openfaas"
     filters:
       - "default"
   - name: "customers"
     literals:
       - name: "customers"
-        value: ""
+        value_from: "/dev/null"
     namespace: "openfaas-fn"
     filters:
       - "default"
@@ -197,6 +197,10 @@ secrets:
 #### Format: registry/username/ - i.e. replace ofctest with your login
 
 registry: docker.io/ofctest/
+
+### Use a secret instead of a publicly accessible URL for the ACL
+### of valid users.
+customers_secret: false
 
 ### Enable only if using AWS ECR
 enable_ecr: false
@@ -312,9 +316,6 @@ enable_dockerfile_lang: false
 ### of com.openfaas.scale.zero: "false"
 scale_to_zero: false
 
-## Version of OpenFaaS Cloud from https://github.com/openfaas/openfaas-cloud/releases/
-openfaas_cloud_version: 0.12.2
-
 ## Enable network policies
 ### Prevents functions from talking to the openfaas namespace, and to each other.
 ### Use the ingress address for the gateway or the external IP instead.
@@ -324,3 +325,5 @@ network_policies: false
 ## You should change this if you want a different branch to be built and deployed instead of master
 build_branch: master
 
+## Version of OpenFaaS Cloud from https://github.com/openfaas/openfaas-cloud/releases/
+openfaas_cloud_version: 0.13.1

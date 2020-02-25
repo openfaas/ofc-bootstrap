@@ -17,7 +17,7 @@ functions:
       write_debug: true
       read_debug: true
       validate_customers: true
-      customers_path: /var/openfaas/secrets/customers
+      customers_path: "{{.CustomersSecretPath}}"
     environment_file:
       - github.yml
       - gateway_config.yml
