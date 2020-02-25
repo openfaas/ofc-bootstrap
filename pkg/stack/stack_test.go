@@ -3,8 +3,6 @@ package stack
 import (
 	"strings"
 	"testing"
-
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
 )
 
 func Test_applyTemplateWithAuth(t *testing.T) {
@@ -42,8 +40,9 @@ func Test_gitlabTemplates(t *testing.T) {
 
 	gitlabTemplateFileName := "../../templates/gitlab.yml"
 
-	generatedValue, err := applyTemplate(gitlabTemplateFileName, types.Gitlab{
-		GitLabInstance: gitLabInstance,
+	generatedValue, err := applyTemplate(gitlabTemplateFileName, gitlabConfig{
+		GitLabInstance:      gitLabInstance,
+		CustomersSecretPath: "",
 	})
 
 	if err != nil {
