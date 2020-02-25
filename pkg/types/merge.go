@@ -7,8 +7,11 @@ import (
 	"fmt"
 
 	"github.com/imdario/mergo"
+	"github.com/jinzhu/copier"
 )
 
+// MergePlans combines one or more plan with a manual merge for
+// the list of secrets.
 func MergePlans(plans []Plan) (*Plan, error) {
 	var err error
 	masterPlan := &Plan{}
@@ -28,5 +31,37 @@ func MergePlans(plans []Plan) (*Plan, error) {
 		}
 	}
 
+	patchSecrets(masterPlan, plans)
+
 	return masterPlan, err
+}
+
+func patchSecrets(masterPlan *Plan, plans []Plan) {
+	masterList := []KeyValueNamespaceTuple{}
+
+	// Read each plan
+	for _, plan := range plans {
+
+		// Process each secret
+		for _, v := range plan.Secrets {
+
+			// Apply to master list
+			index := -1
+			for i, mv := range masterList {
+				if mv.Name == v.Name {
+					index = i
+					break
+				}
+			}
+
+			if index == -1 {
+				item := KeyValueNamespaceTuple{}
+				copier.Copy(&item, &v)
+				masterList = append(masterList, item)
+			} else {
+				copier.Copy(&masterList[index], &v)
+			}
+		}
+	}
+	masterPlan.Secrets = masterList
 }
