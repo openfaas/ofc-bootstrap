@@ -67,7 +67,7 @@ func generateFile(username string, password string, server string) error {
 	writeErr := writeFileToOFCTmp(fileBytes)
 
 	if writeErr != nil {
-		fmt.Print("Registry credentials saved to ./credentials/config.json")
+		fmt.Print("Registry credentials written to ./credentials/config.json")
 	}
 
 	return writeErr
@@ -83,14 +83,15 @@ func generateECRFile(accountID string, region string) error {
 	writeErr := writeFileToOFCTmp(fileBytes)
 
 	if writeErr != nil {
-		fmt.Print("Registry credentials saved to ./credentials/config.json")
+		fmt.Print("Registry credentials written to ./credentials/config.json")
 	}
+
 	return writeErr
 }
 
 func generateRegistryAuth(server, username, password string) ([]byte, error) {
 	if len(username) == 0 || len(password) == 0 || len(server) == 0 {
-		return nil, errors.New("both --username and --password must be used, and provided, for us to generate a valid file")
+		return nil, errors.New("both --username and (--password-stdin or --password) are required")
 	}
 
 	encodedString := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password)))

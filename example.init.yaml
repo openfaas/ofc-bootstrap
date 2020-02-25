@@ -175,10 +175,10 @@ secrets:
     namespace: "openfaas-fn"
 
 ## If not using a HTTPS URL, then set a list of CUSTOMERS
-  - name: "customers"
+  - name: "of-customers"
     literals:
-      - name: "customers"
-        value: ""
+      - name: "of-customers"
+        value: "alexellis"
     namespace: "openfaas"
     filters:
       - "default"
@@ -241,6 +241,12 @@ github:
 gitlab:
   gitlab_instance: "https://gitlab.o6s.io/"
 
+
+## Enable auth:
+### When enabled users must log in with a valid GitHub account and be present in the
+### customers file to view any dashboard
+enable_oauth: false
+
 ## Populate from OAuth App
 oauth:
   client_id: clientid
@@ -270,11 +276,6 @@ s3:
   s3_region: us-east-1
   s3_tls: false
   s3_bucket: pipeline
-
-## Enable auth:
-### When enabled users must log in with a valid GitHub account and be present in the
-### customers file to view any dashboard
-enable_oauth: false
 
 ## TLS
 tls: false
