@@ -8,6 +8,6 @@ helm repo update
 helm upgrade --install \
   cert-manager \
   --namespace cert-manager \
-  --version v0.11.0 \
+  --version v0.13.0 \
   jetstack/cert-manager \
   --wait 
