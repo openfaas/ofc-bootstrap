@@ -8,13 +8,15 @@ This tool automates the installation of OpenFaaS Cloud on Kubernetes. Before sta
 
 For your cluster the following specifications are recommended:
 
-* 2-3 nodes with 1-2 vCPU and 2-4GB RAM each
+* 3-4 nodes with 2 vCPU each and 4GB RAM
 
-These are guidelines and not a hard requirement, you may well be able to run with fewer resources.
+These are guidelines and not a hard requirement, you may well be able to run with fewer resources, but please do not ask for support if you use less and run into problems.
+
+> Note: You must use Intel hardware, ARM such as arm64 and armhf (Raspberry Pi) is not supported and not on the roadmap either. This could change if a company was willing to sponsor and pay for the features and ongoing maintenance.
 
 ### Note for k3s users
 
-If using k3s. ofc-bootstrap uses Nginx for its IngressController, but k3s ships with Traefik and this will configuration is incompatible. When you set up k3s, make sure you pass the `--no-deploy traefik` flag.
+If you are using k3s, then you will need to disable Traefik. ofc-bootstrap uses nginx-ingress for its IngressController, but k3s ships with Traefik and this will configuration is incompatible. When you set up k3s, make sure you pass the `--no-deploy traefik` flag.
 
 Example with [k3sup](https://k3sup.dev):
 
@@ -28,7 +30,7 @@ Example with [k3d](https://github.com/rancher/k3d):
 k3d create --server-arg "--no-deploy=traefik"
 ```
 
-> From Alex: If you're planning on using k3s with DigitalOcean, please stop and think why you are doing this instead of using the managed service called DOKS. DOKS is a free, managed control-plane and much less work for you, k3s on Droplets will be more expensive given that you have to run your own "master".
+> A note on DigitalOcean: if you're planning on using k3s with DigitalOcean, please stop and think why you are doing this instead of using the managed service called DOKS. DOKS is a free, managed control-plane and much less work for you, k3s on Droplets will be more expensive given that you have to run your own "master".
 
 ### Credentials and dependent systems
 
@@ -572,3 +574,4 @@ kubectl apply -f ./tmp/generated-ingress-ingress.yaml
 kubectl apply -f ./tmp/generated-tls-auth-domain-cert.yml
 kubectl apply -f ./tmp/generated-tls-wildcard-domain-cert.yml
 ```
+
