@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"path"
 	"runtime"
 	"strings"
 	"time"
@@ -62,6 +63,10 @@ func createGitHubAppE(command *cobra.Command, _ []string) error {
 	inputMap := map[string]string{
 		"AppName":     name,
 		"GitHubEvent": fmt.Sprintf("%s://system.%s/github-event", scheme, rootDomain),
+	}
+
+	if _, err := os.Stat(path.Join("./pkg/github", "index.html")); err != nil {
+		return fmt.Errorf(`cannot find template "index.html", run this command from the ofc-bootstrap repository`)
 	}
 
 	fmt.Printf("Name: %s\tRoot domain: %s\tScheme: %v\n", name, rootDomain, scheme)
