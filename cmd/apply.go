@@ -402,8 +402,9 @@ func helmRepoAddStable() error {
 		return taskErr
 	}
 
-	log.Println(taskRes.Stdout)
-	log.Println(taskRes.Stderr)
+	if len(taskRes.Stderr) > 0 {
+		log.Println(taskRes.Stderr)
+	}
 
 	return nil
 }
@@ -423,8 +424,9 @@ func helmRepoUpdate() error {
 		return taskErr
 	}
 
-	log.Println(taskRes.Stdout)
-	log.Println(taskRes.Stderr)
+	if len(taskRes.Stderr) > 0 {
+		log.Println(taskRes.Stderr)
+	}
 
 	return nil
 }
@@ -438,14 +440,15 @@ func createFunctionsAuth() error {
 		StreamStdio: true,
 	}
 
-	res, err := task.Execute()
+	taskRes, err := task.Execute()
 
 	if err != nil {
 		return err
 	}
 
-	log.Println(res.Stdout)
-	log.Println(res.Stderr)
+	if len(taskRes.Stderr) > 0 {
+		log.Println(taskRes.Stderr)
+	}
 
 	return nil
 }
@@ -485,14 +488,15 @@ func installSealedSecrets() error {
 		StreamStdio: true,
 	}
 
-	res, err := task.Execute()
+	taskRes, err := task.Execute()
 
 	if err != nil {
 		return err
 	}
 
-	log.Println(res.Stdout)
-	log.Println(res.Stderr)
+	if len(taskRes.Stderr) > 0 {
+		log.Println(taskRes.Stderr)
+	}
 
 	return nil
 }
@@ -529,14 +533,15 @@ func installMinio() error {
 		StreamStdio: true,
 	}
 
-	res, err := task.Execute()
+	taskRes, err := task.Execute()
 
 	if err != nil {
 		return err
 	}
 
-	log.Println(res.Stdout)
-	log.Println(res.Stderr)
+	if len(taskRes.Stderr) > 0 {
+		log.Println(taskRes.Stderr)
+	}
 
 	return nil
 }
@@ -550,15 +555,15 @@ func patchFnServiceaccount() error {
 		StreamStdio: true,
 	}
 
-	res, err := task.Execute()
+	taskRes, err := task.Execute()
 
 	if err != nil {
 		return err
 	}
 
-	log.Println(res.Stdout)
-	log.Println(res.Stderr)
-
+	if len(taskRes.Stderr) > 0 {
+		log.Println(taskRes.Stderr)
+	}
 	return nil
 }
 
