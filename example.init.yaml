@@ -175,15 +175,16 @@ secrets:
     namespace: "openfaas-fn"
 
 ## If not using a HTTPS URL, then set a list of CUSTOMERS
+## To use this set "value_from" to a real file path, and put in a list (each item on a new line) of usernames, without other whitespace
   - name: "of-customers"
-    literals:
+    files:
       - name: "of-customers"
         value_from: "/dev/null"
     namespace: "openfaas"
     filters:
       - "default"
   - name: "customers"
-    literals:
+    files:
       - name: "customers"
         value_from: "/dev/null"
     namespace: "openfaas-fn"
