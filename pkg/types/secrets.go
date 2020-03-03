@@ -34,19 +34,24 @@ func BuildSecretTask(kvn KeyValueNamespaceTuple) execute.ExecTask {
 	}
 
 	for _, file := range kvn.Files {
+		filePath := file.ExpandValueFrom()
 		if len(file.ValueCommand) > 0 {
+			if _, err := os.Stat(filePath); err != nil {
 
-			valueTask := execute.ExecTask{
-				Command:     file.ValueCommand,
-				StreamStdio: true,
-			}
-			res, err := valueTask.Execute()
-			if err != nil {
-				log.Fatal(fmt.Errorf("error executing value_command: %s", file.ValueCommand))
-			}
+				valueTask := execute.ExecTask{
+					Command:     file.ValueCommand,
+					StreamStdio: true,
+				}
+				res, err := valueTask.Execute()
+				if err != nil {
+					log.Fatal(fmt.Errorf("error executing value_command: %s", file.ValueCommand))
+				}
 
-			if res.ExitCode != 0 {
-				log.Fatal(fmt.Errorf("error running value_command: %s, stderr: %s", file.ValueCommand, res.Stderr))
+				if res.ExitCode != 0 {
+					log.Fatal(fmt.Errorf("error running value_command: %s, stderr: %s", file.ValueCommand, res.Stderr))
+				}
+			} else {
+				fmt.Printf("%s exists, not running value_command\n", filePath)
 			}
 		}
 
