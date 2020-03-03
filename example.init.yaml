@@ -327,4 +327,4 @@ network_policies: false
 build_branch: master
 
 ## Version of OpenFaaS Cloud from https://github.com/openfaas/openfaas-cloud/releases/
-openfaas_cloud_version: 0.13.5
+openfaas_cloud_version: 0.13.6
