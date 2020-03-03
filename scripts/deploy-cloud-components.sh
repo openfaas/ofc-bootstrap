@@ -81,7 +81,7 @@ if [ "$ENABLE_AWS_ECR" = "true" ] ; then
 fi
 
 cd ./dashboard
-faas-cli template store pull node10-express
+faas-cli template pull
 faas-cli deploy
 
 sleep 2
