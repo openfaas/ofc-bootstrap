@@ -7,7 +7,7 @@ functions:
   system-github-event:
     lang: go
     handler: ./github-event
-    image: functions/github-event:0.9.0
+    image: functions/github-event:0.9.1
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -51,7 +51,7 @@ functions:
   git-tar:
     lang: dockerfile
     handler: ./git-tar
-    image: functions/of-git-tar:0.17.0
+    image: functions/of-git-tar:0.17.1
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -77,7 +77,7 @@ functions:
   buildshiprun:
     lang: go
     handler: ./buildshiprun
-    image: functions/of-buildshiprun:0.13.0
+    image: functions/of-buildshiprun:0.13.1
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -101,7 +101,7 @@ functions:
   garbage-collect:
     lang: go
     handler: ./garbage-collect
-    image: functions/garbage-collect:0.4.4
+    image: functions/garbage-collect:0.4.6
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -122,7 +122,7 @@ functions:
   github-status:
     lang: go
     handler: ./github-status
-    image: functions/github-status:0.4.0
+    image: functions/github-status:0.4.1
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -144,7 +144,7 @@ functions:
   import-secrets:
     lang: go
     handler: ./import-secrets
-    image: functions/import-secrets:0.5.0
+    image: functions/import-secrets:0.6.1
     annotations:
       com.openfaas.serviceaccount: sealedsecrets-importer-rw
     labels:
@@ -164,7 +164,7 @@ functions:
   pipeline-log:
     lang: go
     handler: ./pipeline-log
-    image: functions/pipeline-log:0.3.4
+    image: functions/pipeline-log:0.3.5
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -183,7 +183,7 @@ functions:
   list-functions:
     lang: go
     handler: ./list-functions
-    image: functions/list-functions:0.4.8
+    image: functions/list-functions:0.5.1
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -220,7 +220,7 @@ functions:
   metrics:
     lang: go
     handler: ./system-metrics
-    image: functions/system-metrics:0.1.1
+    image: functions/system-metrics:0.2.0
     labels:
       com.openfaas.scale.zero: false
     environment_file:
@@ -231,7 +231,7 @@ functions:
   function-logs:
     lang: go
     handler: ./function-logs
-    image: functions/function-logs:0.1.1
+    image: functions/function-logs:0.2.0
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
