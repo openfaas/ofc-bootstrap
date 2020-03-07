@@ -65,7 +65,7 @@ func createGitHubAppE(command *cobra.Command, _ []string) error {
 		"GitHubEvent": fmt.Sprintf("%s://system.%s/github-event", scheme, rootDomain),
 	}
 
-	if _, err := os.Stat(path.Join("./pkg/github", "index.html")); err != nil {
+	if _, err := os.Stat(path.Join("./templates", "github", "index.html")); err != nil {
 		return fmt.Errorf(`cannot find template "index.html", run this command from the ofc-bootstrap repository`)
 	}
 

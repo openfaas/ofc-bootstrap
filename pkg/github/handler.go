@@ -40,7 +40,7 @@ func MakeHandler(inputMap map[string]string, resCh chan AppResult) func(w http.R
 		if r.URL.Path == "/" || r.URL.Path == "" {
 
 			var outBuffer bytes.Buffer
-			tmpl, err := template.ParseFiles(path.Join("./pkg/github", "index.html"))
+			tmpl, err := template.ParseFiles(path.Join("./templates/github", "index.html"))
 			err = tmpl.Execute(&outBuffer, &inputMap)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
