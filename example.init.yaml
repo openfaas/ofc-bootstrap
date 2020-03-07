@@ -226,7 +226,6 @@ ingress: loadbalancer
 ### If needed edit the git-tar Deployment after running the tool
 deployment:
   custom_templates:
-    - "https://github.com/openfaas-incubator/node8-express-template.git"
     - "https://github.com/openfaas-incubator/golang-http-template.git"
     - "https://github.com/openfaas-incubator/node10-express-template.git"
     - "https://github.com/openfaas-incubator/python-flask-template.git"
