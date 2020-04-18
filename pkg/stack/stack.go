@@ -34,6 +34,7 @@ type authConfig struct {
 	OAuthProvider         string
 	OAuthProviderBaseURL  string
 	OFCustomersSecretPath string
+	TLSEnabled			  bool
 }
 
 type builderConfig struct {
@@ -118,6 +119,7 @@ func Apply(plan types.Plan) error {
 			OAuthProvider:         plan.SCM,
 			OAuthProviderBaseURL:  plan.OAuth.OAuthProviderBaseURL,
 			OFCustomersSecretPath: ofCustomersSecretPath,
+			TLSEnabled: plan.TLS,
 		}); ofAuthDepErr != nil {
 			return ofAuthDepErr
 		}

@@ -80,6 +80,11 @@ spec:
           - name: write_debug
             value: "false"
 
+          # Config for setting the cookie to "secure", set this to true for HTTPS only OAuth
+          - name: secure_cookie
+            value: "{{.tls}}"
+
+
         ports:
         - containerPort: 8080
           protocol: TCP
