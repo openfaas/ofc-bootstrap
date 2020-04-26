@@ -72,17 +72,14 @@ spec:
             value: "{{.Scheme}}://auth.system.{{.RootDomain}}"
           - name: cookie_root_domain
             value: ".system.{{.RootDomain}}"
-
 # This is a default and can be overridden
           - name: customers_url
             value: "{{.CustomersURL}}"
-
           - name: write_debug
             value: "false"
-
           # Config for setting the cookie to "secure", set this to true for HTTPS only OAuth
           - name: secure_cookie
-            value: "{{.tls}}"
+            value: "{{.TLSEnabled}}"
 
 
         ports:
