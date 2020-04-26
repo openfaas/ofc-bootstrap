@@ -10,3 +10,5 @@ environment:
   pretty_url: {{.Scheme}}://user.{{.RootDomain}}/function
   # Comment out if not using public pretty-URL
   query_pretty_url: 'true'
+  # Cookie root domain is needed to remove OAuth tokens when using OAuth, it doesnt matter if its set when not using OAuth
+  cookie_root_domain: '.system.{{.RootDomain}}'
