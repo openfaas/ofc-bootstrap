@@ -24,6 +24,7 @@ type gatewayConfig struct {
 	EnableDockerfileLang bool
 	BuildBranch          string
 	CustomersSecretPath  string
+	GatewayFunctionConfig       types.GatewayFunctionConfig
 }
 
 type authConfig struct {
@@ -72,6 +73,7 @@ func Apply(plan types.Plan) error {
 		CustomTemplates:      plan.Deployment.FormatCustomTemplates(),
 		EnableDockerfileLang: plan.EnableDockerfileLang,
 		BuildBranch:          plan.BuildBranch,
+		GatewayFunctionConfig:       plan.GatewayFunctionConfig,
 	}); gwConfigErr != nil {
 		return gwConfigErr
 	}

@@ -27,9 +27,9 @@ environment:
   s3_bucket: {{.S3.Bucket}}
 
 # Function policy
-  readonly_root_filesystem: true
-  scaling_min_limit: 1
-  scaling_max_limit: 4
+  readonly_root_filesystem: {{.GatewayFunctionConfig.RORootFS}}
+  scaling_min_limit: {{.GatewayFunctionConfig.ScalingMin}}
+  scaling_max_limit: {{.GatewayFunctionConfig.ScalingMax}}
   prometheus_host: prometheus.openfaas
   prometheus_port: 9090
   metrics_window: 60m

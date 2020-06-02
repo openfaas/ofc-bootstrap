@@ -321,6 +321,12 @@ scale_to_zero: false
 ### Use the ingress address for the gateway or the external IP instead.
 network_policies: false
 
+## Gateway Function settings
+gateway:
+  read_only_root_filesystem: true
+  scaling_min: 1
+  scaling_max: 4
+
 ## Branch that OpenFaaS Cloud will build and deploy
 ## You should change this if you want a different branch to be built and deployed instead of master
 build_branch: master

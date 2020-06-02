@@ -44,32 +44,40 @@ const (
 )
 
 type Plan struct {
-	Features             []string                 `yaml:"features,omitempty"`
-	Orchestration        string                   `yaml:"orchestration,omitempty"`
-	Secrets              []KeyValueNamespaceTuple `yaml:"secrets,omitempty"`
-	RootDomain           string                   `yaml:"root_domain,omitempty"`
-	Registry             string                   `yaml:"registry,omitempty"`
-	CustomersURL         string                   `yaml:"customers_url,omitempty"`
-	SCM                  string                   `yaml:"scm,omitempty"`
-	Github               Github                   `yaml:"github,omitempty"`
-	Gitlab               Gitlab                   `yaml:"gitlab,omitempty"`
-	TLS                  bool                     `yaml:"tls,omitempty"`
-	OAuth                OAuth                    `yaml:"oauth,omitempty"`
-	S3                   S3                       `yaml:"s3,omitempty"`
-	EnableOAuth          bool                     `yaml:"enable_oauth,omitempty"`
-	TLSConfig            TLSConfig                `yaml:"tls_config,omitempty"`
-	Slack                Slack                    `yaml:"slack,omitempty"`
-	Ingress              string                   `yaml:"ingress,omitempty"`
-	Deployment           Deployment               `yaml:"deployment,omitempty"`
-	EnableDockerfileLang bool                     `yaml:"enable_dockerfile_lang,omitempty"`
-	ScaleToZero          bool                     `yaml:"scale_to_zero,omitempty"`
-	OpenFaaSCloudVersion string                   `yaml:"openfaas_cloud_version,omitempty"`
-	NetworkPolicies      bool                     `yaml:"network_policies,omitempty"`
-	BuildBranch          string                   `yaml:"build_branch,omitempty"`
-	EnableECR            bool                     `yaml:"enable_ecr,omitempty"`
-	ECRConfig            ECRConfig                `yaml:"ecr_config,omitempty"`
-	CustomersSecret      bool                     `yaml:"customers_secret,omitempty"`
-	IngressOperator      bool                     `yaml:"enable_ingress_operator,omitempty"`
+	Features              []string                 `yaml:"features,omitempty"`
+	Orchestration         string                   `yaml:"orchestration,omitempty"`
+	Secrets               []KeyValueNamespaceTuple `yaml:"secrets,omitempty"`
+	RootDomain            string                   `yaml:"root_domain,omitempty"`
+	Registry              string                   `yaml:"registry,omitempty"`
+	CustomersURL          string                   `yaml:"customers_url,omitempty"`
+	SCM                   string                   `yaml:"scm,omitempty"`
+	Github                Github                   `yaml:"github,omitempty"`
+	Gitlab                Gitlab                   `yaml:"gitlab,omitempty"`
+	TLS                   bool                     `yaml:"tls,omitempty"`
+	OAuth                 OAuth                    `yaml:"oauth,omitempty"`
+	S3                    S3                       `yaml:"s3,omitempty"`
+	EnableOAuth           bool                     `yaml:"enable_oauth,omitempty"`
+	TLSConfig             TLSConfig                `yaml:"tls_config,omitempty"`
+	Slack                 Slack                    `yaml:"slack,omitempty"`
+	Ingress               string                   `yaml:"ingress,omitempty"`
+	Deployment            Deployment               `yaml:"deployment,omitempty"`
+	EnableDockerfileLang  bool                     `yaml:"enable_dockerfile_lang,omitempty"`
+	ScaleToZero           bool                     `yaml:"scale_to_zero,omitempty"`
+	OpenFaaSCloudVersion  string                   `yaml:"openfaas_cloud_version,omitempty"`
+	NetworkPolicies       bool                     `yaml:"network_policies,omitempty"`
+	BuildBranch           string                   `yaml:"build_branch,omitempty"`
+	EnableECR             bool                     `yaml:"enable_ecr,omitempty"`
+	ECRConfig             ECRConfig                `yaml:"ecr_config,omitempty"`
+	CustomersSecret       bool                     `yaml:"customers_secret,omitempty"`
+	IngressOperator       bool                     `yaml:"enable_ingress_operator,omitempty"`
+	GatewayFunctionConfig GatewayFunctionConfig    `yaml:"gateway_config,omitempty"`
+}
+
+// GatewayFunctionConfig is the settings for the GatewayFunctionConfig
+type GatewayFunctionConfig struct {
+	RORootFS   bool `yaml:"read_only_root_filesystem"`
+	ScalingMin int  `yaml:"scaling_min"`
+	ScalingMax int  `yaml:"scaling_max"`
 }
 
 // Deployment is the deployment section of YAML concerning
