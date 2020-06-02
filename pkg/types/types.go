@@ -69,6 +69,7 @@ type Plan struct {
 	EnableECR            bool                     `yaml:"enable_ecr,omitempty"`
 	ECRConfig            ECRConfig                `yaml:"ecr_config,omitempty"`
 	CustomersSecret      bool                     `yaml:"customers_secret,omitempty"`
+	IngressOperator      bool                     `yaml:"enable_ingress_operator,omitempty"`
 }
 
 // Deployment is the deployment section of YAML concerning

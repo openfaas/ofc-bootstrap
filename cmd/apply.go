@@ -323,7 +323,7 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		log.Println(functionAuthErr.Error())
 	}
 
-	ofErr := installOpenfaas(plan.ScaleToZero, additionalPaths)
+	ofErr := installOpenfaas(plan.ScaleToZero, plan.IngressOperator, additionalPaths)
 	if ofErr != nil {
 		log.Println(ofErr)
 	}
@@ -501,7 +501,7 @@ func installSealedSecrets() error {
 	return nil
 }
 
-func installOpenfaas(scaleToZero bool, additionalPaths []string) error {
+func installOpenfaas(scaleToZero, ingressOperator bool, additionalPaths []string) error {
 	log.Println("Creating OpenFaaS")
 
 	task := execute.ExecTask{
@@ -509,6 +509,7 @@ func installOpenfaas(scaleToZero bool, additionalPaths []string) error {
 		Shell:   true,
 		Env: []string{
 			fmt.Sprintf("FAAS_IDLER_DRY_RUN=%v", strconv.FormatBool(!scaleToZero)),
+			fmt.Sprintf("INSTALL_INGRESS_OPERATOR=%v", strconv.FormatBool(ingressOperator)),
 		},
 		StreamStdio: true,
 	}

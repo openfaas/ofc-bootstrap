@@ -24,3 +24,6 @@ static:
 dist:
 	./build_redist.sh
 
+fmt:
+	go fmt ./...
+
