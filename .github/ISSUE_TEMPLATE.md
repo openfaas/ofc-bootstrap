@@ -26,16 +26,23 @@
 
 ## Your Environment
 <!--- Include as many relevant details about the environment you experienced the bug in -->
+* Operating System and version (e.g. Linux, Windows, MacOS):
+
 * `faas-cli version` ( full output ):
 
-* Docker version `docker version` (e.g. Docker 17.0.05 ):
+* `ofc-bootstrap version` ( full output ):
 
 * Kubernetes version `kubectl version`:
 
-* Are you using faas-netes or the Operator?
-
-* Operating System and version (e.g. Linux, Windows, MacOS):
+* What kind of Kubernetes service or distribution are you using?
 
 * Link to your project or a code example to reproduce issue:
 
-* Please also follow the [troubleshooting guide](https://github.com/openfaas/faas/blob/master/guide/troubleshooting.md) and paste in any other diagnostic information you have:
+* Please also follow the [OpenFaaS Cloud self-hosted troubleshooting guide](https://docs.openfaas.com/openfaas-cloud/self-hosted/troubleshoot/) and paste in any other diagnostic information you have:
+
+
+* init.yaml (obscure your secrets, but leave domains in place):
+
+```yaml
+
+```
