@@ -326,7 +326,7 @@ network_policies: false
 build_branch: master
 
 ## This setting, if true, will install the openfaas ingress-operator using the openfaas-fn namespace
-for finding functions, creating Ingress records in the openfaas namespace
+## for finding functions, creating Ingress records in the openfaas namespace
 enable_ingress_operator: false
 
 ## Version of OpenFaaS Cloud from https://github.com/openfaas/openfaas-cloud/releases/
