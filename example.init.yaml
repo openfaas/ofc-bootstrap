@@ -325,8 +325,11 @@ network_policies: false
 ## You should change this if you want a different branch to be built and deployed instead of master
 build_branch: master
 
-## Version of OpenFaaS Cloud from https://github.com/openfaas/openfaas-cloud/releases/
-openfaas_cloud_version: 0.13.10
-
-## This setting, if true, will install the openfaas ingress-operator
+## This setting, if true, will install the openfaas ingress-operator using the openfaas-fn namespace
+for finding functions, creating Ingress records in the openfaas namespace
 enable_ingress_operator: false
+
+## Version of OpenFaaS Cloud from https://github.com/openfaas/openfaas-cloud/releases/
+### Usage: release tag, a SHA or branch name
+openfaas_cloud_version: 0.14.0
+
