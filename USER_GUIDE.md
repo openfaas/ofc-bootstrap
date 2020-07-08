@@ -561,7 +561,7 @@ Now update the staging references to "prod":
 
 ```sh
 sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-ingress-ingress-wildcard.yaml
-sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-ingress-ingress.yaml
+sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-ingress-ingress-auth.yaml
 sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-tls-auth-domain-cert.yml
 sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-tls-wildcard-domain-cert.yml
 ```
@@ -570,7 +570,7 @@ Now create the new ingress and certificates:
 
 ```sh
 kubectl apply -f ./tmp/generated-ingress-ingress-wildcard.yaml
-kubectl apply -f ./tmp/generated-ingress-ingress.yaml
+kubectl apply -f ./tmp/generated-ingress-ingress-auth.yaml
 kubectl apply -f ./tmp/generated-tls-auth-domain-cert.yml
 kubectl apply -f ./tmp/generated-tls-wildcard-domain-cert.yml
 ```
