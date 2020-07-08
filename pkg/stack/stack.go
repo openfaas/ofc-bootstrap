@@ -15,16 +15,16 @@ type gitlabConfig struct {
 }
 
 type gatewayConfig struct {
-	Registry             string
-	RootDomain           string
-	CustomersURL         string
-	Scheme               string
-	S3                   types.S3
-	CustomTemplates      string
-	EnableDockerfileLang bool
-	BuildBranch          string
-	CustomersSecretPath  string
-	GatewayFunctionConfig       types.GatewayFunctionConfig
+	Registry              string
+	RootDomain            string
+	CustomersURL          string
+	Scheme                string
+	S3                    types.S3
+	CustomTemplates       string
+	EnableDockerfileLang  bool
+	BuildBranch           string
+	CustomersSecretPath   string
+	GatewayFunctionConfig types.GatewayFunctionConfig
 }
 
 type authConfig struct {
@@ -65,15 +65,15 @@ func Apply(plan types.Plan) error {
 	}
 
 	if gwConfigErr := generateTemplate("gateway_config", plan, gatewayConfig{
-		Registry:             plan.Registry,
-		RootDomain:           plan.RootDomain,
-		CustomersURL:         plan.CustomersURL,
-		Scheme:               scheme,
-		S3:                   plan.S3,
-		CustomTemplates:      plan.Deployment.FormatCustomTemplates(),
-		EnableDockerfileLang: plan.EnableDockerfileLang,
-		BuildBranch:          plan.BuildBranch,
-		GatewayFunctionConfig:       plan.GatewayFunctionConfig,
+		Registry:              plan.Registry,
+		RootDomain:            plan.RootDomain,
+		CustomersURL:          plan.CustomersURL,
+		Scheme:                scheme,
+		S3:                    plan.S3,
+		CustomTemplates:       plan.Deployment.FormatCustomTemplates(),
+		EnableDockerfileLang:  plan.EnableDockerfileLang,
+		BuildBranch:           plan.BuildBranch,
+		GatewayFunctionConfig: plan.GatewayFunctionConfig,
 	}); gwConfigErr != nil {
 		return gwConfigErr
 	}
