@@ -14,10 +14,10 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/alexellis/arkade/pkg/helm"
 	execute "github.com/alexellis/go-execute/pkg/v1"
 	"github.com/alexellis/k3sup/pkg/config"
 	"github.com/alexellis/k3sup/pkg/env"
-	"github.com/alexellis/k3sup/pkg/helm"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/ingress"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/stack"
 	"github.com/openfaas-incubator/ofc-bootstrap/pkg/tls"
@@ -109,7 +109,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 		return fmt.Errorf("error while retreiving features: %s", featuresErr.Error())
 	}
 
-	const helm3Version = "v3.0.2"
+	const helm3Version = "v3.1.2"
 	os.Setenv("HELM_VERSION", helm3Version)
 
 	userPath, err := config.InitUserDir()
@@ -278,7 +278,17 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		return nsErr
 	}
 
-	if err := helmRepoAddStable(); err != nil {
+	if err := helmRepoAdd("stable", "https://kubernetes-charts.storage.googleapis.com"); err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
+	if err := helmRepoAdd("ingress-nginx", "https://kubernetes.github.io/ingress-nginx"); err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
+	if err := helmRepoAdd("minio", "https://helm.min.io/"); err != nil {
 		log.Println(err.Error())
 		return err
 	}
@@ -387,12 +397,33 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 	return nil
 }
 
+func helmRepoAdd(name, repo string) error {
+	log.Printf("Adding %s helm repo\n", name)
+
+	task := execute.ExecTask{
+		Command:     "helm",
+		Args:        []string{"repo", "add", name, repo},
+		StreamStdio: true,
+	}
+
+	taskRes, taskErr := task.Execute()
+
+	if taskErr != nil {
+		return taskErr
+	}
+
+	if len(taskRes.Stderr) > 0 {
+		log.Println(taskRes.Stderr)
+	}
+
+	return nil
+}
+
 func helmRepoAddStable() error {
 	log.Println("Adding stable helm repo")
 
 	task := execute.ExecTask{
 		Command:     "helm",
-		Args:        []string{"repo", "add", "stable", "https://kubernetes-charts.storage.googleapis.com"},
 		StreamStdio: true,
 	}
 
