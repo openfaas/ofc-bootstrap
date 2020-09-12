@@ -183,7 +183,7 @@ If you are using Dockerhub you only need to supply your `--username` and `--pass
 ```sh
 
 ofc-bootstrap registry-login --username <your-registry-username> --password-stdin
-(the enter your password and hit return)
+(then enter your password and use ctrl+d to finish input)
 ```
 
 You could also have you password in a file, or environment variable and echo/cat this instead of entering interactively

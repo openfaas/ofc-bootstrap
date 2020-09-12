@@ -26,7 +26,7 @@ func init() {
 	registryLoginCommand.Flags().String("server", "https://index.docker.io/v1/", "The server URL, it is defaulted to the docker registry")
 	registryLoginCommand.Flags().String("username", "", "The Registry Username")
 	registryLoginCommand.Flags().String("password", "", "The registry password")
-	registryLoginCommand.Flags().BoolP("password-stdin", "s", false, "Reads the gateway password from stdin")
+	registryLoginCommand.Flags().BoolP("password-stdin", "s", false, "Reads the docker password from stdin, either pipe to the command or remember to press ctrl+d when reading interactively")
 
 	registryLoginCommand.Flags().Bool("ecr", false, "If we are using ECR we need a different set of flags, so if this is set, we need to set --username and --password")
 	registryLoginCommand.Flags().String("account-id", "", "Your AWS Account id")
