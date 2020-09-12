@@ -23,7 +23,7 @@ var registryLoginCommand = &cobra.Command{
 func init() {
 	rootCommand.AddCommand(registryLoginCommand)
 
-	registryLoginCommand.Flags().String("server", "https://index.docker.io/v1/", "The server URL, it is defaulted to the docker registry")
+	registryLoginCommand.Flags().String("server", "https://index.docker.io/v2/", "The server URL, it is defaulted to the docker registry")
 	registryLoginCommand.Flags().String("username", "", "The Registry Username")
 	registryLoginCommand.Flags().String("password", "", "The registry password")
 	registryLoginCommand.Flags().BoolP("password-stdin", "s", false, "Reads the gateway password from stdin")
