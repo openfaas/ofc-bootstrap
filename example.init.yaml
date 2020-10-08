@@ -331,5 +331,5 @@ enable_ingress_operator: false
 
 ## Version of OpenFaaS Cloud from https://github.com/openfaas/openfaas-cloud/releases/
 ### Usage: release tag, a SHA or branch name
-openfaas_cloud_version: 0.14.0
+openfaas_cloud_version: 0.14.2
 

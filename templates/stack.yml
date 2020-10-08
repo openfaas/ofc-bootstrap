@@ -7,7 +7,7 @@ functions:
   system-github-event:
     lang: go
     handler: ./github-event
-    image: functions/github-event:0.9.1
+    image: functions/github-event:0.9.2
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -29,7 +29,7 @@ functions:
   github-push:
     lang: go
     handler: ./github-push
-    image: functions/github-push:0.7.4
+    image: functions/github-push:0.7.5
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -51,7 +51,7 @@ functions:
   git-tar:
     lang: dockerfile
     handler: ./git-tar
-    image: functions/of-git-tar:0.17.1
+    image: functions/of-git-tar:0.19.0
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -77,7 +77,7 @@ functions:
   buildshiprun:
     lang: go
     handler: ./buildshiprun
-    image: functions/of-buildshiprun:0.13.1
+    image: functions/of-buildshiprun:0.14.0
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -101,7 +101,7 @@ functions:
   garbage-collect:
     lang: go
     handler: ./garbage-collect
-    image: functions/garbage-collect:0.4.6
+    image: functions/garbage-collect:0.4.7
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -122,7 +122,7 @@ functions:
   github-status:
     lang: go
     handler: ./github-status
-    image: functions/github-status:0.4.1
+    image: functions/github-status:0.5.0
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -183,7 +183,7 @@ functions:
   list-functions:
     lang: go
     handler: ./list-functions
-    image: functions/list-functions:0.5.1
+    image: functions/list-functions:0.6.0
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -203,6 +203,7 @@ functions:
     image: functions/audit-event:0.1.2
     labels:
       openfaas-cloud: "1"
+      role: openfaas-system
       com.openfaas.scale.zero: false
     environment_file:
       - slack.yml
@@ -211,6 +212,7 @@ functions:
     skip_build: true
     image: functions/alpine:latest
     labels:
+      openfaas-cloud: "1"
       com.openfaas.scale.zero: false
     fprocess: cat
     environment:
@@ -219,9 +221,11 @@ functions:
 
   metrics:
     lang: go
-    handler: ./system-metrics
+    handler: ./metrics
     image: functions/system-metrics:0.2.0
     labels:
+      openfaas-cloud: "1"
+      role: openfaas-system
       com.openfaas.scale.zero: false
     environment_file:
       - gateway_config.yml
