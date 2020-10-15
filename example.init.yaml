@@ -333,3 +333,7 @@ enable_ingress_operator: false
 ### Usage: release tag, a SHA or branch name
 openfaas_cloud_version: 0.14.2
 
+## Settings for the ingress records
+ingress_config:
+  max_connections: 20
+  requests_per_minute: 600
