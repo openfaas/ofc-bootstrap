@@ -1,0 +1,36 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+  namespace: openfaas
+spec:
+  acme:
+    email: "{{.Email}}"
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - dns01:
+        {{.DNSService}}:
+          {{ if eq .DNSService "clouddns" }}
+          project: "{{.ProjectID}}"
+          serviceAccountSecretRef:
+            name: "{{.DNSService}}-service-account"
+            key: service-account.json
+          {{else if eq .DNSService "route53" }}
+          region: {{.Region}}
+          # optional if ambient credentials are available; see ambient credentials documentation
+          accessKeyID: {{.AccessKeyID}}
+          secretAccessKeySecretRef:
+            name: "{{.DNSService}}-credentials-secret"
+            key: secret-access-key
+          {{else if eq .DNSService "cloudflare" }}
+          email: {{.Email}}
+          apiKeySecretRef:
+            name: cloudflare-api-key-secret
+            key: api-key
+          {{else if eq .DNSService "digitalocean" }}
+            tokenSecretRef:
+              name: digitalocean-dns
+              key: access-token
+          {{ end }}

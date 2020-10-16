@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edge-auth
+  namespace: openfaas
+  labels:
+    app: edge-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edge-auth
+  template:
+    metadata:
+      annotations:
+        prometheus.io.scrape: "false"
+      labels:
+        app: edge-auth
+    spec:
+      volumes:
+        - name: jwt-private-key
+          secret:
+            secretName: jwt-private-key
+        - name: jwt-public-key
+          secret:
+            secretName: jwt-public-key
+        - name: of-client-secret
+          secret:
+            secretName: of-client-secret
+        - name: of-customers
+          secret:
+            secretName: of-customers
+      containers:
+      - name: edge-auth
+        image: openfaas/edge-auth:0.7.1
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 2
+          periodSeconds: 10
+          timeoutSeconds: 2
+        env:
+          - name: port
+            value: "8080"
+          - name: oauth_client_secret_path
+            value: "/var/secrets/of-client-secret/of-client-secret"
+          - name: public_key_path
+            value: "/var/secrets/public/key.pub"
+          - name: private_key_path
+            value: "/var/secrets/private/key"
+          - name: customers_path
+            value: "{{.OFCustomersSecretPath}}"
+# Update for your configuration:
+          - name: client_secret # this can also be provided via a secret named of-client-secret
+            value: ""
+          - name: client_id
+            value: "{{.ClientId}}"
+          - name: oauth_provider_base_url
+            value: "{{.OAuthProviderBaseURL}}"
+          - name: oauth_provider
+            value: "{{.OAuthProvider}}"
+# Local test config
+          # - name: external_redirect_domain
+          #   value: "http://auth.system.gw.io:8081"
+          # - name: cookie_root_domain
+          #   value: ".system.gw.io"
+
+# Community cluster config:
+          - name: external_redirect_domain
+            value: "{{.Scheme}}://auth.system.{{.RootDomain}}"
+          - name: cookie_root_domain
+            value: ".system.{{.RootDomain}}"
+# This is a default and can be overridden
+          - name: customers_url
+            value: "{{.CustomersURL}}"
+          - name: write_debug
+            value: "false"
+          # Config for setting the cookie to "secure", set this to true for HTTPS only OAuth
+          - name: secure_cookie
+            value: "{{.TLSEnabled}}"
+
+
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        volumeMounts:
+        - name: jwt-private-key
+          readOnly: true
+          mountPath: "/var/secrets/private/"
+        - name: jwt-public-key
+          readOnly: true
+          mountPath: "/var/secrets/public"
+        - name: of-client-secret
+          readOnly: true
+          mountPath: "/var/secrets/of-client-secret"
+        - name: of-customers
+          readOnly: true
+          mountPath: "/var/secrets/of-customers"

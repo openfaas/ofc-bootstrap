@@ -34,6 +34,7 @@ func init() {
 	applyCmd.Flags().Bool("skip-minio", false, "Skip Minio installation")
 	applyCmd.Flags().Bool("skip-create-secrets", false, "Skip creating secrets")
 	applyCmd.Flags().Bool("print-plan", false, "Print merged plan and exit")
+	applyCmd.Flags().Bool("update-cloud", false, "set to true to only upgrade OFC components")
 }
 
 var applyCmd = &cobra.Command{
@@ -158,15 +159,28 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	os.MkdirAll("tmp", 0700)
 	ioutil.WriteFile("tmp/go.mod", []byte("\n"), 0700)
 
-	fmt.Fprint(os.Stdout, "Validating registry credentials file")
+	fmt.Fprint(os.Stdout, "Validating registry credentials file\n")
 
 	registryAuthErr := validateRegistryAuth(plan.Registry, plan.Secrets, plan.EnableECR)
 	if registryAuthErr != nil {
 		fmt.Fprint(os.Stderr, "error with registry credentials file. Please ensure it has been created correctly")
 	}
 
+	cloudOnly, err := command.Flags().GetBool("update-cloud")
+	if err != nil {
+		return err
+	}
+
+	if cloudOnly {
+		err := cloudComponentsInstall(plan)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
 	start := time.Now()
-	err = process(plan, prefs, additionalPaths)
+	err = process(plan, prefs)
 	done := time.Since(start)
 
 	if err != nil {
@@ -264,7 +278,7 @@ func filesExists(files []types.FileSecret) error {
 	return nil
 }
 
-func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string) error {
+func process(plan types.Plan, prefs InstallPreferences) error {
 
 	if plan.OpenFaaSCloudVersion == "" {
 		plan.OpenFaaSCloudVersion = "master"
@@ -297,7 +311,7 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		return err
 	}
 
-	installIngressErr := installIngressController(plan.Ingress, additionalPaths)
+	installIngressErr := installIngressController(plan.Ingress)
 	if installIngressErr != nil {
 		log.Println(installIngressErr.Error())
 		return installIngressErr
@@ -332,7 +346,7 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		log.Println(functionAuthErr.Error())
 	}
 
-	ofErr := installOpenfaas(plan.ScaleToZero, plan.IngressOperator, additionalPaths)
+	ofErr := installOpenfaas(plan.ScaleToZero, plan.IngressOperator)
 	if ofErr != nil {
 		log.Println(ofErr)
 	}
@@ -372,7 +386,16 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		}
 	}
 
-	cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion, additionalPaths)
+	err := cloudComponentsInstall(plan)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func cloudComponentsInstall(plan types.Plan) error {
+	cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion)
 	if cloneErr != nil {
 		return cloneErr
 	}
@@ -382,11 +405,10 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		return ofcValuesErr
 	}
 
-	deployErr := deployCloudComponents(plan, additionalPaths)
+	deployErr := deployCloudComponents(plan)
 	if deployErr != nil {
 		return deployErr
 	}
-
 	return nil
 }
 
@@ -431,13 +453,10 @@ func writeOFCValuesYaml(plan types.Plan) error {
 		ofcOptions.TLS.Enabled = false
 	}
 
-	if plan.CustomersSecret {
-		ofcOptions.Customers.CustomersSecret = true
-	} else {
-		if len(plan.CustomersURL) == 0 {
-			return errors.New("unable to continue without a customers secret or url")
-		}
-		ofcOptions.Customers.URL = plan.CustomersURL
+	ofcOptions.Customers.CustomersSecret = plan.CustomersSecret
+	ofcOptions.Customers.URL = plan.CustomersURL
+	if len(plan.CustomersURL) == 0 && !plan.CustomersSecret {
+		return errors.New("unable to continue without a customers secret or url")
 	}
 
 	ofcOptions.Global.EnableECR = plan.EnableECR
@@ -524,7 +543,7 @@ func createFunctionsAuth() error {
 	return nil
 }
 
-func installIngressController(ingress string, additionalPaths []string) error {
+func installIngressController(ingress string) error {
 	log.Println("Creating Ingress Controller")
 
 	var env []string
@@ -572,7 +591,7 @@ func installSealedSecrets() error {
 	return nil
 }
 
-func installOpenfaas(scaleToZero, ingressOperator bool, additionalPaths []string) error {
+func installOpenfaas(scaleToZero, ingressOperator bool) error {
 	log.Println("Creating OpenFaaS")
 
 	task := execute.ExecTask{
@@ -725,7 +744,7 @@ func certManagerReady() bool {
 	return res.Stdout == "True"
 }
 
-func cloneCloudComponents(tag string, additionalPaths []string) error {
+func cloneCloudComponents(tag string) error {
 	task := execute.ExecTask{
 		Command: "./scripts/clone-cloud-components.sh",
 		Shell:   true,
@@ -735,17 +754,15 @@ func cloneCloudComponents(tag string, additionalPaths []string) error {
 		StreamStdio: true,
 	}
 
-	res, err := task.Execute()
+	_, err := task.Execute()
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(res)
-
 	return nil
 }
 
-func deployCloudComponents(plan types.Plan, additionalPaths []string) error {
+func deployCloudComponents(plan types.Plan) error {
 
 	authEnv := ""
 	if plan.EnableOAuth {

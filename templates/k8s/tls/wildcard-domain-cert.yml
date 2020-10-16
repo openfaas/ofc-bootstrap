@@ -1,0 +1,14 @@
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: wildcard-{{.RootDomain}}
+  namespace: openfaas
+spec:
+  secretName: wildcard-{{.RootDomain}}-cert
+  issuerRef:
+    name: letsencrypt-{{.IssuerType}}
+    kind: ClusterIssuer
+  commonName: '*.{{.RootDomain}}'
+  dnsNames:
+  - '*.{{.RootDomain}}'
