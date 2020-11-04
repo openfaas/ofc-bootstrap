@@ -27,3 +27,8 @@ dist:
 fmt:
 	go fmt ./...
 
+.PHONY: hash
+hash:
+	rm -rf bin/*.sha256 && ./hack/hashgen.sh
+
+all: fmt build install-ci ci static dist hash
