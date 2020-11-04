@@ -4,8 +4,7 @@
 
 How? By automating the whole installation of OpenFaaS Cloud on Kubernetes into a single command and CLI.
 
-[![Build Status](https://travis-ci.com/openfaas/ofc-bootstrap.svg?branch=master)](https://travis-ci.com/openfaas/ofc-bootstrap)
-
+[![Build Status](https://github.com/openfaas/ofc-bootstrap/workflows/build/badge.svg?branch=master)](https://github.com/openfaas/ofc-bootstrap/actions)
 ### What is this and who is it for?
 
 You can use this tool to configure a Kubernetes cluster with [OpenFaaS Cloud](https://github.com/openfaas/openfaas-cloud). You just need to complete all the pre-requisites and fill out your `init.yaml` file then run the tool. It automates several pages of manual steps using Golang templates and bash scripts so that you can get your own [OpenFaaS Cloud](https://github.com/openfaas/openfaas-cloud) in around 1.5 minutes.
