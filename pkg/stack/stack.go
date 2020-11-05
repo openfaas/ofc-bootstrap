@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
+	"github.com/openfaas/ofc-bootstrap/pkg/types"
 )
 
 type gitlabConfig struct {

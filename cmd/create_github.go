@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/inlets/inletsctl/pkg/names"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/github"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
+	"github.com/openfaas/ofc-bootstrap/pkg/github"
+	"github.com/openfaas/ofc-bootstrap/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	yaml "gopkg.in/yaml.v2"

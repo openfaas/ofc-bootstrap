@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/openfaas-incubator/ofc-bootstrap/cmd"
+	"github.com/openfaas/ofc-bootstrap/cmd"
 
-	"github.com/openfaas-incubator/ofc-bootstrap/version"
+	"github.com/openfaas/ofc-bootstrap/version"
 )
 
 func main() {

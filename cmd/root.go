@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/morikuni/aec"
-	"github.com/openfaas-incubator/ofc-bootstrap/version"
+	"github.com/openfaas/ofc-bootstrap/version"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +20,7 @@ var (
 )
 
 // WelcomeMessage to introduce ofc-bootstrap
-const WelcomeMessage = "Welcome to ofc-bootstrap! Find out more at https://github.com/openfaas-incubator/ofc-bootstrap"
+const WelcomeMessage = "Welcome to ofc-bootstrap! Find out more at https://github.com/openfaas/ofc-bootstrap"
 
 func init() {
 	rootCommand.AddCommand(versionCmd)

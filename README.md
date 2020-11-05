@@ -4,7 +4,7 @@
 
 How? By automating the whole installation of OpenFaaS Cloud on Kubernetes into a single command and CLI.
 
-[![Build Status](https://travis-ci.com/openfaas-incubator/ofc-bootstrap.svg?branch=master)](https://travis-ci.com/openfaas-incubator/ofc-bootstrap)
+[![Build Status](https://travis-ci.com/openfaas/ofc-bootstrap.svg?branch=master)](https://travis-ci.com/openfaas/ofc-bootstrap)
 
 ### What is this and who is it for?
 

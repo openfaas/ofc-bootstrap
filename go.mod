@@ -1,4 +1,4 @@
-module github.com/openfaas-incubator/ofc-bootstrap
+module github.com/openfaas/ofc-bootstrap
 
 go 1.13
 

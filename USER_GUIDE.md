@@ -124,7 +124,7 @@ Now clone the GitHub repository, download the binary release and start customisi
 ```bash
 mkdir -p $GOPATH/src/github.com/openfaas-incubator
 cd $GOPATH/src/github.com/openfaas-incubator/
-git clone https://github.com/openfaas-incubator/ofc-bootstrap
+git clone https://github.com/openfaas/ofc-bootstrap
 ```
 
 * Download the latest `ofc-bootstrap` binary release from GitHub
@@ -133,17 +133,17 @@ Either run the following script, or follow the manual steps below.
 
 ```sh
 # Download and move to /usr/local/bin
-curl -sLSf https://raw.githubusercontent.com/openfaas-incubator/ofc-bootstrap/master/get.sh | \
+curl -sLSf https://raw.githubusercontent.com/openfaas/ofc-bootstrap/master/get.sh | \
  sudo sh
 
 # Or, download and move manually
-curl -sLSf https://raw.githubusercontent.com/openfaas-incubator/ofc-bootstrap/master/get.sh | \
+curl -sLSf https://raw.githubusercontent.com/openfaas/ofc-bootstrap/master/get.sh | \
  sh
 ```
 
 Manual steps:
 
-Download [ofc-boostrap](https://github.com/openfaas-incubator/ofc-bootstrap/releases) from the GitHub releases page and move it to `/usr/local/bin/`.
+Download [ofc-boostrap](https://github.com/openfaas/ofc-bootstrap/releases) from the GitHub releases page and move it to `/usr/local/bin/`.
 
 You may also need to run `chmod +x /usr/local/bin/ofc-bootstrap`.
 
@@ -405,7 +405,7 @@ The default behaviour is to enable policies. If you would like to remove the res
 If you are now ready, you can run the `ofc-bootstrap` tool:
 
 ```bash
-cd $GOPATH/src/github.com/openfaas-incubator/ofc-bootstrap
+cd $GOPATH/src/github.com/openfaas/ofc-bootstrap
 
 ofc-bootstrap apply --file init.yaml
 ```
