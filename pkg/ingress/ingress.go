@@ -9,7 +9,7 @@ import (
 	"os"
 
 	execute "github.com/alexellis/go-execute/pkg/v1"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
+	"github.com/openfaas/ofc-bootstrap/pkg/types"
 )
 
 type IngressTemplate struct {

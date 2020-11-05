@@ -18,12 +18,12 @@ import (
 	execute "github.com/alexellis/go-execute/pkg/v1"
 	"github.com/alexellis/k3sup/pkg/config"
 	"github.com/alexellis/k3sup/pkg/env"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/ingress"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/stack"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/tls"
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/validators"
+	"github.com/openfaas/ofc-bootstrap/pkg/ingress"
+	"github.com/openfaas/ofc-bootstrap/pkg/stack"
+	"github.com/openfaas/ofc-bootstrap/pkg/tls"
+	"github.com/openfaas/ofc-bootstrap/pkg/validators"
 
-	"github.com/openfaas-incubator/ofc-bootstrap/pkg/types"
+	"github.com/openfaas/ofc-bootstrap/pkg/types"
 	yaml "gopkg.in/yaml.v2"
 )
 
