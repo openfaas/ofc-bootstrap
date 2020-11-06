@@ -4,8 +4,6 @@ set -e
 
 export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 
-cd $GOPATH/src/github.com/openfaas/ofc-bootstrap
-
 # Fake the secrets from init.yaml
 mkdir -p ~/Downloads
 touch ~/Downloads/secret-access-key
