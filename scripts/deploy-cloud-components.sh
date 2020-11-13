@@ -72,12 +72,12 @@ faas-cli deploy
 if [ "$GITLAB" = "true" ] ; then
     cp ../generated-gitlab.yml ./gitlab.yml
     echo "Deploying gitlab functions..."
-    faas deploy -f ./gitlab.yml
+    faas-cli deploy -f ./gitlab.yml
 fi
 
 if [ "$ENABLE_AWS_ECR" = "true" ] ; then
     echo "Deploying AWS ECR functions (register-image)..."
-    faas deploy -f ./aws.yml
+    faas-cli deploy -f ./aws.yml
 fi
 
 cd ./dashboard
