@@ -278,7 +278,7 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		return nsErr
 	}
 
-	if err := helmRepoAdd("stable", "https://kubernetes-charts.storage.googleapis.com"); err != nil {
+	if err := helmRepoAdd("stable", "https://charts.helm.sh/stable"); err != nil {
 		log.Println(err.Error())
 		return err
 	}
