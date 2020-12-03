@@ -80,15 +80,9 @@ if [ "$ENABLE_AWS_ECR" = "true" ] ; then
     faas-cli deploy -f ./aws.yml
 fi
 
-cd ./dashboard
-faas-cli template pull
-faas-cli deploy
+TAG=0.14.4 faas-cli deploy -f ./dashboard/stack.yml
 
 sleep 2
-
-# This `ServiceAccount` needs to be patched in place so that the function can perform create / get and update on the SealedSecret CRD:
-#kubectl patch -n openfaas-fn deploy import-secrets -p '{"spec":{"template":{"spec":{"serviceAccountName":"sealedsecrets-importer-rw"}}}}'
-# This is now applied through an annotation in stack.yml
 
 # Close the kubectl port-forward
 kill %1
