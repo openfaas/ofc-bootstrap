@@ -7,7 +7,7 @@ functions:
   system-github-event:
     lang: go
     handler: ./github-event
-    image: functions/github-event:0.9.2
+    image: ghcr.io/${REPO:-openfaas}/ofc-github-event:0.14.4
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -29,7 +29,7 @@ functions:
   github-push:
     lang: go
     handler: ./github-push
-    image: functions/github-push:0.7.5
+    image: ghcr.io/${REPO:-openfaas}/ofc-github-push:0.14.4
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -51,7 +51,7 @@ functions:
   git-tar:
     lang: dockerfile
     handler: ./git-tar
-    image: functions/of-git-tar:0.19.0
+    image: ghcr.io/${REPO:-openfaas}/ofc-git-tar:0.14.4
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -77,7 +77,7 @@ functions:
   buildshiprun:
     lang: go
     handler: ./buildshiprun
-    image: functions/of-buildshiprun:0.14.0
+    image: ghcr.io/${REPO:-openfaas}/ofc-buildshiprun:0.14.4
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -101,7 +101,7 @@ functions:
   garbage-collect:
     lang: go
     handler: ./garbage-collect
-    image: functions/garbage-collect:0.4.7
+    image: ghcr.io/${REPO:-openfaas}/ofc-garbage-collect:0.14.4
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -122,7 +122,7 @@ functions:
   github-status:
     lang: go
     handler: ./github-status
-    image: functions/github-status:0.5.0
+    image: ghcr.io/${REPO:-openfaas}/ofc-github-status:0.14.4
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -144,7 +144,7 @@ functions:
   import-secrets:
     lang: go
     handler: ./import-secrets
-    image: functions/import-secrets:0.6.2
+    image: ghcr.io/${REPO:-openfaas}/ofc-import-secrets:0.14.4
     annotations:
       com.openfaas.serviceaccount: sealedsecrets-importer-rw
     labels:
@@ -164,7 +164,7 @@ functions:
   pipeline-log:
     lang: go
     handler: ./pipeline-log
-    image: functions/pipeline-log:0.3.5
+    image: ghcr.io/${REPO:-openfaas}/ofc-pipeline-log:0.14.4
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -182,8 +182,8 @@ functions:
 
   list-functions:
     lang: go
-    handler: ./list-functions
-    image: functions/list-functions:0.6.0
+    handler: ./list-ghcr.io/${REPO:-openfaas}
+    image: ghcr.io/${REPO:-openfaas}/ofc-list-functions:0.14.4
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -193,14 +193,14 @@ functions:
       read_debug: true
     environment_file:
       - gateway_config.yml
-    secrets:
+    secrets/auth.:
       - basic-auth-user
       - basic-auth-password
 
   audit-event:
     lang: go
     handler: ./audit-event
-    image: functions/audit-event:0.1.2
+    image: ghcr.io/${REPO:-openfaas}/ofc-audit-event:0.14.4
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -209,20 +209,25 @@ functions:
       - slack.yml
 
   echo:
-    skip_build: true
-    image: functions/alpine:latest
+    lang: go
+    handler: ./echo
+    image: ghcr.io/${REPO:-openfaas}/ofc-echo:0.14.4
     labels:
       openfaas-cloud: "1"
       com.openfaas.scale.zero: false
-    fprocess: cat
     environment:
       write_debug: true
       read_debug: true
+    limits:
+      memory: 128Mi
+    requests:
+      memory: 32Mi
+      cpu: 50m
 
   metrics:
     lang: go
     handler: ./metrics
-    image: functions/system-metrics:0.2.0
+    image: ghcr.io/${REPO:-openfaas}/ofc-system-metrics:0.14.4
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -235,7 +240,7 @@ functions:
   function-logs:
     lang: go
     handler: ./function-logs
-    image: functions/function-logs:0.2.0
+    image: ghcr.io/${REPO:-openfaas}/ofc-function-logs:0.14.4
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
