@@ -12,3 +12,11 @@ environment:
   query_pretty_url: 'true'
   # Cookie root domain is needed to remove OAuth tokens when using OAuth, it doesnt matter if its set when not using OAuth
   cookie_root_domain: '.system.{{.RootDomain}}'
+  # Public URL for your GitHub app
+  # see https://github.com/settings/apps/
+  github_app_url: {{.GitHubAppUrl}}
+  # Public URL for your GitLab instance
+  gitlab_url: {{.GitLabInstance}}
+  # SealedSecrets public key
+  public_key: |
+    {{.PublicKey}}
