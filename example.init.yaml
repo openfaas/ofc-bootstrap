@@ -239,6 +239,7 @@ scm: github
 ## Populate from GitHub App
 github:
   app_id: "24304"
+  public_link: "https://github.com/apps/o6s-io"
 
 ## GitLab
 ### Public URL for your GitLab instance with a trailing slash

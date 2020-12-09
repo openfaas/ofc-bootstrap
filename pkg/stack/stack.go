@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/openfaas/ofc-bootstrap/pkg/types"
 )
@@ -50,8 +51,16 @@ type awsConfig struct {
 	ECRRegion string
 }
 
+type dashboardConfig struct {
+	RootDomain     string
+	Scheme         string
+	GitHubAppUrl   string
+	GitLabInstance string
+	PublicKey      string
+}
+
 // Apply creates `templates/gateway_config.yml` to be referenced by stack.yml
-func Apply(plan types.Plan) error {
+func Apply(plan types.Plan, pubCert string) error {
 	scheme := "http"
 	if plan.TLS {
 		scheme += "s"
@@ -98,8 +107,18 @@ func Apply(plan types.Plan) error {
 		}
 	}
 
-	dashboardConfigErr := generateTemplate("dashboard_config", plan, gatewayConfig{
-		RootDomain: plan.RootDomain, Scheme: scheme,
+	var gitHubAppUrl, gitLabInstance string
+	if plan.SCM == types.GitHubSCM {
+		gitHubAppUrl = plan.Github.PublicLink
+	} else if plan.SCM == types.GitLabSCM {
+		gitLabInstance = plan.Gitlab.GitLabInstance
+	}
+	dashboardConfigErr := generateTemplate("dashboard_config", plan, dashboardConfig{
+		RootDomain:     plan.RootDomain,
+		Scheme:         scheme,
+		GitHubAppUrl:   gitHubAppUrl,
+		GitLabInstance: gitLabInstance,
+		PublicKey:      strings.ReplaceAll(pubCert, "\n", "\n    "),
 	})
 	if dashboardConfigErr != nil {
 		return dashboardConfigErr

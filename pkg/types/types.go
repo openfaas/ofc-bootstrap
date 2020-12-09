@@ -122,6 +122,7 @@ type KeyValueNamespaceTuple struct {
 type Github struct {
 	AppID          string `yaml:"app_id,omitempty"`
 	PrivateKeyFile string `yaml:"private_key_filename,omitempty"`
+	PublicLink     string `yaml:"public_link,omitempty"`
 }
 
 type Gitlab struct {
