@@ -13,5 +13,6 @@ then
     chmod +x /tmp/kubeseal
 fi
 
+/tmp/kubeseal --version
 /tmp/kubeseal --fetch-cert --controller-name=ofc-sealedsecrets-sealed-secrets > tmp/pub-cert.pem && \
   cat tmp/pub-cert.pem

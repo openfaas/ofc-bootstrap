@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"io/ioutil"
 	"os"
-	"strings"
 
 	"github.com/openfaas/ofc-bootstrap/pkg/types"
 )
@@ -56,11 +55,10 @@ type dashboardConfig struct {
 	Scheme         string
 	GitHubAppUrl   string
 	GitLabInstance string
-	PublicKey      string
 }
 
 // Apply creates `templates/gateway_config.yml` to be referenced by stack.yml
-func Apply(plan types.Plan, pubCert string) error {
+func Apply(plan types.Plan) error {
 	scheme := "http"
 	if plan.TLS {
 		scheme += "s"
@@ -118,7 +116,6 @@ func Apply(plan types.Plan, pubCert string) error {
 		Scheme:         scheme,
 		GitHubAppUrl:   gitHubAppUrl,
 		GitLabInstance: gitLabInstance,
-		PublicKey:      strings.ReplaceAll(pubCert, "\n", "\n    "),
 	})
 	if dashboardConfigErr != nil {
 		return dashboardConfigErr

@@ -80,6 +80,9 @@ if [ "$ENABLE_AWS_ECR" = "true" ] ; then
     faas-cli deploy -f ./aws.yml
 fi
 
+kubectl create secret generic sealedsecrets-public-key -n openfaas-fn --from-file=../pub-cert.pem \
+ --dry-run=client -o yaml | kubectl apply -f -
+
 TAG=0.14.4 faas-cli deploy -f ./dashboard/stack.yml
 
 sleep 2
