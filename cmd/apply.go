@@ -362,7 +362,13 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		}
 	}
 
-	var pubCert string
+	fmt.Println("Creating stack.yml")
+
+	planErr := stack.Apply(plan)
+	if planErr != nil {
+		log.Println(planErr)
+	}
+
 	if !prefs.SkipSealedSecrets {
 		sealedSecretsErr := installSealedSecrets()
 		if sealedSecretsErr != nil {
@@ -370,19 +376,12 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 			return sealedSecretsErr
 		}
 
-		pubCert = exportSealedSecretPubCert()
+		pubCert := exportSealedSecretPubCert()
 		writeErr := ioutil.WriteFile("tmp/pubcert.pem", []byte(pubCert), 0700)
 		if writeErr != nil {
 			log.Println(writeErr)
 			return writeErr
 		}
-	}
-
-	fmt.Println("Creating stack.yml")
-
-	planErr := stack.Apply(plan, pubCert)
-	if planErr != nil {
-		log.Println(planErr)
 	}
 
 	cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion, additionalPaths)

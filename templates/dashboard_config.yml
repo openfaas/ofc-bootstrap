@@ -17,6 +17,3 @@ environment:
   github_app_url: {{.GitHubAppUrl}}
   # Public URL for your GitLab instance
   gitlab_url: {{.GitLabInstance}}
-  # SealedSecrets public key
-  public_key: |
-    {{.PublicKey}}
