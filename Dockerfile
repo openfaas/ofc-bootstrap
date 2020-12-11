@@ -1,13 +1,12 @@
-FROM teamserverless/license-check:0.3.6 as license-check
+FROM teamserverless/license-check:0.3.9 as license-check
 
 # Build stage
-FROM golang:1.13 as builder
-ENV GO111MODULE=on
+FROM golang:1.15 as builder
 
+ENV GO111MODULE=on
 ENV CGO_ENABLED=0
 
 COPY --from=license-check /license-check /usr/bin/
-
 WORKDIR /go/src/github.com/openfaas/ofc-bootstrap
 COPY . .
 
@@ -26,7 +25,7 @@ RUN VERSION=$(git describe --all --exact-match `git rev-parse HEAD` | grep tags 
     -a -installsuffix cgo -o ofc-bootstrap
 
 # Release stage
-FROM alpine:3.11
+FROM alpine:3.12
 
 RUN apk --no-cache add ca-certificates git
 
