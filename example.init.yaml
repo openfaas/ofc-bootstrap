@@ -104,7 +104,7 @@ secrets:
         value_from: "~/Downloads/do-access-token"
     filters:
       - "do_dns01"
-    namespace: "cert-manager"
+    namespace: "openfaas"
 
   ## Use Google Cloud DNS
   ### Create a service account for DNS management and export it
@@ -114,7 +114,7 @@ secrets:
         value_from: "~/Downloads/service-account.json"
     filters:
       - "gcp_dns01"
-    namespace: "cert-manager"
+    namespace: "openfaas"
 
   ## Use Route 53
   ### Create role and download its secret access key
@@ -124,7 +124,7 @@ secrets:
         value_from: "~/Downloads/route53-secret-access-key"
     filters:
       - "route53_dns01"
-    namespace: "cert-manager"
+    namespace: "openfaas"
 
   ## Use Cloudflare
   ### Create role and download its secret access key
@@ -134,7 +134,7 @@ secrets:
         value_from: "~/Downloads/cloudflare-secret-access-key"
     filters:
       - "cloudflare_dns01"
-    namespace: "cert-manager"
+    namespace: "openfaas"
 
   # Used by Buildkit to push images to your registry
   - name: "registry-secret"
@@ -333,3 +333,7 @@ enable_ingress_operator: false
 ### Usage: release tag, a SHA or branch name
 openfaas_cloud_version: 0.14.4
 
+## Settings for the ingress records
+ingress_config:
+  max_connections: 20
+  requests_per_minute: 600

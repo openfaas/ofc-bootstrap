@@ -1,38 +1,17 @@
 #!/bin/bash
 
+
+
 cp ./tmp/generated-gateway_config.yml ./tmp/openfaas-cloud/gateway_config.yml
 cp ./tmp/generated-github.yml ./tmp/openfaas-cloud/github.yml
 cp ./tmp/generated-slack.yml ./tmp/openfaas-cloud/slack.yml
 cp ./tmp/generated-dashboard_config.yml ./tmp/openfaas-cloud/dashboard/dashboard_config.yml
 cp ./tmp/generated-aws.yml ./tmp/openfaas-cloud/aws.yml
 
-kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-svc.yml
-
-# Update builder for any ECR secrets needed
-cp ./tmp/generated-of-builder-dep.yml ./tmp/openfaas-cloud/yaml/core/of-builder-dep.yml
-kubectl apply -f ./tmp/openfaas-cloud/yaml/core/of-builder-dep.yml
-
-kubectl apply -f ./tmp/openfaas-cloud/yaml/core/rbac-import-secrets.yml
-
-if [ "$ENABLE_OAUTH" = "true" ] ; then
-    cp ./tmp/generated-edge-auth-dep.yml ./tmp/openfaas-cloud/yaml/core/edge-auth-dep.yml
-    kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-auth-dep.yml
-    kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-auth-svc.yml
-    kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-router-dep.yml
-else
-    #  Disable auth service by pointing the router at the echo function:
-    sed s/edge-auth.openfaas/echo.openfaas-fn/g ./tmp/openfaas-cloud/yaml/core/edge-router-dep.yml | kubectl apply -f -
-fi
-
-kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-router-svc.yml
-
-kubectl apply -f ./tmp/openfaas-cloud/yaml/core/edge-auth-svc.yml
-
-if [ "$ENABLE_NETWORK_POLICIES" = "true" ] ; then
-    kubectl apply -f ./tmp/openfaas-cloud/yaml/network-policy/
-fi
-
 cd ./tmp/openfaas-cloud
+
+
+helm upgrade --install --values ../ofc-values.yaml ofc-core ./chart/openfaas-cloud
 
 echo "Creating payload-secret in openfaas-fn"
 

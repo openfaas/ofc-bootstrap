@@ -4,6 +4,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -18,13 +19,11 @@ import (
 	execute "github.com/alexellis/go-execute/pkg/v1"
 	"github.com/alexellis/k3sup/pkg/config"
 	"github.com/alexellis/k3sup/pkg/env"
-	"github.com/openfaas/ofc-bootstrap/pkg/ingress"
 	"github.com/openfaas/ofc-bootstrap/pkg/stack"
-	"github.com/openfaas/ofc-bootstrap/pkg/tls"
 	"github.com/openfaas/ofc-bootstrap/pkg/validators"
 
 	"github.com/openfaas/ofc-bootstrap/pkg/types"
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 )
 
 func init() {
@@ -35,6 +34,7 @@ func init() {
 	applyCmd.Flags().Bool("skip-minio", false, "Skip Minio installation")
 	applyCmd.Flags().Bool("skip-create-secrets", false, "Skip creating secrets")
 	applyCmd.Flags().Bool("print-plan", false, "Print merged plan and exit")
+	applyCmd.Flags().Bool("update-cloud", false, "set to true to only upgrade OFC components")
 }
 
 var applyCmd = &cobra.Command{
@@ -141,7 +141,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 		"faas-cli version",
 	}
 
-	validateToolsErr := validateTools(tools, additionalPaths)
+	validateToolsErr := validateTools(tools)
 
 	if validateToolsErr != nil {
 		panic(validateToolsErr)
@@ -159,15 +159,28 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	os.MkdirAll("tmp", 0700)
 	ioutil.WriteFile("tmp/go.mod", []byte("\n"), 0700)
 
-	fmt.Fprint(os.Stdout, "Validating registry credentials file")
+	fmt.Fprint(os.Stdout, "Validating registry credentials file\n")
 
 	registryAuthErr := validateRegistryAuth(plan.Registry, plan.Secrets, plan.EnableECR)
 	if registryAuthErr != nil {
 		fmt.Fprint(os.Stderr, "error with registry credentials file. Please ensure it has been created correctly")
 	}
 
+	cloudOnly, err := command.Flags().GetBool("update-cloud")
+	if err != nil {
+		return err
+	}
+
+	if cloudOnly {
+		err := cloudComponentsInstall(plan)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
 	start := time.Now()
-	err = process(plan, prefs, additionalPaths)
+	err = process(plan, prefs)
 	done := time.Since(start)
 
 	if err != nil {
@@ -184,7 +197,7 @@ type Vars struct {
 	YamlFile string
 }
 
-func taskGivesStdout(tool string, additionalPaths []string) error {
+func taskGivesStdout(tool string) error {
 
 	parts := strings.Split(tool, " ")
 
@@ -210,10 +223,10 @@ func taskGivesStdout(tool string, additionalPaths []string) error {
 	return nil
 }
 
-func validateTools(tools []string, additionalPaths []string) error {
+func validateTools(tools []string) error {
 
 	for _, tool := range tools {
-		err := taskGivesStdout(tool, additionalPaths)
+		err := taskGivesStdout(tool)
 		if err != nil {
 			return err
 		}
@@ -265,7 +278,7 @@ func filesExists(files []types.FileSecret) error {
 	return nil
 }
 
-func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string) error {
+func process(plan types.Plan, prefs InstallPreferences) error {
 
 	if plan.OpenFaaSCloudVersion == "" {
 		plan.OpenFaaSCloudVersion = "master"
@@ -298,7 +311,7 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		return err
 	}
 
-	installIngressErr := installIngressController(plan.Ingress, additionalPaths)
+	installIngressErr := installIngressController(plan.Ingress)
 	if installIngressErr != nil {
 		log.Println(installIngressErr.Error())
 		return installIngressErr
@@ -333,7 +346,7 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		log.Println(functionAuthErr.Error())
 	}
 
-	ofErr := installOpenfaas(plan.ScaleToZero, plan.IngressOperator, additionalPaths)
+	ofErr := installOpenfaas(plan.ScaleToZero, plan.IngressOperator)
 	if ofErr != nil {
 		log.Println(ofErr)
 	}
@@ -350,23 +363,12 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		}
 	}
 
-	ingressErr := ingress.Apply(plan)
-	if ingressErr != nil {
-		log.Println(ingressErr)
-	}
-
-	if plan.TLS {
-		tlsErr := tls.Apply(plan)
-		if tlsErr != nil {
-			log.Println(tlsErr)
-		}
-	}
-
 	fmt.Println("Creating stack.yml")
 
 	planErr := stack.Apply(plan)
 	if planErr != nil {
 		log.Println(planErr)
+		return planErr
 	}
 
 	if !prefs.SkipSealedSecrets {
@@ -384,14 +386,92 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		}
 	}
 
-	cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion, additionalPaths)
+	err := cloudComponentsInstall(plan)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func cloudComponentsInstall(plan types.Plan) error {
+	cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion)
 	if cloneErr != nil {
 		return cloneErr
 	}
 
-	deployErr := deployCloudComponents(plan, additionalPaths)
+	ofcValuesErr := writeOFCValuesYaml(plan)
+	if ofcValuesErr != nil {
+		return ofcValuesErr
+	}
+
+	deployErr := deployCloudComponents(plan)
 	if deployErr != nil {
 		return deployErr
+	}
+	return nil
+}
+
+func writeOFCValuesYaml(plan types.Plan) error {
+	ofcOptions := &types.OFCValues{}
+
+	ofcOptions.NetworkPolicies.Enabled = plan.NetworkPolicies
+
+	if plan.EnableOAuth {
+		ofcOptions.EdgeAuth.EnableOauth2 = true
+		ofcOptions.EdgeAuth.OauthProvider = plan.SCM
+		ofcOptions.EdgeAuth.ClientID = plan.OAuth.ClientId
+		ofcOptions.EdgeAuth.OauthProviderBaseURL = plan.OAuth.OAuthProviderBaseURL
+	} else {
+		ofcOptions.EdgeAuth.EnableOauth2 = false
+	}
+
+	ofcOptions.NetworkPolicies.Enabled = plan.NetworkPolicies
+	ofcOptions.Global.EnableECR = plan.EnableECR
+
+	if plan.TLS {
+		ofcOptions.TLS.IssuerType = plan.TLSConfig.IssuerType
+		ofcOptions.TLS.Enabled = true
+		ofcOptions.TLS.Email = plan.TLSConfig.Email
+		ofcOptions.TLS.DNSService = plan.TLSConfig.DNSService
+		switch ofcOptions.TLS.DNSService {
+		case types.CloudDNS:
+			ofcOptions.TLS.CloudDNS.ProjectID = plan.TLSConfig.ProjectID
+		case types.Cloudflare:
+			ofcOptions.TLS.Cloudflare.Email = plan.TLSConfig.Email
+			ofcOptions.TLS.Cloudflare.ProjectID = plan.TLSConfig.ProjectID
+		case types.Route53:
+			ofcOptions.TLS.Route53.AccessKeyID = plan.TLSConfig.AccessKeyID
+			ofcOptions.TLS.Route53.Region = plan.TLSConfig.Region
+		case types.DigitalOcean:
+			// No special config for DO DNS
+		default:
+			log.Fatalf("dns service not recognised: %s", ofcOptions.TLS.DNSService)
+		}
+
+	} else {
+		ofcOptions.TLS.Enabled = false
+	}
+
+	ofcOptions.Customers.CustomersSecret = plan.CustomersSecret
+	ofcOptions.Customers.URL = plan.CustomersURL
+	if len(plan.CustomersURL) == 0 && !plan.CustomersSecret {
+		return errors.New("unable to continue without a customers secret or url")
+	}
+
+	ofcOptions.Global.EnableECR = plan.EnableECR
+	ofcOptions.Global.RootDomain = plan.RootDomain
+
+	ofcOptions.Ingress.MaxConnections = plan.IngressConfig.MaxConnections
+	ofcOptions.Ingress.RequestsPerMinute = plan.IngressConfig.RequestsPerMinute
+	yamlBytes, err := yaml.Marshal(&ofcOptions)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+	filePath := "./tmp/ofc-values.yaml"
+	fileErr := ioutil.WriteFile(filePath, yamlBytes, 0644)
+	if fileErr != nil {
+		return fileErr
 	}
 
 	return nil
@@ -403,27 +483,6 @@ func helmRepoAdd(name, repo string) error {
 	task := execute.ExecTask{
 		Command:     "helm",
 		Args:        []string{"repo", "add", name, repo},
-		StreamStdio: true,
-	}
-
-	taskRes, taskErr := task.Execute()
-
-	if taskErr != nil {
-		return taskErr
-	}
-
-	if len(taskRes.Stderr) > 0 {
-		log.Println(taskRes.Stderr)
-	}
-
-	return nil
-}
-
-func helmRepoAddStable() error {
-	log.Println("Adding stable helm repo")
-
-	task := execute.ExecTask{
-		Command:     "helm",
 		StreamStdio: true,
 	}
 
@@ -484,7 +543,7 @@ func createFunctionsAuth() error {
 	return nil
 }
 
-func installIngressController(ingress string, additionalPaths []string) error {
+func installIngressController(ingress string) error {
 	log.Println("Creating Ingress Controller")
 
 	var env []string
@@ -532,7 +591,7 @@ func installSealedSecrets() error {
 	return nil
 }
 
-func installOpenfaas(scaleToZero, ingressOperator bool, additionalPaths []string) error {
+func installOpenfaas(scaleToZero, ingressOperator bool) error {
 	log.Println("Creating OpenFaaS")
 
 	task := execute.ExecTask{
@@ -660,19 +719,6 @@ func createSecrets(plan types.Plan) error {
 	return nil
 }
 
-func sealedSecretsReady() bool {
-
-	task := execute.ExecTask{
-		Command:     "./scripts/get-sealedsecretscontroller.sh",
-		Shell:       true,
-		StreamStdio: true,
-	}
-
-	res, err := task.Execute()
-	fmt.Println("sealedsecretscontroller", res.ExitCode, res.Stdout, res.Stderr, err)
-	return res.Stdout == "1"
-}
-
 func exportSealedSecretPubCert() string {
 
 	task := execute.ExecTask{
@@ -698,7 +744,7 @@ func certManagerReady() bool {
 	return res.Stdout == "True"
 }
 
-func cloneCloudComponents(tag string, additionalPaths []string) error {
+func cloneCloudComponents(tag string) error {
 	task := execute.ExecTask{
 		Command: "./scripts/clone-cloud-components.sh",
 		Shell:   true,
@@ -708,17 +754,15 @@ func cloneCloudComponents(tag string, additionalPaths []string) error {
 		StreamStdio: true,
 	}
 
-	res, err := task.Execute()
+	_, err := task.Execute()
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(res)
-
 	return nil
 }
 
-func deployCloudComponents(plan types.Plan, additionalPaths []string) error {
+func deployCloudComponents(plan types.Plan) error {
 
 	authEnv := ""
 	if plan.EnableOAuth {

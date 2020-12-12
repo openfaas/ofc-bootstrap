@@ -50,7 +50,6 @@ type awsConfig struct {
 	ECRRegion string
 }
 
-// Apply creates `templates/gateway_config.yml` to be referenced by stack.yml
 func Apply(plan types.Plan) error {
 	scheme := "http"
 	if plan.TLS {
@@ -67,7 +66,6 @@ func Apply(plan types.Plan) error {
 		Registry:             plan.Registry,
 		RootDomain:           plan.RootDomain,
 		CustomersURL:         plan.CustomersURL,
-		Scheme:               scheme,
 		S3:                   plan.S3,
 		CustomTemplates:      plan.Deployment.FormatCustomTemplates(),
 		EnableDockerfileLang: plan.EnableDockerfileLang,
@@ -105,38 +103,12 @@ func Apply(plan types.Plan) error {
 		return dashboardConfigErr
 	}
 
-	if plan.EnableOAuth {
-		ofCustomersSecretPath := ""
-		if plan.CustomersSecret {
-			ofCustomersSecretPath = "/var/secrets/of-customers/of-customers"
-		}
-
-		if ofAuthDepErr := generateTemplate("edge-auth-dep", plan, authConfig{
-			RootDomain:            plan.RootDomain,
-			ClientId:              plan.OAuth.ClientId,
-			CustomersURL:          plan.CustomersURL,
-			Scheme:                scheme,
-			OAuthProvider:         plan.SCM,
-			OAuthProviderBaseURL:  plan.OAuth.OAuthProviderBaseURL,
-			OFCustomersSecretPath: ofCustomersSecretPath,
-			TLSEnabled:            plan.TLS,
-		}); ofAuthDepErr != nil {
-			return ofAuthDepErr
-		}
-	}
-
 	isGitHub := plan.SCM == "github"
 	if stackErr := generateTemplate("stack", plan, stackConfig{
 		GitHub:              isGitHub,
 		CustomersSecretPath: customersSecretPath,
 	}); stackErr != nil {
 		return stackErr
-	}
-
-	if builderErr := generateTemplate("of-builder-dep", plan, builderConfig{
-		ECR: plan.EnableECR,
-	}); builderErr != nil {
-		return builderErr
 	}
 
 	if ecrErr := generateTemplate("aws", plan, awsConfig{

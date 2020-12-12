@@ -4,7 +4,7 @@ You will need admin access to a Kubernetes cluster, some CLI tooling and a GitHu
 
 ## Pre-reqs
 
-This tool automates the installation of OpenFaaS Cloud on Kubernetes. Before starting you will need to install some tools and then create either a local or remote cluster.
+This tool automates the installation of OpenFaaS Cloud on Kubernetes. Before starting, you will need to install some tools and then create either a local or remote cluster.
 
 For your cluster the following specifications are recommended:
 
@@ -513,28 +513,8 @@ At this point you can also view your UI dashboard at: http://127.0.0.1:31112
 
 ## Re-deploy the OpenFaaS Cloud functions (advanced)
 
-If you run the step above `Access your OpenFaaS UI or API`, then you can edit settings for OpenFaaS Cloud and redeploy your functions. This is an advanced step.
-
-```
-cd tmp/openfaas-cloud/
-
-# Edit stack.yml
-# Edit github.yml or gitlab.yml
-# Edit gateway_config.yml
-# Edit buildshiprun_limits.yml
-
-# Edit aws.yml if you want to change AWS ECR settings such as the region
-
-# Update all functions
-faas-cli deploy -f stack.yml
-
-
-# Update AWS ECR functions if needed
-faas-cli deploy -f aws.yml
-
-# Update a single function, such as "buildshiprun"
-faas-cli deploy -f stack.yml --filter=buildshiprun
-```
+Run `ofc-bootstrap` passing `--update-cloud` as a flag.
+This will re-deploy the ofc helm chart using the new settings in init.yaml
 
 ## Invite your team
 
@@ -549,29 +529,9 @@ alexellis
 
 When you want to switch to the Production issuer from staging do the following:
 
-Flush out the staging certificates and orders
+Update the staging setting in init.yaml to "prod" and re-run `ofc-bootstrap` passing `--update-cloud` as a flag.
+This will re-deploy the ofc helm chart using the new settings.
 
-```sh
-kubectl delete certificates --all  -n openfaas
-kubectl delete secret -n openfaas -l="cert-manager.io/certificate-name"
-kubectl delete order -n openfaas --all
+```sh 
+ofc-bootstrap apply -f init.yaml --update-cloud
 ```
-
-Now update the staging references to "prod":
-
-```sh
-sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-ingress-ingress-wildcard.yaml
-sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-ingress-ingress-auth.yaml
-sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-tls-auth-domain-cert.yml
-sed -i '' s/letsencrypt-staging/letsencrypt-prod/g ./tmp/generated-tls-wildcard-domain-cert.yml
-```
-
-Now create the new ingress and certificates:
-
-```sh
-kubectl apply -f ./tmp/generated-ingress-ingress-wildcard.yaml
-kubectl apply -f ./tmp/generated-ingress-ingress-auth.yaml
-kubectl apply -f ./tmp/generated-tls-auth-domain-cert.yml
-kubectl apply -f ./tmp/generated-tls-wildcard-domain-cert.yml
-```
-

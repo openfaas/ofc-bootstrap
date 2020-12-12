@@ -70,6 +70,13 @@ type Plan struct {
 	ECRConfig            ECRConfig                `yaml:"ecr_config,omitempty"`
 	CustomersSecret      bool                     `yaml:"customers_secret,omitempty"`
 	IngressOperator      bool                     `yaml:"enable_ingress_operator,omitempty"`
+	IngressConfig        IngressConfig            `yaml:"ingress_config,omitempty"`
+}
+
+// IngressConfig is for configuring Ingress type settings, like max connections
+type IngressConfig struct {
+	MaxConnections    string `yaml:"max_connections,omitempty"`
+	RequestsPerMinute string `yaml:"requests_per_minute,omitempty"`
 }
 
 // Deployment is the deployment section of YAML concerning
@@ -155,4 +162,63 @@ type TLSConfig struct {
 
 type ECRConfig struct {
 	ECRRegion string `yaml:"ecr_region,omitempty"`
+}
+
+type OFCValues struct {
+	EdgeAuth        EdgeAuth        `yaml:"edgeAuth,omitempty"`
+	TLS             OFCTLS          `yaml:"tls,omitempty"`
+	Ingress         Ingress         `yaml:"ingress,omitempty"`
+	Global          Global          `yaml:"global,omitempty"`
+	NetworkPolicies NetworkPolicies `yaml:"networkPolicies,omitempty"`
+	Customers       Customers       `yaml:"customers,omitempty"`
+}
+
+type NetworkPolicies struct {
+	Enabled bool `yaml:"enabled,omitempty"`
+}
+
+type EdgeAuth struct {
+	EnableOauth2         bool   `yaml:"enableOauth2,omitempty"`
+	OauthProvider        string `yaml:"oauthProvider,omitempty"`
+	OauthProviderBaseURL string `yaml:"oauthProviderBaseURL,omitempty"`
+	ClientID             string `yaml:"clientId,omitempty"`
+}
+
+type OFCTLS struct {
+	Enabled    bool           `yaml:"enabled"`
+	Email      string         `yaml:"email,omitempty"`
+	IssuerType string         `yaml:"issuerType,omitempty"`
+	DNSService string         `yaml:"dnsService,omitempty"`
+	Route53    OFCRoute53     `yaml:"route53,omitempty"`
+	Cloudflare OFCCloudflare  `yaml:"cloudflare,omitempty"`
+	CloudDNS   CloudDNSConfig `yaml:"clouddns,omitempty"`
+}
+
+type CloudDNSConfig struct {
+	ProjectID string `yaml:"projectID,omitempty"`
+}
+
+type OFCRoute53 struct {
+	Region      string `yaml:"region,omitempty"`
+	AccessKeyID string `yaml:"accessKeyID,omitempty"`
+}
+
+type OFCCloudflare struct {
+	Email     string `yaml:"email,omitempty"`
+	ProjectID string `yaml:"projectID,omitempty"`
+}
+
+type Ingress struct {
+	MaxConnections    string `yaml:"maxConnections,omitempty"`
+	RequestsPerMinute string `yaml:"requestsPerMinute,omitempty"`
+}
+
+type Customers struct {
+	URL             string `yaml:"url,omitempty"`
+	CustomersSecret bool   `yaml:"customersSecret,omitempty"`
+}
+
+type Global struct {
+	RootDomain string `yaml:"rootDomain,omitempty"`
+	EnableECR  bool   `yaml:"enableECR,omitempty"`
 }
