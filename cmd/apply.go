@@ -174,7 +174,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	os.MkdirAll("tmp", 0700)
 	ioutil.WriteFile("tmp/go.mod", []byte("\n"), 0700)
 
-	fmt.Fprint(os.Stdout, "Validating registry credentials file")
+	fmt.Println("Validating registry credentials file")
 
 	registryAuthErr := validateRegistryAuth(plan.Registry, plan.Secrets, plan.EnableECR)
 	if registryAuthErr != nil {
@@ -189,7 +189,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 		return fmt.Errorf("plan failed after %f seconds, error: %s", done.Seconds(), err.Error())
 	}
 
-	fmt.Fprintf(os.Stdout, "Plan completed in %f seconds\n", done.Seconds())
+	fmt.Printf("Plan completed in %f seconds\n", done.Seconds())
 
 	return nil
 }
@@ -285,16 +285,8 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 		fmt.Println("No openfaas_cloud_version set in init.yaml, using: master.")
 	}
 
-	nsErr := createNamespaces()
-	if nsErr != nil {
-		log.Println(nsErr)
-		return nsErr
-	}
-
-	installIngressErr := installIngressController(plan.Ingress)
-	if installIngressErr != nil {
-		log.Println(installIngressErr.Error())
-		return installIngressErr
+	if err := installIngressController(plan.Ingress); err != nil {
+		return errors.Wrap(err, "installIngressController")
 	}
 
 	if !prefs.SkipCreateSecrets {
@@ -307,17 +299,14 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 	}
 
 	if !prefs.SkipMinio {
-		minioErr := installMinio()
-		if minioErr != nil {
-			log.Println(minioErr)
+		if err := installMinio(); err != nil {
+			return errors.Wrap(err, "installMinio")
 		}
 	}
 
 	if plan.TLS {
-		cmErr := installCertmanager()
-		if cmErr != nil {
-			log.Println(cmErr)
-			return cmErr
+		if err := installCertmanager(); err != nil {
+			return errors.Wrap(err, "installCertmanager")
 		}
 	}
 
@@ -326,9 +315,8 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 		log.Println(functionAuthErr.Error())
 	}
 
-	ofErr := installOpenfaas(plan.ScaleToZero, plan.IngressOperator)
-	if ofErr != nil {
-		log.Println(ofErr)
+	if err := installOpenfaas(plan.ScaleToZero, plan.IngressOperator); err != nil {
+		return errors.Wrap(err, "unable to install openfaas")
 	}
 
 	retries := 260
@@ -357,16 +345,13 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 
 	fmt.Println("Creating stack.yml")
 
-	planErr := stack.Apply(plan)
-	if planErr != nil {
-		log.Println(planErr)
+	if err := stack.Apply(plan); err != nil {
+		return errors.Wrap(err, "stack.Apply(")
 	}
 
 	if !prefs.SkipSealedSecrets {
-		sealedSecretsErr := installSealedSecrets()
-		if sealedSecretsErr != nil {
-			log.Println(sealedSecretsErr)
-			return sealedSecretsErr
+		if err := installSealedSecrets(); err != nil {
+			return errors.Wrap(err, "unable to install sealed-secrets")
 		}
 
 		pubCert := exportSealedSecretPubCert()
@@ -377,14 +362,12 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 		}
 	}
 
-	cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion)
-	if cloneErr != nil {
-		return cloneErr
+	if err := cloneCloudComponents(plan.OpenFaaSCloudVersion); err != nil {
+		return errors.Wrap(err, "cloneCloudComponents")
 	}
 
-	deployErr := deployCloudComponents(plan)
-	if deployErr != nil {
-		return deployErr
+	if err := deployCloudComponents(plan); err != nil {
+		return errors.Wrap(err, "deployCloudComponents")
 	}
 
 	return nil
@@ -481,7 +464,8 @@ func installIngressController(ingress string) error {
 	log.Println("Installing ingress-nginx")
 
 	env := []string{"PATH=" + os.Getenv("PATH")}
-	log.Println(env)
+
+	// Adding wait took quite a long time, so disabling that.
 	args := []string{"install", "ingress-nginx"}
 	if ingress == "host" {
 		args = append(args, "--host-mode")
@@ -514,7 +498,7 @@ func installSealedSecrets() error {
 	log.Println("Installing sealed-secrets")
 
 	var env []string
-	args := []string{"install", "sealed-secrets", "--namespace=kube-system"}
+	args := []string{"install", "sealed-secrets", "--namespace=kube-system", "--wait"}
 
 	task := execute.ExecTask{
 		Command:     "arkade",
@@ -542,7 +526,7 @@ func installSealedSecrets() error {
 func installOpenfaas(scaleToZero, ingressOperator bool) error {
 	log.Println("Installing openfaas")
 
-	args := []string{"install", "openfaas", "--namespace=openfaas",
+	args := []string{"install", "openfaas",
 		"--set basic_auth=true",
 		"--set functionNamespace=openfaas-fn",
 		"--set ingress.enabled=false",
@@ -559,6 +543,7 @@ func installOpenfaas(scaleToZero, ingressOperator bool) error {
 		"--set faasnetes.httpProbe=true",
 		"--set faasnetes.imagePullPolicy=IfNotPresent",
 		"--set ingressOperator.create=" + strconv.FormatBool(ingressOperator),
+		"--wait",
 	}
 
 	task := execute.ExecTask{
@@ -591,11 +576,11 @@ func installMinio() error {
 
 	args := []string{"install", "minio",
 		"--namespace=openfaas",
-		"--set replicas=1",
 		"--set persistence.enabled=false",
 		"--set service.port=9000",
 		"--set service.type=ClusterIP",
 		"--set resources.requests.memory=512Mi",
+		"--wait",
 	}
 
 	task := execute.ExecTask{
@@ -644,7 +629,7 @@ func patchFnServiceaccount() error {
 func installCertmanager() error {
 	log.Println("Installing cert-manager")
 
-	args := []string{"install", "cert-manager"}
+	args := []string{"install", "cert-manager", "--wait"}
 	task := execute.ExecTask{
 		Command:     "arkade",
 		Args:        args,
@@ -664,26 +649,6 @@ func installCertmanager() error {
 	if len(res.Stderr) > 0 {
 		log.Printf("stderr: %s\n", res.Stderr)
 	}
-	return nil
-}
-
-func createNamespaces() error {
-	log.Println("Creating namespaces")
-
-	task := execute.ExecTask{
-		Command:     "scripts/create-namespaces.sh",
-		Shell:       true,
-		StreamStdio: true,
-	}
-
-	res, err := task.Execute()
-
-	if err != nil {
-		return err
-	}
-
-	log.Println(res.ExitCode, res.Stdout, res.Stderr)
-
 	return nil
 }
 
