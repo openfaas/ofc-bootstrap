@@ -31,4 +31,4 @@ fmt:
 hash:
 	rm -rf bin/*.sha256 && ./hack/hashgen.sh
 
-all: fmt build install-ci ci static dist hash
+all: fmt build install-ci ci dist hash
