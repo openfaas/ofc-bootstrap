@@ -182,7 +182,7 @@ functions:
 
   list-functions:
     lang: go
-    handler: ./list-ghcr.io/${REPO:-openfaas}
+    handler: ./list-functions
     image: ghcr.io/${REPO:-openfaas}/ofc-list-functions:0.14.4
     labels:
       openfaas-cloud: "1"
@@ -193,7 +193,7 @@ functions:
       read_debug: true
     environment_file:
       - gateway_config.yml
-    secrets/auth.:
+    secrets:
       - basic-auth-user
       - basic-auth-password
 
