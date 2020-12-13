@@ -13,7 +13,7 @@ functions:
       role: openfaas-system
       com.openfaas.scale.zero: false
     environment:
-      validate_hmac: false
+      validate_hmac: true
       write_debug: true
       read_debug: true
       validate_customers: true
@@ -35,7 +35,7 @@ functions:
       role: openfaas-system
       com.openfaas.scale.zero: false
     environment:
-      validate_hmac: false
+      validate_hmac: true
       read_timeout: 10s
       write_timeout: 10s
       write_debug: true

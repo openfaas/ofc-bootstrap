@@ -277,7 +277,7 @@ customers_url: "https://raw.githubusercontent.com/openfaas/openfaas-cloud/master
 ### Build logs from buildkit are stored in S3
 ### Defaults to in-cluster deployment of Minio. AWS S3 is also possible
 s3:
-  s3_url: cloud-minio.openfaas.svc.cluster.local:9000
+  s3_url: minio.openfaas.svc.cluster.local:9000
   s3_region: us-east-1
   s3_tls: false
   s3_bucket: pipeline
