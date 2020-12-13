@@ -233,7 +233,7 @@ func taskGivesStdout(tool string) error {
 	task := execute.ExecTask{
 		Command:     parts[0],
 		Args:        args,
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	res, err := task.Execute()
@@ -389,7 +389,7 @@ func helmRepoAdd(name, repo string) error {
 	task := execute.ExecTask{
 		Command:     "helm",
 		Args:        []string{"repo", "add", name, repo},
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	taskRes, taskErr := task.Execute()
@@ -410,7 +410,7 @@ func helmRepoAddStable() error {
 
 	task := execute.ExecTask{
 		Command:     "helm",
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	taskRes, taskErr := task.Execute()
@@ -432,7 +432,7 @@ func helmRepoUpdate() error {
 	task := execute.ExecTask{
 		Command:     "helm",
 		Args:        []string{"repo", "update"},
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	taskRes, taskErr := task.Execute()
@@ -454,7 +454,7 @@ func createFunctionsAuth() error {
 	task := execute.ExecTask{
 		Command:     "scripts/create-functions-auth.sh",
 		Shell:       true,
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	taskRes, err := task.Execute()
@@ -621,7 +621,7 @@ func patchFnServiceaccount() error {
 	task := execute.ExecTask{
 		Command:     "scripts/patch-fn-serviceaccount.sh",
 		Shell:       true,
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	taskRes, err := task.Execute()
@@ -690,7 +690,7 @@ func sealedSecretsReady() bool {
 	task := execute.ExecTask{
 		Command:     "./scripts/get-sealedsecretscontroller.sh",
 		Shell:       true,
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	res, err := task.Execute()
@@ -703,7 +703,7 @@ func exportSealedSecretPubCert() string {
 	task := execute.ExecTask{
 		Command:     "./scripts/export-sealed-secret-pubcert.sh",
 		Shell:       true,
-		StreamStdio: true,
+		StreamStdio: false,
 		Env:         []string{"PATH=" + os.Getenv("PATH")},
 	}
 
@@ -716,7 +716,7 @@ func certManagerReady() bool {
 	task := execute.ExecTask{
 		Command:     "./scripts/get-cert-manager.sh",
 		Shell:       true,
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	res, err := task.Execute()
@@ -731,7 +731,7 @@ func cloneCloudComponents(tag string) error {
 		Env: []string{
 			fmt.Sprintf("TAG=%v", tag),
 		},
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	res, err := task.Execute()
@@ -774,7 +774,7 @@ func deployCloudComponents(plan types.Plan) error {
 			networkPoliciesEnv,
 			enableECREnv,
 		},
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	res, err := task.Execute()

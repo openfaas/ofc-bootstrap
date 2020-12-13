@@ -90,7 +90,7 @@ func applyTemplate(tempFilePath string) error {
 	execTask := execute.ExecTask{
 		Command:     "kubectl apply -f " + tempFilePath,
 		Shell:       false,
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	execRes, execErr := execTask.Execute()

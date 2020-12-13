@@ -70,7 +70,7 @@ func apply(source string, name string, ingress IngressTemplate) error {
 		Command:     "kubectl",
 		Args:        []string{"apply", "-f", tempFilePath},
 		Shell:       false,
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	execRes, execErr := execTask.Execute()
