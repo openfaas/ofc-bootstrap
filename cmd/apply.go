@@ -668,14 +668,17 @@ func createSecrets(plan types.Plan) error {
 			fmt.Printf("Creating secret: %s\n", secret.Name)
 
 			command := types.BuildSecretTask(secret)
-			fmt.Printf("Secret - %s %s\n", command.Command, command.Args)
+			fmt.Printf("Secret - %s %s\n", command.Command, strings.Join(command.Args, " "))
 			res, err := command.Execute()
-
 			if err != nil {
 				log.Println(err)
 			}
 
-			fmt.Println(res)
+			out := res.Stdout
+			if len(res.Stderr) > 0 {
+				out = out + " / " + res.Stderr
+			}
+			fmt.Printf("%s\n", out)
 		}
 	}
 

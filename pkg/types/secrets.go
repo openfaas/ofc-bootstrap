@@ -13,7 +13,7 @@ func BuildSecretTask(kvn KeyValueNamespaceTuple) execute.ExecTask {
 	task := execute.ExecTask{
 		Command:     "kubectl",
 		Args:        []string{"create", "secret", "generic", "-n=" + kvn.Namespace, kvn.Name},
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	if len(kvn.Type) > 0 {
@@ -40,7 +40,7 @@ func BuildSecretTask(kvn KeyValueNamespaceTuple) execute.ExecTask {
 
 				valueTask := execute.ExecTask{
 					Command:     file.ValueCommand,
-					StreamStdio: true,
+					StreamStdio: false,
 				}
 				res, err := valueTask.Execute()
 				if err != nil {
