@@ -19,6 +19,7 @@ import (
 	"github.com/alexellis/arkade/pkg/config"
 	"github.com/alexellis/arkade/pkg/env"
 	"github.com/alexellis/arkade/pkg/get"
+	"github.com/alexellis/arkade/pkg/k8s"
 	execute "github.com/alexellis/go-execute/pkg/v1"
 	"github.com/openfaas/ofc-bootstrap/pkg/ingress"
 	"github.com/openfaas/ofc-bootstrap/pkg/stack"
@@ -162,12 +163,21 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 		panic(validateToolsErr)
 	}
 
-	if !prefs.SkipCreateSecrets {
+	if prefs.SkipCreateSecrets == false {
 		validateErr := validatePlan(plan)
 		if validateErr != nil {
 			panic(validateErr)
 		}
 	}
+
+	res, err := k8s.KubectlTask("apply", "-f", "https://raw.githubusercontent.com/openfaas/faas-netes/master/namespaces.yml")
+	if err != nil {
+		return err
+	}
+	if res.ExitCode != 0 {
+		return fmt.Errorf("error creating openfaas namespaces: %s %s", res.Stdout, res.Stderr)
+	}
+	fmt.Printf("Applied namespaces for openfaas.\n")
 
 	fmt.Fprintf(os.Stdout, "Plan loaded from: %s\n", files)
 
