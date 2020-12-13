@@ -13,8 +13,9 @@ init.yaml
 main
 bin/
 config.json
-credentials/
+/credentials
 /github.yml
 /github.yaml
 /private-key
 CUSTOMERS
+/install.sh

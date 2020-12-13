@@ -30,6 +30,12 @@ Example with [k3d](https://github.com/rancher/k3d):
 k3d create --server-arg "--no-deploy=traefik"
 ```
 
+Newer k3d versions will require an alternative:
+
+```bash
+k3d create --k3s-server-arg "--no-deploy=traefik"
+```
+
 > A note on DigitalOcean: if you're planning on using k3s with DigitalOcean, please stop and think why you are doing this instead of using the managed service called DOKS. DOKS is a free, managed control-plane and much less work for you, k3s on Droplets will be more expensive given that you have to run your own "master".
 
 ### Credentials and dependent systems
@@ -46,11 +52,13 @@ OpenFaaS Cloud installs, manages, and bundles software which spans source-contro
 ### Tools
 
 * Kubernetes - [development options](https://blog.alexellis.io/be-kind-to-yourself/)
-    * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-using-curl)
+* OpenSSL - the `openssl` binary must be available in `PATH`
 * Linux or Mac. Windows if `bash` is available
+
+The following are automatically installed for you:
 * [helm](https://docs.helm.sh/using_helm/#installing-helm)
 * [faas-cli](https://github.com/openfaas/faas-cli) `curl -sL https://cli.openfaas.com | sudo sh`
-* OpenSSL - the `openssl` binary must be available in `PATH`
+* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-using-curl)
 
 If you are using a cluster with GKE then you must run the following command:
 
@@ -87,7 +95,8 @@ Once set up make sure you have set your `KUBECONFIG` and / or `kubectl` tool to 
 Check this with:
 
 ```sh
-kubectl config get-contexts
+arkade get kubectx
+kubectx
 ```
 
 Do not follow the instructions for B).
@@ -96,24 +105,14 @@ Do not follow the instructions for B).
 
 For testing you can create a local cluster using `kind`, `minikube` or Docker Desktop. This is how you can install `kind` to setup a local cluster in a Docker container.
 
-First install [Go 1.10 or newer](https://golang.org/dl/)
-
-* Set your `GOPATH` if you don't already have one
+Create a cluster with KinD
 
 ```bash
-export GOPATH=$HOME/go
+arkade get kind
+kind create cluster
 ```
 
-* Download and build `kind`
-
-Now use `go get` to install `kind` and point your `KUBECONFIG` variable at the new cluster.
-
-```bash
-go get sigs.k8s.io/kind
-kind create cluster --name 1
-
-export KUBECONFIG=$(kind get kubeconfig-path --name 1)
-```
+KinD will automatically switch you into the new context, but feel free to check with `kubectx`.
 
 ## Get `ofc-bootstrap`
 
@@ -215,7 +214,6 @@ OpenFaaS Cloud also supports Amazon's managed container registry called ECR.
 ```sh
 ofc-bootstrap registry-login --ecr --region <your-aws-region> --account-id <your-account-id>
 ```
-
 
 At runtime it will use your mounted AWS credentials file from a separate secret to gain an access token for ECR. ECR access tokens need to be refreshed around every 12 hours and this is handled by the `ecr-login` binary built-into the OFC builder container image.
 

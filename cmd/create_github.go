@@ -21,17 +21,25 @@ import (
 )
 
 var createGitHubAppCommand = &cobra.Command{
-	Use:          "create-github-app",
-	Short:        "Create a GitHub App",
+	Use:   "create-github-app",
+	Short: "Create a GitHub App",
+	Long: `Creates a GitHub App on GitHub.com. This is required for receiving 
+webhooks, for checking out code for builds, and updating commit statuses.
+
+With a --root-domain of ofc.example.com, your webhooks will be sent to: 
+https://system.ofc.example.com/github-event`,
 	SilenceUsage: true,
 	RunE:         createGitHubAppE,
+	Example: `  ofc-bootstrap create-github-app --root-domain o6s.io \
+  --name community-cluster
+`,
 }
 
 func init() {
 	rootCommand.AddCommand(createGitHubAppCommand)
 
-	createGitHubAppCommand.Flags().String("name", "", "The name of your GitHub App for OpenFaaS Cloud, leave blank to generate")
-	createGitHubAppCommand.Flags().String("root-domain", "", "The root domain for your app i.e. ofc.example.com")
+	createGitHubAppCommand.Flags().String("root-domain", "", "The root domain for your GitHub i.e. ofc.example.com")
+	createGitHubAppCommand.Flags().String("name", "", "Name your GitHub App, or leave blank to get a generated name.")
 	createGitHubAppCommand.Flags().Bool("insecure", false, "Use HTTP instead of HTTPS for webhooks")
 	createGitHubAppCommand.Flags().Int("port", 30010, "HTTP port to listen to for GitHub App automation")
 }
@@ -41,10 +49,10 @@ func createGitHubAppE(command *cobra.Command, _ []string) error {
 	name := ""
 	if nameFlagVal, _ := command.Flags().GetString("name"); len(nameFlagVal) > 0 {
 		name = nameFlagVal
-
 	} else {
 		name = "OFC " + strings.Replace(names.GetRandomName(10), "_", " ", -1)
 	}
+
 	var rootDomain string
 	if rootDomain, _ = command.Flags().GetString("root-domain"); len(rootDomain) == 0 {
 		return fmt.Errorf("give a value for --root-domain")
@@ -84,9 +92,7 @@ func createGitHubAppE(command *cobra.Command, _ []string) error {
 		cancel()
 	}()
 
-	err := receiveGitHubApp(context, inputMap, resCh, launchBrowser, port)
-
-	if err != nil {
+	if err := receiveGitHubApp(context, inputMap, resCh, launchBrowser, port); err != nil {
 		return err
 	}
 

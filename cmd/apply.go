@@ -8,16 +8,18 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	"github.com/alexellis/arkade/pkg/helm"
+	"github.com/alexellis/arkade/pkg/config"
+	"github.com/alexellis/arkade/pkg/env"
+	"github.com/alexellis/arkade/pkg/get"
 	execute "github.com/alexellis/go-execute/pkg/v1"
-	"github.com/alexellis/k3sup/pkg/config"
-	"github.com/alexellis/k3sup/pkg/env"
 	"github.com/openfaas/ofc-bootstrap/pkg/ingress"
 	"github.com/openfaas/ofc-bootstrap/pkg/stack"
 	"github.com/openfaas/ofc-bootstrap/pkg/tls"
@@ -58,11 +60,23 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
-	printPlan, _ := command.Flags().GetBool("print-plan")
+	printPlan, err := command.Flags().GetBool("print-plan")
+	if err != nil {
+		return err
+	}
 
-	prefs.SkipMinio, _ = command.Flags().GetBool("skip-minio")
-	prefs.SkipSealedSecrets, _ = command.Flags().GetBool("skip-sealedsecrets")
-	prefs.SkipCreateSecrets, _ = command.Flags().GetBool("skip-create-secrets")
+	prefs.SkipMinio, err = command.Flags().GetBool("skip-minio")
+	if err != nil {
+		return err
+	}
+	prefs.SkipSealedSecrets, err = command.Flags().GetBool("skip-sealedsecrets")
+	if err != nil {
+		return err
+	}
+	prefs.SkipCreateSecrets, err = command.Flags().GetBool("skip-create-secrets")
+	if err != nil {
+		return err
+	}
 
 	if len(files) == 0 {
 		return fmt.Errorf("Provide one or more --file arguments")
@@ -109,39 +123,40 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 		return fmt.Errorf("error while retreiving features: %s", featuresErr.Error())
 	}
 
-	const helm3Version = "v3.1.2"
-	os.Setenv("HELM_VERSION", helm3Version)
-
-	userPath, err := config.InitUserDir()
-	if err != nil {
-		return err
-	}
-
 	clientArch, clientOS := env.GetClientArch()
-	helmPathOut, err := helm.TryDownloadHelm(userPath, clientArch, clientOS, true)
 
+	userDir, err := config.InitUserDir()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("User dir: %s\n", userDir)
+
+	install := []string{"kubectl", "helm", "faas-cli", "arkade", "kubeseal"}
+	err = getTools(clientArch, clientOS, userDir, install)
 	if err != nil {
 		return err
 	}
 
-	log.Printf("helm3 at: %s\n", helmPathOut)
+	// pathCurrent := os.Getenv("PATH")
+	// newPath := strings.Join(additionalPaths, ":") + ":" + pathCurrent
+	// os.Setenv("PATH", newPath)
+	// fmt.Printf("Path: %s\n", newPath)
 
-	additionalPaths := []string{helmPathOut}
-
-	pathCurrent := os.Getenv("PATH")
-	newPath := strings.Join(additionalPaths, ":") + ":" + pathCurrent
+	// To avoid cached versions of tools in /usr/local/bin/
+	newPath := "/bin/:/usr/bin/:/usr/sbin/:/sbin/:" + path.Join(userDir, "bin")
 	os.Setenv("PATH", newPath)
 
 	log.Printf("Validating tools available in PATH: %q\n", newPath)
 
 	tools := []string{
-		"kubectl version --client",
 		"openssl version",
-		"helm version -c",
+		"kubectl version --client",
+		"helm version",
 		"faas-cli version",
+		"kubeseal --version",
 	}
 
-	validateToolsErr := validateTools(tools, additionalPaths)
+	validateToolsErr := validateTools(tools)
 
 	if validateToolsErr != nil {
 		panic(validateToolsErr)
@@ -167,7 +182,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	}
 
 	start := time.Now()
-	err = process(plan, prefs, additionalPaths)
+	err = process(plan, prefs)
 	done := time.Since(start)
 
 	if err != nil {
@@ -184,10 +199,21 @@ type Vars struct {
 	YamlFile string
 }
 
-func taskGivesStdout(tool string, additionalPaths []string) error {
+func validateTools(tools []string) error {
 
+	for _, tool := range tools {
+		err := taskGivesStdout(tool)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+
+}
+
+func taskGivesStdout(tool string) error {
 	parts := strings.Split(tool, " ")
-
 	args := []string{}
 
 	if len(parts) > 0 {
@@ -208,19 +234,6 @@ func taskGivesStdout(tool string, additionalPaths []string) error {
 		return fmt.Errorf("error executing '%s', no output was given - tool is available in PATH", task.Command)
 	}
 	return nil
-}
-
-func validateTools(tools []string, additionalPaths []string) error {
-
-	for _, tool := range tools {
-		err := taskGivesStdout(tool, additionalPaths)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-
 }
 
 func validateRegistryAuth(regEndpoint string, planSecrets []types.KeyValueNamespaceTuple, enableECR bool) error {
@@ -265,7 +278,7 @@ func filesExists(files []types.FileSecret) error {
 	return nil
 }
 
-func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string) error {
+func process(plan types.Plan, prefs InstallPreferences) error {
 
 	if plan.OpenFaaSCloudVersion == "" {
 		plan.OpenFaaSCloudVersion = "master"
@@ -278,27 +291,7 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		return nsErr
 	}
 
-	if err := helmRepoAdd("stable", "https://charts.helm.sh/stable"); err != nil {
-		log.Println(err.Error())
-		return err
-	}
-
-	if err := helmRepoAdd("ingress-nginx", "https://kubernetes.github.io/ingress-nginx"); err != nil {
-		log.Println(err.Error())
-		return err
-	}
-
-	if err := helmRepoAdd("minio", "https://helm.min.io/"); err != nil {
-		log.Println(err.Error())
-		return err
-	}
-
-	if err := helmRepoUpdate(); err != nil {
-		log.Println(err.Error())
-		return err
-	}
-
-	installIngressErr := installIngressController(plan.Ingress, additionalPaths)
+	installIngressErr := installIngressController(plan.Ingress)
 	if installIngressErr != nil {
 		log.Println(installIngressErr.Error())
 		return installIngressErr
@@ -333,7 +326,7 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		log.Println(functionAuthErr.Error())
 	}
 
-	ofErr := installOpenfaas(plan.ScaleToZero, plan.IngressOperator, additionalPaths)
+	ofErr := installOpenfaas(plan.ScaleToZero, plan.IngressOperator)
 	if ofErr != nil {
 		log.Println(ofErr)
 	}
@@ -384,12 +377,12 @@ func process(plan types.Plan, prefs InstallPreferences, additionalPaths []string
 		}
 	}
 
-	cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion, additionalPaths)
+	cloneErr := cloneCloudComponents(plan.OpenFaaSCloudVersion)
 	if cloneErr != nil {
 		return cloneErr
 	}
 
-	deployErr := deployCloudComponents(plan, additionalPaths)
+	deployErr := deployCloudComponents(plan)
 	if deployErr != nil {
 		return deployErr
 	}
@@ -484,97 +477,146 @@ func createFunctionsAuth() error {
 	return nil
 }
 
-func installIngressController(ingress string, additionalPaths []string) error {
-	log.Println("Creating Ingress Controller")
+func installIngressController(ingress string) error {
+	log.Println("Installing ingress-nginx")
 
-	var env []string
+	env := []string{"PATH=" + os.Getenv("PATH")}
+	log.Println(env)
+	args := []string{"install", "ingress-nginx"}
 	if ingress == "host" {
-		env = append(env, "ADDITIONAL_SET=,controller.hostNetwork=true,controller.daemonset.useHostPort=true,dnsPolicy=ClusterFirstWithHostNet,controller.kind=DaemonSet")
+		args = append(args, "--host-mode")
 	}
 
 	task := execute.ExecTask{
-		Command:     "scripts/install-nginx.sh",
+		Command:     "arkade",
+		Args:        args,
 		Shell:       true,
 		Env:         env,
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	res, err := task.Execute()
-
 	if err != nil {
-		return err
+		return errors.Wrap(err, "error installing ingress-nginx")
 	}
 
-	log.Println(res.ExitCode, res.Stdout, res.Stderr)
+	if res.ExitCode != 0 {
+		return fmt.Errorf("non-zero exit-code: %s %s", res.Stdout, res.Stderr)
+	}
 
+	if len(res.Stderr) > 0 {
+		log.Printf("stderr: %s\n", res.Stderr)
+	}
 	return nil
 }
 
 func installSealedSecrets() error {
-	log.Println("Creating SealedSecrets")
+	log.Println("Installing sealed-secrets")
+
+	var env []string
+	args := []string{"install", "sealed-secrets", "--namespace=kube-system"}
 
 	task := execute.ExecTask{
-		Command:     "scripts/install-sealedsecrets.sh",
+		Command:     "arkade",
+		Args:        args,
 		Shell:       true,
-		StreamStdio: true,
-	}
-
-	taskRes, err := task.Execute()
-
-	if err != nil {
-		return err
-	}
-
-	if len(taskRes.Stderr) > 0 {
-		log.Println(taskRes.Stderr)
-	}
-
-	return nil
-}
-
-func installOpenfaas(scaleToZero, ingressOperator bool, additionalPaths []string) error {
-	log.Println("Creating OpenFaaS")
-
-	task := execute.ExecTask{
-		Command: "scripts/install-openfaas.sh",
-		Shell:   true,
-		Env: []string{
-			fmt.Sprintf("FAAS_IDLER_DRY_RUN=%v", strconv.FormatBool(!scaleToZero)),
-			fmt.Sprintf("INSTALL_INGRESS_OPERATOR=%v", strconv.FormatBool(ingressOperator)),
-		},
-		StreamStdio: true,
+		Env:         env,
+		StreamStdio: false,
 	}
 
 	res, err := task.Execute()
-
 	if err != nil {
 		return err
 	}
 
-	log.Println(res.ExitCode, res.Stdout, res.Stderr)
+	if res.ExitCode != 0 {
+		return fmt.Errorf("non-zero exit-code: %s %s", res.Stdout, res.Stderr)
+	}
 
+	if len(res.Stderr) > 0 {
+		log.Printf("stderr: %s\n", res.Stderr)
+	}
+	return nil
+}
+
+func installOpenfaas(scaleToZero, ingressOperator bool) error {
+	log.Println("Installing openfaas")
+
+	args := []string{"install", "openfaas", "--namespace=openfaas",
+		"--set basic_auth=true",
+		"--set functionNamespace=openfaas-fn",
+		"--set ingress.enabled=false",
+		"--set gateway.scaleFromZero=true",
+		"--set gateway.readTimeout=15m",
+		"--set gateway.writeTimeout=15m",
+		"--set gateway.upstreamTimeout=14m55s",
+		"--set queueWorker.ackWait=15m",
+		"--set faasnetes.readTimeout=5m",
+		"--set faasnetes.writeTimeout=5m",
+		"--set gateway.replicas=2",
+		"--set queueWorker.replicas=2",
+		"--set faasIdler.dryRun=" + strconv.FormatBool(!scaleToZero),
+		"--set faasnetes.httpProbe=true",
+		"--set faasnetes.imagePullPolicy=IfNotPresent",
+		"--set ingressOperator.create=" + strconv.FormatBool(ingressOperator),
+	}
+
+	task := execute.ExecTask{
+		Command:     "arkade",
+		Args:        args,
+		Shell:       true,
+		StreamStdio: false,
+	}
+
+	res, err := task.Execute()
+	if err != nil {
+		return err
+	}
+
+	if res.ExitCode != 0 {
+		return fmt.Errorf("non-zero exit-code: %s %s", res.Stdout, res.Stderr)
+	}
+
+	if len(res.Stderr) > 0 {
+		log.Printf("stderr: %s\n", res.Stderr)
+	}
 	return nil
 }
 
 func installMinio() error {
-	log.Println("Creating Minio")
+	log.Println("Installing minio")
 
-	task := execute.ExecTask{
-		Command:     "scripts/install-minio.sh",
-		Shell:       true,
-		StreamStdio: true,
+	// # Minio has a default requests value of 4Gi RAM
+	// # https://github.com/minio/charts/blob/master/minio/values.yaml
+
+	args := []string{"install", "minio",
+		"--namespace=openfaas",
+		"--set replicas=1",
+		"--set persistence.enabled=false",
+		"--set service.port=9000",
+		"--set service.type=ClusterIP",
+		"--set resources.requests.memory=512Mi",
 	}
 
-	taskRes, err := task.Execute()
+	task := execute.ExecTask{
+		Command:     "arkade",
+		Args:        args,
+		Shell:       true,
+		StreamStdio: false,
+	}
 
+	res, err := task.Execute()
 	if err != nil {
 		return err
 	}
 
-	if len(taskRes.Stderr) > 0 {
-		log.Println(taskRes.Stderr)
+	if res.ExitCode != 0 {
+		return fmt.Errorf("non-zero exit-code: %s %s", res.Stdout, res.Stderr)
 	}
 
+	if len(res.Stderr) > 0 {
+		log.Printf("stderr: %s\n", res.Stderr)
+	}
 	return nil
 }
 
@@ -600,22 +642,28 @@ func patchFnServiceaccount() error {
 }
 
 func installCertmanager() error {
-	log.Println("Creating Cert-Manager")
+	log.Println("Installing cert-manager")
 
+	args := []string{"install", "cert-manager"}
 	task := execute.ExecTask{
-		Command:     "scripts/install-cert-manager.sh",
+		Command:     "arkade",
+		Args:        args,
 		Shell:       true,
-		StreamStdio: true,
+		StreamStdio: false,
 	}
 
 	res, err := task.Execute()
-
 	if err != nil {
 		return err
 	}
 
-	log.Println(res.ExitCode, res.Stdout, res.Stderr)
+	if res.ExitCode != 0 {
+		return fmt.Errorf("non-zero exit-code: %s %s", res.Stdout, res.Stderr)
+	}
 
+	if len(res.Stderr) > 0 {
+		log.Printf("stderr: %s\n", res.Stderr)
+	}
 	return nil
 }
 
@@ -640,7 +688,6 @@ func createNamespaces() error {
 }
 
 func createSecrets(plan types.Plan) error {
-
 	for _, secret := range plan.Secrets {
 		if featureEnabled(plan.Features, secret.Filters) {
 			fmt.Printf("Creating secret: %s\n", secret.Name)
@@ -679,6 +726,7 @@ func exportSealedSecretPubCert() string {
 		Command:     "./scripts/export-sealed-secret-pubcert.sh",
 		Shell:       true,
 		StreamStdio: true,
+		Env:         []string{"PATH=" + os.Getenv("PATH")},
 	}
 
 	res, err := task.Execute()
@@ -698,7 +746,7 @@ func certManagerReady() bool {
 	return res.Stdout == "True"
 }
 
-func cloneCloudComponents(tag string, additionalPaths []string) error {
+func cloneCloudComponents(tag string) error {
 	task := execute.ExecTask{
 		Command: "./scripts/clone-cloud-components.sh",
 		Shell:   true,
@@ -718,7 +766,7 @@ func cloneCloudComponents(tag string, additionalPaths []string) error {
 	return nil
 }
 
-func deployCloudComponents(plan types.Plan, additionalPaths []string) error {
+func deployCloudComponents(plan types.Plan) error {
 
 	authEnv := ""
 	if plan.EnableOAuth {
@@ -824,4 +872,41 @@ func filterGitRepositoryManager(plan types.Plan) (types.Plan, error) {
 		return plan, fmt.Errorf("Error unsupported Git repository manager: %s", plan.SCM)
 	}
 	return plan, nil
+}
+
+func getTools(clientArch, clientOS, userDir string, install []string) error {
+	tools := get.MakeTools()
+	displayProgess := true
+	for _, t := range install {
+		if tool, err := getTool(t, tools); tool != nil {
+			filePath := path.Join(path.Join(userDir, "bin"), tool.Name)
+			if _, err := os.Stat(filePath); err != nil {
+				_, finalName, err := get.Download(tool, clientArch, clientOS, tool.Version, get.DownloadArkadeDir, displayProgess)
+				if err != nil {
+					return err
+				}
+				fmt.Printf("Downloaded tool: %s\n", finalName)
+			} else {
+				fmt.Printf("Skipping tool: %s\n", tool.Name)
+			}
+		} else {
+			return err
+		}
+	}
+	return nil
+}
+
+func getTool(name string, tools []get.Tool) (*get.Tool, error) {
+	var tool *get.Tool
+	for _, t := range tools {
+		if t.Name == name {
+			tool = &t
+			break
+		}
+	}
+	if tool == nil {
+		return nil, fmt.Errorf("unable to find tool definition")
+	}
+
+	return tool, nil
 }

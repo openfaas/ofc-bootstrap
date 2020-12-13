@@ -5,8 +5,8 @@ export PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath='{.data.
 
 kubectl create secret generic basic-auth-user \
  --from-literal=basic-auth-user=$USER --namespace openfaas-fn \
- --dry-run -o yaml | kubectl apply -f -
+ --dry-run=client -o yaml | kubectl apply -f -
 
 kubectl create secret generic basic-auth-password \
  --from-literal=basic-auth-password=$PASSWORD --namespace openfaas-fn \
- --dry-run -o yaml | kubectl apply -f -
+ --dry-run=client -o yaml | kubectl apply -f -
