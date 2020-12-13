@@ -24,7 +24,7 @@ func init() {
 	rootCommand.AddCommand(registryLoginCommand)
 
 	registryLoginCommand.Flags().String("server", "https://index.docker.io/v1/", "The server URL, it is defaulted to the docker registry")
-	registryLoginCommand.Flags().String("username", "", "The Registry Username")
+	registryLoginCommand.Flags().StringP("username", "u", "", "The Registry Username")
 	registryLoginCommand.Flags().String("password", "", "The registry password")
 	registryLoginCommand.Flags().BoolP("password-stdin", "s", false, "Reads the docker password from stdin, either pipe to the command or remember to press ctrl+d when reading interactively")
 
@@ -42,19 +42,33 @@ func generateRegistryAuthFile(command *cobra.Command, _ []string) error {
 	server, _ := command.Flags().GetString("server")
 	passStdIn, _ := command.Flags().GetBool("password-stdin")
 
+	if len(username) == 0 {
+		return fmt.Errorf("you must give --username (-u)")
+	}
+
+	var generateErr error
 	if ecrEnabled {
-		return generateECRFile(accountID, region)
+		generateErr = generateECRFile(accountID, region)
 	} else {
 		if passStdIn {
+			fmt.Printf("Enter your password, hit enter then type Ctrl+D\n\nPassword: ")
 			passwordStdin, err := ioutil.ReadAll(os.Stdin)
 			if err != nil {
 				return err
 			}
-			return generateFile(username, strings.TrimSpace(string(passwordStdin)), server)
+			generateErr = generateFile(username, strings.TrimSpace(string(passwordStdin)), server)
 		} else {
-			return generateFile(username, password, server)
+			generateErr = generateFile(username, password, server)
 		}
 	}
+
+	if generateErr != nil {
+		return generateErr
+	}
+
+	fmt.Printf("\nWrote ./credentials/docker.json..OK\n")
+
+	return nil
 }
 
 func generateFile(username string, password string, server string) error {
@@ -63,14 +77,7 @@ func generateFile(username string, password string, server string) error {
 	if err != nil {
 		return err
 	}
-
-	writeErr := writeFileToOFCTmp(fileBytes)
-
-	if writeErr != nil {
-		fmt.Print("Registry credentials written to ./credentials/config.json")
-	}
-
-	return writeErr
+	return writeFileToOFCTmp(fileBytes)
 }
 
 func generateECRFile(accountID string, region string) error {
@@ -80,13 +87,7 @@ func generateECRFile(accountID string, region string) error {
 		return err
 	}
 
-	writeErr := writeFileToOFCTmp(fileBytes)
-
-	if writeErr != nil {
-		fmt.Print("Registry credentials written to ./credentials/config.json")
-	}
-
-	return writeErr
+	return writeFileToOFCTmp(fileBytes)
 }
 
 func generateRegistryAuth(server, username, password string) ([]byte, error) {
