@@ -923,10 +923,11 @@ func createNamespaces() error {
 	ns := `apiVersion: v1
 kind: Namespace
 metadata:
- creationTimestamp: null
+  creationTimestamp: null
   name: cert-manager
 spec: {}
-status: {}`
+status: {}
+`
 	buffer := bytes.NewReader([]byte(ns))
 	res, err = k8s.KubectlTaskStdin(buffer, "apply", "-f", "-")
 	if err != nil {
