@@ -4,6 +4,7 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -157,10 +158,8 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 		"kubeseal --version",
 	}
 
-	validateToolsErr := validateTools(tools)
-
-	if validateToolsErr != nil {
-		panic(validateToolsErr)
+	if err := validateTools(tools); err != nil {
+		return errors.Wrap(err, "validateTools")
 	}
 
 	if prefs.SkipCreateSecrets == false {
@@ -170,25 +169,19 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 		}
 	}
 
-	res, err := k8s.KubectlTask("apply", "-f", "https://raw.githubusercontent.com/openfaas/faas-netes/master/namespaces.yml")
-	if err != nil {
-		return err
+	if err = createNamespaces(); err != nil {
+		return errors.Wrap(err, "createNamespaces")
 	}
-	if res.ExitCode != 0 {
-		return fmt.Errorf("error creating openfaas namespaces: %s %s", res.Stdout, res.Stderr)
-	}
-	fmt.Printf("Applied namespaces for openfaas.\n")
 
-	fmt.Fprintf(os.Stdout, "Plan loaded from: %s\n", files)
+	fmt.Printf("Plan loaded from: %s\n", files)
 
 	os.MkdirAll("tmp", 0700)
 	ioutil.WriteFile("tmp/go.mod", []byte("\n"), 0700)
 
 	fmt.Println("Validating registry credentials file")
 
-	registryAuthErr := validateRegistryAuth(plan.Registry, plan.Secrets, plan.EnableECR)
-	if registryAuthErr != nil {
-		fmt.Fprint(os.Stderr, "error with registry credentials file. Please ensure it has been created correctly")
+	if err := validateRegistryAuth(plan.Registry, plan.Secrets, plan.EnableECR); err != nil {
+		return fmt.Errorf("error with registry credentials file. Please ensure it has been created correctly")
 	}
 
 	start := time.Now()
@@ -196,11 +189,10 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	done := time.Since(start)
 
 	if err != nil {
-		return fmt.Errorf("plan failed after %f seconds, error: %s", done.Seconds(), err.Error())
+		return fmt.Errorf("plan failed after %fs, error: %s", done.Seconds(), err.Error())
 	}
 
-	fmt.Printf("Plan completed in %f seconds\n", done.Seconds())
-
+	fmt.Printf("Plan completed in %fs.\n", done.Seconds())
 	return nil
 }
 
@@ -210,7 +202,6 @@ type Vars struct {
 }
 
 func validateTools(tools []string) error {
-
 	for _, tool := range tools {
 		err := taskGivesStdout(tool)
 		if err != nil {
@@ -219,7 +210,6 @@ func validateTools(tools []string) error {
 	}
 
 	return nil
-
 }
 
 func taskGivesStdout(tool string) error {
@@ -309,7 +299,12 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 	}
 
 	if !prefs.SkipMinio {
-		if err := installMinio(); err != nil {
+		accessKey, secretKey, err := getS3Credentials()
+		if err != nil {
+			return errors.Wrap(err, "getS3Credentials")
+		}
+
+		if err := installMinio(accessKey, secretKey); err != nil {
 			return errors.Wrap(err, "installMinio")
 		}
 	}
@@ -575,10 +570,31 @@ func installOpenfaas(scaleToZero, ingressOperator bool) error {
 	if len(res.Stderr) > 0 {
 		log.Printf("stderr: %s\n", res.Stderr)
 	}
+
 	return nil
 }
 
-func installMinio() error {
+func getS3Credentials() (string, string, error) {
+	var accessKey, secretKey string
+
+	args := []string{"get", "secret", "-n", "openfaas", "s3-access-key", "-o jsonpath='{.data.s3-access-key}'"}
+	res, err := k8s.KubectlTask(args...)
+	if err != nil {
+		return "", "", err
+	}
+	accessKey = res.Stdout
+
+	args = []string{"get", "secret", "-n", "openfaas", "s3-access-key", "-o jsonpath='{.data.s3-secret-key}'"}
+	res, err = k8s.KubectlTask(args...)
+	if err != nil {
+		return "", "", err
+	}
+	secretKey = res.Stdout
+
+	return accessKey, secretKey, nil
+}
+
+func installMinio(accessKey, secretKey string) error {
 	log.Println("Installing minio")
 
 	// # Minio has a default requests value of 4Gi RAM
@@ -590,6 +606,8 @@ func installMinio() error {
 		"--set service.port=9000",
 		"--set service.type=ClusterIP",
 		"--set resources.requests.memory=512Mi",
+		"--secret-key=" + secretKey,
+		"--access-key=" + accessKey,
 		"--wait",
 	}
 
@@ -887,4 +905,37 @@ func getTool(name string, tools []get.Tool) (*get.Tool, error) {
 	}
 
 	return tool, nil
+}
+
+// createNamespaces is required for secrets to be created
+// before each app is installed. Including: cert-manager for TLS
+// secrets and openfaas/openfaas-fn for function secrets.
+func createNamespaces() error {
+	res, err := k8s.KubectlTask("apply", "-f", "https://raw.githubusercontent.com/openfaas/faas-netes/master/namespaces.yml")
+	if err != nil {
+		return err
+	}
+	if res.ExitCode != 0 {
+		return fmt.Errorf("error creating openfaas namespaces: %s %s", res.Stdout, res.Stderr)
+	}
+	fmt.Printf("Applied namespaces for openfaas\n")
+
+	ns := `apiVersion: v1
+kind: Namespace
+metadata:
+ creationTimestamp: null
+  name: cert-manager
+spec: {}
+status: {}`
+	buffer := bytes.NewReader([]byte(ns))
+	res, err = k8s.KubectlTaskStdin(buffer, "apply", "-f", "-")
+	if err != nil {
+		return err
+	}
+	if res.ExitCode != 0 {
+		return fmt.Errorf("error creating openfaas namespaces: %s %s", res.Stdout, res.Stderr)
+	}
+	fmt.Printf("Applied namespaces for cert-manager\n")
+
+	return nil
 }
