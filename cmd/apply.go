@@ -61,7 +61,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	if os.Getuid() == 0 {
 		return fmt.Errorf("do not run this tool as root, or on your server. Run it from your own client remotely")
 	}
-	
+
 	files, err := command.Flags().GetStringArray("file")
 	if err != nil {
 		return err
@@ -97,7 +97,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 		}
 
 		plan := types.Plan{}
-		if err := yaml.Unmarshal(yamlBytes, &plan);err != nil {
+		if err := yaml.Unmarshal(yamlBytes, &plan); err != nil {
 			return fmt.Errorf("unmarshal of --file %s gave error: %s", yamlFile, err.Error())
 		}
 
@@ -304,6 +304,9 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 			return errors.Wrap(err, "getS3Credentials")
 		}
 
+		if len(accessKey) == 0 || len(secretKey) == 0 {
+			return fmt.Errorf("S3 secrets returned from getS3Credentials were empty, but should have been generated")
+		}
 		if err := installMinio(accessKey, secretKey); err != nil {
 			return errors.Wrap(err, "installMinio")
 		}
@@ -575,19 +578,27 @@ func installOpenfaas(scaleToZero, ingressOperator bool) error {
 }
 
 func getS3Credentials() (string, string, error) {
-	args := []string{"get", "secret", "-n", "openfaas-fn", "s3-access-key", "-o jsonpath='{.data.s3-access-key}'"}
+	args := []string{"get", "secret", "-n", "openfaas-fn", "s3-access-key", "-o", "jsonpath={.data.s3-access-key}"}
 	res, err := k8s.KubectlTask(args...)
 	if err != nil {
 		return "", "", err
 	}
+	if res.ExitCode != 0 {
+		return "", "", fmt.Errorf("error getting s3 secret %s / %s", res.Stderr, res.Stdout)
+	}
+
 	decoded, _ := b64.StdEncoding.DecodeString(res.Stdout)
 	accessKey := decoded
 
-	args = []string{"get", "secret", "-n", "openfaas-fn", "s3-secret-key", "-o jsonpath='{.data.s3-secret-key}'"}
+	args = []string{"get", "secret", "-n", "openfaas-fn", "s3-secret-key", "-o", "jsonpath={.data.s3-secret-key}"}
 	res, err = k8s.KubectlTask(args...)
 	if err != nil {
 		return "", "", err
 	}
+	if res.ExitCode != 0 {
+		return "", "", fmt.Errorf("error getting s3 secret %s / %s", res.Stderr, res.Stdout)
+	}
+
 	decoded, _ = b64.StdEncoding.DecodeString(res.Stdout)
 	secretKey := decoded
 
@@ -606,8 +617,8 @@ func installMinio(accessKey, secretKey string) error {
 		"--set service.port=9000",
 		"--set service.type=ClusterIP",
 		"--set resources.requests.memory=512Mi",
-		"--secret-key=" + secretKey,
 		"--access-key=" + accessKey,
+		"--secret-key=" + secretKey,
 		"--wait",
 	}
 
