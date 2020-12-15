@@ -63,19 +63,10 @@ func BuildSecretTask(kvn KeyValueNamespaceTuple) execute.ExecTask {
 }
 
 func generateSecret() (string, error) {
-	task := execute.ExecTask{
-		Command:     "scripts/generate-sha.sh",
-		Shell:       false,
-		StreamStdio: false,
+	var err error
+	pass, err = password.Generate(25, 10, 0, false, true)
+	if err != nil {
+		return err
 	}
-
-	res, err := task.Execute()
-	if res.ExitCode != 0 && err != nil {
-		err = fmt.Errorf("non-zero exit code")
-	}
-
-	h := sha256.New()
-	h.Write([]byte(res.Stdout))
-
-	return fmt.Sprintf("%x", h.Sum(nil)), err
+	return pass, err
 }

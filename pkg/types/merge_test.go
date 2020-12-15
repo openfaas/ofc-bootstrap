@@ -94,13 +94,13 @@ func Test_mergePlans_CombineSecretsDifferentNames(t *testing.T) {
 
 	plan1 := Plan{
 		Secrets: []KeyValueNamespaceTuple{
-			KeyValueNamespaceTuple{Name: "one"},
+			{Name: "one"},
 		},
 	}
 
 	plan2 := Plan{
 		Secrets: []KeyValueNamespaceTuple{
-			KeyValueNamespaceTuple{Name: "two"},
+			{Name: "two"},
 		},
 	}
 
@@ -122,7 +122,7 @@ func Test_mergePlans_CombineSecretsMatchingNames(t *testing.T) {
 
 	plan1 := Plan{
 		Secrets: []KeyValueNamespaceTuple{
-			KeyValueNamespaceTuple{Name: "one",
+			{Name: "one",
 				Namespace: "openfaas-fn",
 			},
 		},
@@ -130,7 +130,7 @@ func Test_mergePlans_CombineSecretsMatchingNames(t *testing.T) {
 
 	plan2 := Plan{
 		Secrets: []KeyValueNamespaceTuple{
-			KeyValueNamespaceTuple{Name: "one",
+			{Name: "one",
 				Namespace: "openfaas-stag"},
 		},
 	}
@@ -153,10 +153,10 @@ func Test_mergePlans_CombineSecretsMatchingNamesLiterals(t *testing.T) {
 
 	plan1 := Plan{
 		Secrets: []KeyValueNamespaceTuple{
-			KeyValueNamespaceTuple{Name: "one",
+			{Name: "one",
 				Namespace: "openfaas-fn",
 				Literals: []KeyValueTuple{
-					KeyValueTuple{
+					{
 						Name:  "password",
 						Value: "",
 					},
@@ -168,10 +168,10 @@ func Test_mergePlans_CombineSecretsMatchingNamesLiterals(t *testing.T) {
 	wantPass := "test1234"
 	plan2 := Plan{
 		Secrets: []KeyValueNamespaceTuple{
-			KeyValueNamespaceTuple{Name: "one",
+			{Name: "one",
 				Namespace: "openfaas-stag",
 				Literals: []KeyValueTuple{
-					KeyValueTuple{
+					{
 						Name:  "password",
 						Value: wantPass,
 					},
