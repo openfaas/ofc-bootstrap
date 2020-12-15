@@ -6,7 +6,7 @@ functions:
   system-gitlab-event:
     lang: go
     handler: ./gitlab-event
-    image: ghcr.io/openfaas/ofc-gitlab-event:0.14.4
+    image: ghcr.io/openfaas/ofc-gitlab-event:0.14.6
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -31,7 +31,7 @@ functions:
   gitlab-push:
     lang: go
     handler: ./gitlab-push
-    image: ghcr.io/openfaas/ofc-gitlab-push:0.14.4
+    image: ghcr.io/openfaas/ofc-gitlab-push:0.14.6
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -47,7 +47,7 @@ functions:
   gitlab-status:
     lang: go
     handler: ./gitlab-status
-    image: ghcr.io/openfaas/ofc-gitlab-status:0.14.4
+    image: ghcr.io/openfaas/ofc-gitlab-status:0.14.6
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
@@ -65,7 +65,7 @@ functions:
   git-tar:
     lang: dockerfile
     handler: ./git-tar
-    image: ghcr.io/openfaas/ofc-git-tar:0.14.4
+    image: ghcr.io/openfaas/ofc-git-tar:0.14.6
     labels:
       openfaas-cloud: "1"
       role: openfaas-system

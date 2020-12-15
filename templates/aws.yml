@@ -8,7 +8,7 @@ functions:
   register-image:
     lang: go
     handler: ./register-image
-    image: ghcr.io/${REPO:-openfaas}/ofc-aws-register-image:0.14.4
+    image: ghcr.io/${REPO:-openfaas}/ofc-aws-register-image:0.14.6
     labels:
       openfaas-cloud: "1"
       role: openfaas-system
