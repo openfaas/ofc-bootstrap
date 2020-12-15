@@ -41,9 +41,8 @@ func Apply(plan types.Plan) error {
 			return tlsTemplateErr
 		}
 
-		applyErr := applyTemplate(tempFilePath)
-		if applyErr != nil {
-			return applyErr
+		if err := applyTemplate(tempFilePath); err != nil {
+			return err
 		}
 	}
 
@@ -76,10 +75,8 @@ func generateTemplate(fileName string, tlsTemplate TLSTemplate) (string, error) 
 	}
 	defer file.Close()
 
-	executeErr := t.Execute(file, tlsTemplate)
-
-	if executeErr != nil {
-		return "", executeErr
+	if err := t.Execute(file, tlsTemplate); err != nil {
+		return "", err
 	}
 
 	return tempFilePath, nil
@@ -93,12 +90,11 @@ func applyTemplate(tempFilePath string) error {
 		StreamStdio: false,
 	}
 
-	execRes, execErr := execTask.Execute()
-	if execErr != nil {
-		return execErr
+	execRes, err := execTask.Execute()
+	if err != nil {
+		return err
 	}
 
-	log.Println(execRes.ExitCode, execRes.Stdout, execRes.Stderr)
-
+	log.Println(execRes.Stdout, execRes.Stderr)
 	return nil
 }
