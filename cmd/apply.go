@@ -577,14 +577,14 @@ func installOpenfaas(scaleToZero, ingressOperator bool) error {
 func getS3Credentials() (string, string, error) {
 	var accessKey, secretKey string
 
-	args := []string{"get", "secret", "-n", "openfaas", "s3-access-key", "-o jsonpath='{.data.s3-access-key}'"}
+	args := []string{"get", "secret", "-n", "openfaas-fn", "s3-access-key", "-o jsonpath='{.data.s3-access-key}'"}
 	res, err := k8s.KubectlTask(args...)
 	if err != nil {
 		return "", "", err
 	}
 	accessKey = res.Stdout
 
-	args = []string{"get", "secret", "-n", "openfaas", "s3-access-key", "-o jsonpath='{.data.s3-secret-key}'"}
+	args = []string{"get", "secret", "-n", "openfaas-fn", "s3-access-key", "-o jsonpath='{.data.s3-secret-key}'"}
 	res, err = k8s.KubectlTask(args...)
 	if err != nil {
 		return "", "", err
