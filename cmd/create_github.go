@@ -145,10 +145,10 @@ func printResult(rootDomain string, appRes github.AppResult) {
 			AppID: fmt.Sprintf("%d", appRes.ID),
 		},
 		Secrets: []types.KeyValueNamespaceTuple{
-			types.KeyValueNamespaceTuple{
+			{
 				Name: "github-webhook-secret",
 				Literals: []types.KeyValueTuple{
-					types.KeyValueTuple{
+					{
 						Name:  "github-webhook-secret",
 						Value: appRes.WebhookSecret,
 					},
@@ -156,10 +156,10 @@ func printResult(rootDomain string, appRes github.AppResult) {
 				Filters:   []string{"scm_github"},
 				Namespace: "openfaas-fn",
 			},
-			types.KeyValueNamespaceTuple{
+			{
 				Name: "private-key",
 				Literals: []types.KeyValueTuple{
-					types.KeyValueTuple{
+					{
 						Name:  "private-key",
 						Value: appRes.PEM,
 					},
