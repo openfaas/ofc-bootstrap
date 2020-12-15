@@ -81,12 +81,16 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	}
 
 	if len(files) == 0 {
-		return fmt.Errorf("Provide one or more --file arguments")
+		return fmt.Errorf("provide one or more --file arguments")
+	}
+
+	if os.Getuid() == 0 {
+		return fmt.Errorf("do not run this tool as root, or on your server. Run it from your own client remotely")
 	}
 
 	plans := []types.Plan{}
 
-	log.Printf("Loading %d plans\n", len(files))
+	log.Printf("Loading %d plan(s)..OK.\n", len(files))
 	for _, yamlFile := range files {
 
 		yamlBytes, yamlErr := ioutil.ReadFile(yamlFile)
@@ -126,7 +130,6 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	}
 
 	clientArch, clientOS := env.GetClientArch()
-
 	userDir, err := config.InitUserDir()
 	if err != nil {
 		return err
@@ -160,6 +163,10 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 
 	if err := validateTools(tools); err != nil {
 		return errors.Wrap(err, "validateTools")
+	}
+
+	if arch := k8s.GetNodeArchitecture(); len(arch) == 0 {
+		return fmt.Errorf("unable to detect node architecture. Do not run as root, or directly on a Kubernetes master node")
 	}
 
 	if prefs.SkipCreateSecrets == false {
