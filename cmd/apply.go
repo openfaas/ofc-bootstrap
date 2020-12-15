@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"bytes"
+	b64 "encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -582,23 +583,23 @@ func installOpenfaas(scaleToZero, ingressOperator bool) error {
 }
 
 func getS3Credentials() (string, string, error) {
-	var accessKey, secretKey string
-
 	args := []string{"get", "secret", "-n", "openfaas-fn", "s3-access-key", "-o jsonpath='{.data.s3-access-key}'"}
 	res, err := k8s.KubectlTask(args...)
 	if err != nil {
 		return "", "", err
 	}
-	accessKey = res.Stdout
+	decoded, _ := b64.StdEncoding.DecodeString(res.Stdout)
+	accessKey := decoded
 
 	args = []string{"get", "secret", "-n", "openfaas-fn", "s3-secret-key", "-o jsonpath='{.data.s3-secret-key}'"}
 	res, err = k8s.KubectlTask(args...)
 	if err != nil {
 		return "", "", err
 	}
-	secretKey = res.Stdout
+	decoded, _ = b64.StdEncoding.DecodeString(res.Stdout)
+	secretKey := decoded
 
-	return accessKey, secretKey, nil
+	return string(accessKey), string(secretKey), nil
 }
 
 func installMinio(accessKey, secretKey string) error {
