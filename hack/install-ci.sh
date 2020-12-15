@@ -11,3 +11,5 @@ curl -sLSf https://dl.get-arkade.dev | sudo sh
 
 arkade get kind
 sudo mv $HOME/.arkade/bin/kind /usr/local/bin/
+
+./bin/ofc-bootstrap version

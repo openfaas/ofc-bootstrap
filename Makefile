@@ -1,34 +1,42 @@
+Version := $(shell git describe --tags --dirty)
+GitCommit := $(shell git rev-parse HEAD)
+LDFLAGS := "-s -w -X github.com/openfaas/ofc-bootstrap/cmd.Version=$(Version) -X github.com/openfaas/ofc-bootstrap/cmd.GitCommit=$(GitCommit)"
+SOURCE_DIRS = cmd pkg main.go
+export GO111MODULE=on
 
-GO_FILES?=$(shell find . -name '*.go' |grep -v vendor)
-TAG?=latest
-GIT_COMMIT=$(shell git rev-list -1 HEAD)
-VERSION=$(shell git describe --all --exact-match `git rev-parse HEAD` | grep tags | sed 's/tags\///')
+.PHONY: all
+all: gofmt test dist hash
 
-.PHONY: build install-ci ci static dist
+.PHONY: ci
+ci: all install-ci ci
 
+.PHONY: build
 build:
-	./build.sh
+	CGO_ENABLED=0 GOOS=linux go build -ldflags $(LDFLAGS) -a -installsuffix cgo -o ofc-bootstrap
 
-install-ci:
-	./hack/install-ci.sh
-ci:
-	./hack/integration-test.sh
+.PHONY: gofmt
+gofmt:
+	@test -z $(shell gofmt -l -s $(SOURCE_DIRS) ./ | tee /dev/stderr) || (echo "[WARN] Fix formatting issues with 'make fmt'" && exit 1)
 
-static:
-	go test $(shell go list ./... | grep -v /vendor/ | grep -v /template/|grep -v /build/) -cover \
-    && CGO_ENABLED=0 go build --ldflags "-s -w \
-    -X github.com/openfaas/ofc-bootstrap/version.GitCommit=${GIT_COMMIT} \
-    -X github.com/openfaas/ofc-bootstrap/version.Version=${VERSION}" \
-    -a -installsuffix cgo -o ofc-bootstrap
+.PHONY: test
+test:
+	CGO_ENABLED=0 go test $(shell go list ./... | grep -v /vendor/|xargs echo) -cover
 
+.PHONY: dist
 dist:
-	./build_redist.sh
-
-fmt:
-	go fmt ./...
+	mkdir -p bin
+	CGO_ENABLED=0 GOOS=linux go build -ldflags $(LDFLAGS) -a -installsuffix cgo -o bin/ofc-bootstrap
+	CGO_ENABLED=0 GOOS=darwin go build -ldflags $(LDFLAGS) -a -installsuffix cgo -o bin/ofc-bootstrap-darwin
+	CGO_ENABLED=0 GOOS=windows go build -ldflags $(LDFLAGS) -a -installsuffix cgo -o bin/ofc-bootstrap.exe
 
 .PHONY: hash
 hash:
 	rm -rf bin/*.sha256 && ./hack/hashgen.sh
 
-all: fmt build install-ci ci dist hash
+.PHONY: install-ci
+install-ci:
+	./hack/install-ci.sh
+
+.PHONY: ci
+ci:
+	./hack/integration-test.sh

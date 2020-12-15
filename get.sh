@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright OpenFaaS Author(s) 2019
+# Copyright OpenFaaS Author(s) 2020
 #########################
 # Repo specific content #
 #########################

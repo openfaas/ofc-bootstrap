@@ -1,4 +1,4 @@
-// Copyright (c) OpenFaaS Author(s) 2019. All rights reserved.
+// Copyright (c) OpenFaaS Author(s) 2020. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 package cmd
@@ -55,7 +55,8 @@ func parseBaseCommand(_ *cobra.Command, _ []string) {
 
 	fmt.Printf(
 		`ofc-bootstrap
-Bootstrap your own OpenFaaS Cloud within 100 seconds
+
+Bootstrap your own self-hosted OpenFaaS Cloud
 
 Commit: %s
 Version: %s
