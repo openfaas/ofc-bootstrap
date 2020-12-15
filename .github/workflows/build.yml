@@ -19,4 +19,4 @@ jobs:
         with:
           fetch-depth: 1
       - name: Make all
-        run: make all
+        run: make ci

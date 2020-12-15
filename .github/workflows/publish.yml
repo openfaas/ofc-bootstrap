@@ -15,7 +15,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: Make all
-        run: make all
+        run: make ci
       - name: Upload release binaries
         uses: alexellis/upload-assets@0.2.2
         env:
