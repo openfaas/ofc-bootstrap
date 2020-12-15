@@ -591,7 +591,7 @@ func getS3Credentials() (string, string, error) {
 	}
 	accessKey = res.Stdout
 
-	args = []string{"get", "secret", "-n", "openfaas-fn", "s3-access-key", "-o jsonpath='{.data.s3-secret-key}'"}
+	args = []string{"get", "secret", "-n", "openfaas-fn", "s3-secret-key", "-o jsonpath='{.data.s3-secret-key}'"}
 	res, err = k8s.KubectlTask(args...)
 	if err != nil {
 		return "", "", err
