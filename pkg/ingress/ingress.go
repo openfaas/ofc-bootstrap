@@ -22,24 +22,20 @@ type IngressTemplate struct {
 // for the OpenFaaS Cloud ingress configuration
 func Apply(plan types.Plan) error {
 
-	err := apply("ingress-wildcard.yml", "ingress-wildcard", IngressTemplate{
+	if err := apply("ingress-wildcard.yml", "ingress-wildcard", IngressTemplate{
 		RootDomain: plan.RootDomain,
 		TLS:        plan.TLS,
 		IssuerType: plan.TLSConfig.IssuerType,
-	})
-
-	if err != nil {
+	}); err != nil {
 		return err
 	}
 
-	err1 := apply("ingress-auth.yml", "ingress-auth", IngressTemplate{
+	if err := apply("ingress-auth.yml", "ingress-auth", IngressTemplate{
 		RootDomain: plan.RootDomain,
 		TLS:        plan.TLS,
 		IssuerType: plan.TLSConfig.IssuerType,
-	})
-
-	if err1 != nil {
-		return err1
+	}); err != nil {
+		return err
 	}
 
 	return nil
@@ -53,17 +49,17 @@ func apply(source string, name string, ingress IngressTemplate) error {
 	}
 
 	tempFilePath := "tmp/generated-ingress-" + name + ".yaml"
-	file, fileErr := os.Create(tempFilePath)
-	if fileErr != nil {
-		return fileErr
+	file, err := os.Create(tempFilePath)
+	if err != nil {
+		return err
 	}
 	defer file.Close()
 
-	_, writeErr := file.Write(generatedData)
+	_, err = file.Write(generatedData)
 	file.Close()
 
-	if writeErr != nil {
-		return writeErr
+	if err != nil {
+		return err
 	}
 
 	execTask := execute.ExecTask{
@@ -73,12 +69,12 @@ func apply(source string, name string, ingress IngressTemplate) error {
 		StreamStdio: false,
 	}
 
-	execRes, execErr := execTask.Execute()
-	if execErr != nil {
-		return execErr
+	execRes, err := execTask.Execute()
+	if err != nil {
+		return err
 	}
 
-	log.Println(execRes.ExitCode, execRes.Stdout, execRes.Stderr)
+	log.Println(execRes.Stdout, execRes.Stderr)
 
 	return nil
 }
@@ -88,11 +84,12 @@ func applyTemplate(templateFileName string, templateValues IngressTemplate) ([]b
 	if err != nil {
 		return nil, err
 	}
+
 	t := template.Must(template.New(templateFileName).Parse(string(data)))
-
 	buffer := new(bytes.Buffer)
+	if err := t.Execute(buffer, templateValues); err != nil {
+		return []byte{}, err
+	}
 
-	executeErr := t.Execute(buffer, templateValues)
-
-	return buffer.Bytes(), executeErr
+	return buffer.Bytes(), nil
 }
