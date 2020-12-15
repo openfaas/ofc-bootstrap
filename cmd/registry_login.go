@@ -66,7 +66,7 @@ func generateRegistryAuthFile(command *cobra.Command, _ []string) error {
 		return generateErr
 	}
 
-	fmt.Printf("\nWrote ./credentials/docker.json..OK\n")
+	fmt.Printf("\nWrote ./credentials/config.json..OK\n")
 
 	return nil
 }
