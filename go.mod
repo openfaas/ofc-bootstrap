@@ -21,6 +21,7 @@ require (
 	github.com/openfaas/openfaas-cloud/edge-auth v0.0.0-20201214095559-b4ad89b94ed9 // indirect
 	github.com/openfaas/openfaas-cloud/sdk v0.0.0-20201214095559-b4ad89b94ed9 // indirect
 	github.com/pkg/errors v0.9.1
+	github.com/sethvargo/go-password v0.1.3
 	github.com/spf13/cobra v1.1.1
 	gopkg.in/yaml.v2 v2.3.0
 	k8s.io/apimachinery v0.20.0 // indirect

@@ -1,12 +1,12 @@
 package types
 
 import (
-	"crypto/sha256"
 	"fmt"
 	"log"
 	"os"
 
 	execute "github.com/alexellis/go-execute/pkg/v1"
+	"github.com/sethvargo/go-password/password"
 )
 
 func BuildSecretTask(kvn KeyValueNamespaceTuple) execute.ExecTask {
@@ -63,10 +63,10 @@ func BuildSecretTask(kvn KeyValueNamespaceTuple) execute.ExecTask {
 }
 
 func generateSecret() (string, error) {
-	var err error
-	pass, err = password.Generate(25, 10, 0, false, true)
+
+	pass, err := password.Generate(25, 10, 0, false, true)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return pass, err
+	return pass, nil
 }
