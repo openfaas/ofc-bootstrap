@@ -56,9 +56,12 @@ type InstallPreferences struct {
 }
 
 func runApplyCommandE(command *cobra.Command, _ []string) error {
-
 	prefs := InstallPreferences{}
 
+	if os.Getuid() == 0 {
+		return fmt.Errorf("do not run this tool as root, or on your server. Run it from your own client remotely")
+	}
+	
 	files, err := command.Flags().GetStringArray("file")
 	if err != nil {
 		return err
@@ -85,49 +88,40 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 		return fmt.Errorf("provide one or more --file arguments")
 	}
 
-	if os.Getuid() == 0 {
-		return fmt.Errorf("do not run this tool as root, or on your server. Run it from your own client remotely")
-	}
-
 	plans := []types.Plan{}
-
-	log.Printf("Loading %d plan(s)..OK.\n", len(files))
 	for _, yamlFile := range files {
 
-		yamlBytes, yamlErr := ioutil.ReadFile(yamlFile)
-		if yamlErr != nil {
-			return fmt.Errorf("loading --file %s gave error: %s", yamlFile, yamlErr.Error())
+		yamlBytes, err := ioutil.ReadFile(yamlFile)
+		if err != nil {
+			return fmt.Errorf("loading --file %s gave error: %s", yamlFile, err.Error())
 		}
 
 		plan := types.Plan{}
-		unmarshalErr := yaml.Unmarshal(yamlBytes, &plan)
-		if unmarshalErr != nil {
-			return fmt.Errorf("unmarshal of --file %s gave error: %s", yamlFile, unmarshalErr.Error())
+		if err := yaml.Unmarshal(yamlBytes, &plan);err != nil {
+			return fmt.Errorf("unmarshal of --file %s gave error: %s", yamlFile, err.Error())
 		}
+
 		log.Printf("%s loaded\n", yamlFile)
 		plans = append(plans, plan)
 	}
 
-	planMerged, mergeErr := types.MergePlans(plans)
-
-	if mergeErr != nil {
-		return mergeErr
+	log.Printf("Loaded %d plan(s)\n", len(files))
+	planMerged, err := types.MergePlans(plans)
+	if err != nil {
+		return err
 	}
 
 	if printPlan {
-
 		out, _ := yaml.Marshal(planMerged)
 		fmt.Println(string(out))
-
 		os.Exit(0)
 	}
 
 	plan := *planMerged
 
-	var featuresErr error
-	plan, featuresErr = filterFeatures(plan)
-	if featuresErr != nil {
-		return fmt.Errorf("error while retreiving features: %s", featuresErr.Error())
+	plan, err = filterFeatures(plan)
+	if err != nil {
+		return fmt.Errorf("error while retreiving features: %s", err.Error())
 	}
 
 	clientArch, clientOS := env.GetClientArch()
@@ -138,8 +132,7 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	fmt.Printf("User dir: %s\n", userDir)
 
 	install := []string{"kubectl", "helm", "faas-cli", "arkade", "kubeseal"}
-	err = getTools(clientArch, clientOS, userDir, install)
-	if err != nil {
+	if err := getTools(clientArch, clientOS, userDir, install); err != nil {
 		return err
 	}
 
@@ -171,9 +164,8 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	}
 
 	if prefs.SkipCreateSecrets == false {
-		validateErr := validatePlan(plan)
-		if validateErr != nil {
-			panic(validateErr)
+		if err := validatePlan(plan); err != nil {
+			return errors.Wrap(err, "validatePlan")
 		}
 	}
 
