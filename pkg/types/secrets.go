@@ -63,7 +63,6 @@ func BuildSecretTask(kvn KeyValueNamespaceTuple) execute.ExecTask {
 }
 
 func generateSecret() (string, error) {
-
 	pass, err := password.Generate(25, 10, 0, false, true)
 	if err != nil {
 		return "", err
