@@ -323,7 +323,7 @@ func process(plan types.Plan, prefs InstallPreferences) error {
 		log.Println(functionAuthErr.Error())
 	}
 
-	if err := installOpenfaas(plan.ScaleToZero, plan.IngressOperator); err != nil {
+	if err := installOpenfaas(plan.ScaleToZero, plan.IngressOperator, plan.OpenFaaSOperator); err != nil {
 		return errors.Wrap(err, "unable to install openfaas")
 	}
 
@@ -531,7 +531,7 @@ func installSealedSecrets() error {
 	return nil
 }
 
-func installOpenfaas(scaleToZero, ingressOperator bool) error {
+func installOpenfaas(scaleToZero, ingressOperator, openfaasOperator bool) error {
 	log.Println("Installing openfaas")
 
 	args := []string{"install", "openfaas",
@@ -551,6 +551,7 @@ func installOpenfaas(scaleToZero, ingressOperator bool) error {
 		"--set faasnetes.httpProbe=true",
 		"--set faasnetes.imagePullPolicy=IfNotPresent",
 		"--set ingressOperator.create=" + strconv.FormatBool(ingressOperator),
+		"--set operator.create=" + strconv.FormatBool(openfaasOperator),
 		"--wait",
 	}
 
