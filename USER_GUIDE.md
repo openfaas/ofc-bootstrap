@@ -27,7 +27,7 @@ k3sup install --ip $IP --user $USER --k3s-extra-args "--no-deploy traefik"
 Example with [k3d](https://github.com/rancher/k3d):
 
 ```sh
-k3d create --server-arg "--no-deploy=traefik"
+k3d cluster create --k3s-server-arg "--no-deploy=traefik"
 ```
 
 Newer k3d versions will require an alternative:
