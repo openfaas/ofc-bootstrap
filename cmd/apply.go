@@ -179,9 +179,8 @@ func runApplyCommandE(command *cobra.Command, _ []string) error {
 	ioutil.WriteFile("tmp/go.mod", []byte("\n"), 0700)
 
 	fmt.Println("Validating registry credentials file")
-
 	if err := validateRegistryAuth(plan.Registry, plan.Secrets, plan.EnableECR); err != nil {
-		return fmt.Errorf("error with registry credentials file. Please ensure it has been created correctly")
+		return errors.Wrap(err, "error with registry credentials file")
 	}
 
 	start := time.Now()

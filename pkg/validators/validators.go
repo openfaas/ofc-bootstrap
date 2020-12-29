@@ -16,6 +16,20 @@ type DockerConfigJson struct {
 	AuthConfigs map[string]AuthConfig `json:"auths"`
 }
 
+func ValidateRegistryAuth(registryEndpoint string, configFileBytes []byte) error {
+
+	registryData, err := unmarshalRegistryConfig(configFileBytes)
+	if err != nil {
+		return err
+	}
+
+	if err := validate(registryData, registryEndpoint); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func unmarshalRegistryConfig(data []byte) (*DockerConfigJson, error) {
 	var registryConfig DockerConfigJson
 
@@ -24,21 +38,6 @@ func unmarshalRegistryConfig(data []byte) (*DockerConfigJson, error) {
 		return nil, err
 	}
 	return &registryConfig, nil
-}
-
-func ValidateRegistryAuth(registryEndpoint string, configFileBytes []byte) error {
-
-	registryData, unmarshalErr := unmarshalRegistryConfig(configFileBytes)
-	if unmarshalErr != nil {
-		return unmarshalErr
-	}
-
-	noAuthErr := validate(registryData, registryEndpoint)
-	if noAuthErr != nil {
-		return noAuthErr
-	}
-
-	return nil
 }
 
 func validate(registryData *DockerConfigJson, endpoint string) error {
