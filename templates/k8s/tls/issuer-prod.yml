@@ -26,9 +26,9 @@ spec:
             key: secret-access-key
           {{else if eq .DNSService "cloudflare" }}
           email: {{.Email}}
-          apiKeySecretRef:
-            name: cloudflare-api-key-secret
-            key: api-key
+          apiTokenSecretRef:
+            name: cloudflare-api-token-secret
+            key: api-token
           {{else if eq .DNSService "digitalocean" }}
             tokenSecretRef:
               name: digitalocean-dns
